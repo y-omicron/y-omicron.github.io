@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"omicron.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="这可不是DHCP动态分配IP地址~~">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ECDH 密钥协商原理">
-<meta property="og:url" content="http://example.com/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:url" content="http://omicron.fun/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="这可不是DHCP动态分配IP地址~~">
 <meta property="og:locale" content="en_US">
@@ -35,7 +35,7 @@
 <meta property="article:tag" content="零知识证明">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/">
+<link rel="canonical" href="http://omicron.fun/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -153,7 +153,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="http://omicron.fun/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -218,7 +218,7 @@
 <li><p>首先，他们约定一个<code>p</code>和一个<code>g</code>，假设，<code>p=23,g=5</code></p>
 </li>
 <li><p>Alice在不告诉Bob的情况下，秘密生成一个数字<code>a=6</code>，计算<span style="background-color:#ffc7c7;">A = g^a * mod(p)</span>并发送给Bob</p>
-<p><span style="background-color:#ffc7c7;">A=5^6 * mod(23)=8</span></p>
+<p><span style="background-color:#ffc7c7;">A=5^6 * mod(23)=8</sapn></p>
 </li>
 <li><p>Bob同样的选择一个数字<code>b=15</code>，也计算<span style="background-color:#ffc7c7;">B = g^a * mod(p)</span>发送给Alice</p>
 <p><span style="background-color:#ffc7c7;">B = 8^15 * mod(23) = 19</span></p>

@@ -17,32 +17,32 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"omicron.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="主要是弄来弄去，搭建N次虚拟机，总是忘记东西，索性记录下来">
 <meta property="og:type" content="article">
 <meta property="og:title" content="搭建Ubuntu虚拟机的注意事项">
-<meta property="og:url" content="http://example.com/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/index.html">
+<meta property="og:url" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="主要是弄来弄去，搭建N次虚拟机，总是忘记东西，索性记录下来">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-16-39-51.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-16-46-56.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-16-49-44.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-16-53-04.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-16-57-01.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-17-27-46.png">
-<meta property="og:image" content="http://example.com/.com//2020-04-27-17-31-19.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-39-51.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-46-56.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-49-44.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-53-04.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-57-01.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-17-27-46.png">
+<meta property="og:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-17-31-19.png">
 <meta property="article:published_time" content="2020-04-20T04:52:07.000Z">
 <meta property="article:modified_time" content="2020-04-27T09:37:10.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Tip">
 <meta property="article:tag" content="Ubuntu">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//2020-04-27-16-39-51.png">
+<meta name="twitter:image" content="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-39-51.png">
 
-<link rel="canonical" href="http://example.com/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/">
+<link rel="canonical" href="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/">
 
 
 <script id="page-configurations">
@@ -160,7 +160,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/">
+    <link itemprop="mainEntityOfPage" href="http://omicron.fun/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -221,7 +221,7 @@
 <h1 id="源"><a href="#源" class="headerlink" title="源"></a>源</h1><ul>
 <li>没什么好说的，直接上链接<ul>
 <li><a target="_blank" rel="noopener" href="http://mirrors.163.com/ubuntu-releases/">Ubuntu（网易镜像源）</a></li>
-<li><a target="_blank" rel="noopener" href="https://omicron.fun/Download/VMware.7z">VMware 15 Pro（含注册码）</a></li>
+<li><a href="https://omicron.fun/Download/VMware.7z">VMware 15 Pro（含注册码）</a></li>
 </ul>
 </li>
 <li>关于源，特殊的一点就是一般在搭建好虚拟机之后需要更换原本的源(/etc/apt/sources.list)为国内的镜像源用来提高速度，这个文件呢，总是要去网上找，然后有的人又坑，复制出来的自己的源总会缺失一部分，导致出现各种各样的错误，所以我更换源的时候，直接将原来源文件中的<code>cn.archive.ubuntu</code>替换为<code>mirrors.163</code>，顺便附上我使用的sources.list文件<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.163.com/ubuntu/ xenial main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ xenial-security main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ xenial-updates main restricted universe multiverse</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">##測試版源</span><br><span class="line">deb http://mirrors.163.com/ubuntu/ xenial-proposed main restricted universe multiverse</span><br><span class="line"># 源碼</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ xenial main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ xenial-security main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ xenial-updates main restricted universe multiverse</span><br><span class="line">deb-src http://mirrors.163.com/ubuntu/ xenial-backports main restricted universe multiverse</span><br><span class="line">## 測試版源</span><br><span class="line">deb-src http://cn.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe multiverse</span><br><span class="line"># Canonical 合作夥伴和附加</span><br><span class="line">deb http://archive.canonical.com/ubuntu/ xenial partner</span><br><span class="line">deb http://extras.ubuntu.com/ubuntu/ xenial main</span><br><span class="line"># notepad++ PPA源</span><br><span class="line">deb http://ppa.launchpad.net/notepadqq-team/notepadqq/ubuntu trusty main</span><br><span class="line">deb-src http://ppa.launchpad.net/notepadqq-team/notepadqq/ubuntu trusty main</span><br></pre></td></tr></table></figure></li>
@@ -239,23 +239,23 @@
 </li>
 </ul>
 <h3 id="设置系统语言为中文"><a href="#设置系统语言为中文" class="headerlink" title="设置系统语言为中文"></a>设置系统语言为中文</h3><ul>
-<li>如何设置中文，首先终端执行<code>apt-get update</code>，有强迫症的可以顺便执行<code>apt-get upgrage</code><br><img src="/.com//2020-04-27-16-39-51.png" alt="通过仓库检查更新"></li>
+<li>如何设置中文，首先终端执行<code>apt-get update</code>，有强迫症的可以顺便执行<code>apt-get upgrage</code><br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-39-51.png" alt="通过仓库检查更新"></li>
 <li>然后我们打开系统设置，就是右上角那个齿轮里面的<code>System Settings</code><del>（这俩单词不认识的建议退出计算机相关工作）</del></li>
-<li>接下来找到语言设置，第一次点进去的时候会下载一些东西，点击下载就行了(<code>Install</code>)<br><img src="/.com//2020-04-27-16-46-56.png" alt="语言设置"></li>
-<li>接下来添加或删除语言，在里面勾选简体中文，然后点击应用<br><img src="/.com//2020-04-27-16-49-44.png" alt="下载简体中文包"></li>
-<li>然后的事情就很<del>诡异</del>简单，将简体中文拖到最上面就可以了<br><img src="/.com//2020-04-27-16-53-04.png" alt="设置语言首选项"></li>
+<li>接下来找到语言设置，第一次点进去的时候会下载一些东西，点击下载就行了(<code>Install</code>)<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-46-56.png" alt="语言设置"></li>
+<li>接下来添加或删除语言，在里面勾选简体中文，然后点击应用<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-49-44.png" alt="下载简体中文包"></li>
+<li>然后的事情就很<del>诡异</del>简单，将简体中文拖到最上面就可以了<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-53-04.png" alt="设置语言首选项"></li>
 <li>接下来直接<code>reboot</code>，说句题外话，我在上一步中遇到很无语的情况，无法拖动简体中文，显示为灰色，最终通过修改配置文件完成修改的操作，修改方式如下：<ol>
 <li>找到Ubuntu语言的配置文件<br><code>gedit /etc/default/locale </code></li>
 <li>修改文件为: <figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#  File generated by update-locale</span><br><span class="line">LANG=&quot;zh_CN.UTF-8&quot;</span><br><span class="line">LANGUAGE=&quot;zh_CN:zh&quot;</span><br></pre></td></tr></table></figure></li>
 <li>重启之后就可以修改系统的语言了，其中LANGUAGE是登录界面的语言，可加可不加</li>
 </ol>
 </li>
-<li>接下来重启之后会询问你是否更换名称，千万不要点击是，不然这白干了，就是为了保留旧名称(英文)，同时利用中文化的系统来帮助我们阅读设置<br><img src="/.com//2020-04-27-16-57-01.png" alt="提示"></li>
+<li>接下来重启之后会询问你是否更换名称，千万不要点击是，不然这白干了，就是为了保留旧名称(英文)，同时利用中文化的系统来帮助我们阅读设置<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-16-57-01.png" alt="提示"></li>
 </ul>
 <h3 id="安装中文输入法"><a href="#安装中文输入法" class="headerlink" title="安装中文输入法"></a>安装中文输入法</h3><ul>
 <li>我就不用搜狗输入法了，不是很方便，直接使用默认的ibus-pinyin输入法，虽然现在已经更改系统语言为中文了，但是依然没有输入法，首先下载输入法<br><code>sudo apt-get install ibus-pinyin</code></li>
-<li>然后<code>ibus-setup</code>打开ibus设置，添加中文输入法<br><img src="/.com//2020-04-27-17-27-46.png" alt="添加拼音输入法"></li>
-<li>接下来重启之后就可以看到拼音输入法已经安装好了~<br><img src="/.com//2020-04-27-17-31-19.png" alt="拼音输入法"></li>
+<li>然后<code>ibus-setup</code>打开ibus设置，添加中文输入法<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-17-27-46.png" alt="添加拼音输入法"></li>
+<li>接下来重启之后就可以看到拼音输入法已经安装好了~<br><img src="%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/2020-04-27-17-31-19.png" alt="拼音输入法"></li>
 </ul>
 <h2 id="安装配置VScode"><a href="#安装配置VScode" class="headerlink" title="安装配置VScode"></a>安装配置VScode</h2><ul>
 <li>没什么好说的，直接下载之后双击安装即可</li>

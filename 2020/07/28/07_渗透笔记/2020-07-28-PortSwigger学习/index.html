@@ -17,34 +17,34 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"omicron.fun","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="PortSwigger 实际上是 Web Security Academy, 顾名思义这就是 BurpSuite 的一个在线靶场, 用于学习渗透技巧">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2020.07.28.PortSwigger初识">
-<meta property="og:url" content="http://example.com/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:url" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="PortSwigger 实际上是 Web Security Academy, 顾名思义这就是 BurpSuite 的一个在线靶场, 用于学习渗透技巧">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-19-58-45.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-19-59-19.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-00-55.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-18-04.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-20-50.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-22-32.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-23-53.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-25-29.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-26-36.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-36-15.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-51-21.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-51-08.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-53-33.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-20-57-22.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-21-26-59.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-21-37-50.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-21-32-57.png">
-<meta property="og:image" content="http://example.com/.com//2020-07-28-21-35-19.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-19-58-45.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-19-59-19.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-00-55.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-18-04.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-20-50.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-22-32.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-23-53.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-25-29.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-26-36.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-36-15.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-51-21.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-51-08.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-53-33.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-57-22.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-26-59.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-37-50.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-32-57.png">
+<meta property="og:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-35-19.png">
 <meta property="article:published_time" content="2020-07-28T11:55:11.000Z">
 <meta property="article:modified_time" content="2020-07-28T15:50:40.000Z">
 <meta property="article:author" content="John Doe">
@@ -54,9 +54,9 @@
 <meta property="article:tag" content="PortSwigger">
 <meta property="article:tag" content="Web Security Academy">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/.com//2020-07-28-19-58-45.png">
+<meta name="twitter:image" content="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-19-58-45.png">
 
-<link rel="canonical" href="http://example.com/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/">
+<link rel="canonical" href="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/">
 
 
 <script id="page-configurations">
@@ -174,7 +174,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="http://omicron.fun/2020/07/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -227,40 +227,40 @@
 <a id="more"></a>
 
 <h1 id="初识"><a href="#初识" class="headerlink" title="初识"></a>初识</h1><ul>
-<li>可以在线访问到他的<a target="_blank" rel="noopener" href="https://portswigger.net/web-security">首页</a><br><img src="/.com//2020-07-28-19-58-45.png"></li>
-<li>下面就可以看到我们需要的实验环境了<br><img src="/.com//2020-07-28-19-59-19.png"></li>
+<li>可以在线访问到他的<a target="_blank" rel="noopener" href="https://portswigger.net/web-security">首页</a><br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-19-58-45.png"></li>
+<li>下面就可以看到我们需要的实验环境了<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-19-59-19.png"></li>
 <li>不过我还是喜欢跳转到总列表上来从上往下做~</li>
-<li>作为一个纯纯的新人，我们来做第一个，SQL注入<br><img src="/.com//2020-07-28-20-00-55.png"></li>
+<li>作为一个纯纯的新人，我们来做第一个，SQL注入<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-00-55.png"></li>
 </ul>
 <h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><ul>
 <li>甚至题目提示和题目下方的文字都提醒了你，这是一个SQL联合查询，目标是获取列数</li>
-<li>看明白了，就访问实验资源<br><img src="/.com//2020-07-28-20-18-04.png"></li>
+<li>看明白了，就访问实验资源<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-18-04.png"></li>
 <li>顺便开好代理哦，BurpSuite抓包哦~</li>
 </ul>
 <h2 id="Search"><a href="#Search" class="headerlink" title="Search"></a>Search</h2><ul>
-<li>很酷，模仿的实战环境，第一眼就看到了搜索，通常搜索都很值得我们测试，因为可能存在注入，这里也不例外<br><img src="/.com//2020-07-28-20-20-50.png"></li>
-<li>BurpSuite是按照我的习惯配置的，开启代理，但是不拦截包，现在我们点击过之后，回去看事件，假如分析完每一个包，都不能利用，那就可以清除历史，继续捕获新的数据包<br><img src="/.com//2020-07-28-20-22-32.png"></li>
-<li>这里则是着重关注有参数的数据包，可以看到我们刚刚点击选择的选项被作为参数发送给服务器了，所以简单测试一下是否存在SQL注入<br><img src="/.com//2020-07-28-20-23-53.png"></li>
-<li>首先发送的重发器，然后很单纯的添加一个单引号，看看能否报错，结果自然没有过滤，返回一个错误，那么再通过构造payload，试试能不能恢复正常返回<br><img src="/.com//2020-07-28-20-25-29.png"></li>
-<li>同样很俗套，两个单引号正常返回了页面，那么这里我们单引号是成功闭合了SQL语句的，我们可以尝试构造SQL注入<br><img src="/.com//2020-07-28-20-26-36.png"></li>
+<li>很酷，模仿的实战环境，第一眼就看到了搜索，通常搜索都很值得我们测试，因为可能存在注入，这里也不例外<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-20-50.png"></li>
+<li>BurpSuite是按照我的习惯配置的，开启代理，但是不拦截包，现在我们点击过之后，回去看事件，假如分析完每一个包，都不能利用，那就可以清除历史，继续捕获新的数据包<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-22-32.png"></li>
+<li>这里则是着重关注有参数的数据包，可以看到我们刚刚点击选择的选项被作为参数发送给服务器了，所以简单测试一下是否存在SQL注入<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-23-53.png"></li>
+<li>首先发送的重发器，然后很单纯的添加一个单引号，看看能否报错，结果自然没有过滤，返回一个错误，那么再通过构造payload，试试能不能恢复正常返回<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-25-29.png"></li>
+<li>同样很俗套，两个单引号正常返回了页面，那么这里我们单引号是成功闭合了SQL语句的，我们可以尝试构造SQL注入<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-26-36.png"></li>
 <li>当然，可以用Render来查看页面，更直观一些</li>
 </ul>
 <h2 id="SQLMap"><a href="#SQLMap" class="headerlink" title="SQLMap"></a>SQLMap</h2><ul>
 <li>不要跟我说手注，学习的时候做过就好了，掌握原理，学会绕过，普通的注入还是直接交给sqlmap吧，永远不会辜负你的期望~</li>
-<li>直接copy包，打好标记传递给sqlmap<br><img src="/.com//2020-07-28-20-36-15.png"></li>
-<li>欸<br><img src="/.com//2020-07-28-20-51-21.png"></li>
-<li>咳咳，你永远可以相信sqlmap!<br><img src="/.com//2020-07-28-20-51-08.png"></li>
+<li>直接copy包，打好标记传递给sqlmap<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-36-15.png"></li>
+<li>欸<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-51-21.png"></li>
+<li>咳咳，你永远可以相信sqlmap!<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-51-08.png"></li>
 <li>重新指定-u url就好…</li>
-<li>既然需要的是列，我们加上参数<code>--columns</code>列出当前的列<br><img src="/.com//2020-07-28-20-53-33.png"></li>
-<li><code>--is-dba</code><br><img src="/.com//2020-07-28-20-57-22.png"></li>
+<li>既然需要的是列，我们加上参数<code>--columns</code>列出当前的列<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-53-33.png"></li>
+<li><code>--is-dba</code><br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-20-57-22.png"></li>
 <li><del>好了我们GetShell</del>，？？？，我们干嘛来的？</li>
 </ul>
 <h2 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h2><ul>
-<li>是我英语太垃圾了…题目要求我们通过注入返回一个空行…<br><img src="/.com//2020-07-28-21-26-59.png"></li>
-<li>乖乖手注，单引号闭合，爆字段<code>/filter?category=Accessories&#39; order by 3 --</code><br><img src="/.com//2020-07-28-21-37-50.png"></li>
+<li>是我英语太垃圾了…题目要求我们通过注入返回一个空行…<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-26-59.png"></li>
+<li>乖乖手注，单引号闭合，爆字段<code>/filter?category=Accessories&#39; order by 3 --</code><br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-37-50.png"></li>
 <li>直接构造<del><code>/filter?category=&#39; union select 1,2,3 --</code></del></li>
-<li>直接构造<code>/filter?category=&#39; union select null,null,null --</code><br><img src="/.com//2020-07-28-21-32-57.png"></li>
-<li>返回就提示我们已经成功~<br><img src="/.com//2020-07-28-21-35-19.png"></li>
+<li>直接构造<code>/filter?category=&#39; union select null,null,null --</code><br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-32-57.png"></li>
+<li>返回就提示我们已经成功~<br><img src="2020-07-28-PortSwigger%E5%AD%A6%E4%B9%A0/2020-07-28-21-35-19.png"></li>
 </ul>
 
     </div>
