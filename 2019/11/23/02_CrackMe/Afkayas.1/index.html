@@ -227,7 +227,7 @@
 
 <h1 id="查壳-amp-样本信息"><a href="#查壳-amp-样本信息" class="headerlink" title="查壳&amp;样本信息"></a>查壳&amp;样本信息</h1><h2 id="壳信息，样本语言"><a href="#壳信息，样本语言" class="headerlink" title="壳信息，样本语言"></a>壳信息，样本语言</h2><ul>
 <li><p>实际上，这个样本是没有壳的，而且是采用的<code>Visual Basic</code>语言编写程序。</p>
-<p><img src="1571476909028.png" alt="1571476909028"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1571476909028.png" alt="1571476909028"></p>
 </li>
 <li><p>我得要多说一嘴，因为我分析这个CrackMe的时候已经是2019年了，VB几乎退出历史舞台，所以我白写了半天 VB .Net，还以为是一个东西….</p>
 </li>
@@ -239,56 +239,56 @@
 </ul>
 <h2 id="VB-Decompiler逆向功能算法"><a href="#VB-Decompiler逆向功能算法" class="headerlink" title="VB Decompiler逆向功能算法"></a>VB Decompiler逆向功能算法</h2><ul>
 <li><p>首先上图</p>
-<p><img src="1574490937972.png" alt="1574490937972"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574490937972.png" alt="1574490937972"></p>
 </li>
 <li><p>可以看到主要的逻辑都已经被反编译出来了，而且我们利用对应的地址也可以在IDA中寻找到相应的代码，但是我可以通过一个地方简单的说一下为什么不建议用IDA分析这个程序。</p>
 </li>
 <li><p>首先是VB反编译程序反编译的窗口类的一个代码</p>
-<p><img src="1574491066485.png" alt="1574491066485"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574491066485.png" alt="1574491066485"></p>
 </li>
 <li><p>重点是我标出来的这一句，从Serial类中获取Text框中的消息，我们再看看IDA。</p>
-<p><img src="1574491290910.png" alt="1574491290910"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574491290910.png" alt="1574491290910"></p>
 </li>
 <li><p>可以说可读性极差，我们只知道肯定是调用的对象的方法，但是没有签名的情况下没有办法得知是什么方法。VB程序的函数可以在这里(<a target="_blank" rel="noopener" href="https://www.cnblogs.com/bbdxf/p/3793545.html">笨笨的幸福大神博客</a>)查询。</p>
-<p><img src="1574492825995.png" alt="1574492825995"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574492825995.png" alt="1574492825995"></p>
 </li>
 <li><p>看到这个分析的结果肯定会迷惑不已，这变量和实际效果。。。根本就是迷惑行为嘛。。。这个工具还是不靠谱，只可意会不可言传，只能在一定程度上帮助分析，实际效果需要调试器获取。</p>
 </li>
 </ul>
 <h1 id="动态分析"><a href="#动态分析" class="headerlink" title="动态分析"></a>动态分析</h1><h2 id="OD-x64dbg"><a href="#OD-x64dbg" class="headerlink" title="OD x64dbg"></a><del>OD</del> x64dbg</h2><ul>
 <li><p>基于我们刚刚分析的内容，我们使用x64dbg分析这个CrackMe的加密部分，首先根据函数的入口地址，下断在判断函数处。</p>
-<p><img src="1574493011752.png" alt="1574493011752"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574493011752.png" alt="1574493011752"></p>
 </li>
 <li><p>我们输入<code>Name</code>和<code>Serial</code>进入判断，首先跟踪上面遇到的取输入的Name长度，遇到类似下图的函数就没有必要在意了，都是初始化的时候编译器的函数，与我们关注的注册码没有太大关系。</p>
-<p><img src="1574493209397.png" alt="1574493209397"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574493209397.png" alt="1574493209397"></p>
 </li>
 <li><p>当然也可以直接在我们找到的对应的函数处下断点。</p>
-<p><img src="1574493284077.png" alt="1574493284077"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574493284077.png" alt="1574493284077"></p>
 </li>
 <li><p>可以看到名字被存入变量</p>
-<p><img src="1574493418370.png" alt="1574493418370"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574493418370.png" alt="1574493418370"></p>
 </li>
 <li><p>接下来，首先函数求输入的用户名长度，然后使用<code>IMUL</code>指令计算乘积，然后使用函数<code>rtcAnsiValueBstr</code>取输入的第一个字符的ANSI值，并且求和。</p>
-<p><img src="1574493945177.png" alt="1574493945177"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574493945177.png" alt="1574493945177"></p>
 </li>
 <li><p>然后使用函数<code>__vbaStrI4</code>将计算出来的值，先转换为10进制，然后转换为字符串(Unicode编码)</p>
-<p><img src="1574494743835.png" alt="1574494743835"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574494743835.png" alt="1574494743835"></p>
 </li>
 <li><p>接下来直接跳转到拼接字符串的地方继续处理注册码</p>
-<p><img src="1574495003126.png" alt="1574495003126"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574495003126.png" alt="1574495003126"></p>
 </li>
 <li><p>我们接下来，手动计算一下</p>
 <p><code>4 * 0x17CFB + 4E = 5F43A --&gt; 390202</code>，拼接得到<code>AKA-390202</code></p>
 </li>
 <li><p>与内存中的值是一致的</p>
-<p><img src="1574495193066.png" alt="1574495193066"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574495193066.png" alt="1574495193066"></p>
 </li>
 </ul>
 <h2 id="内存中的汇编代码"><a href="#内存中的汇编代码" class="headerlink" title="内存中的汇编代码"></a>内存中的汇编代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line">;&gt;&gt;&gt; 首先获取输入的用户名，并且初步处理</span><br><span class="line"></span><br><span class="line">004023DE | CALL    DWORD PTR DS:[&lt;&amp;__vbaObjSet&gt;]             ;|</span><br><span class="line">004023E4 | MOV     EBX, EAX                                  ;|</span><br><span class="line">004023E6 | LEA     ECX, DWORD PTR SS:[EBP-0x1C]              ;|</span><br><span class="line">004023E9 | PUSH    ECX                                       ;|</span><br><span class="line">004023EA | PUSH    EBX                                       ;|</span><br><span class="line">004023EB | MOV     EAX, DWORD PTR DS:[EBX]                   ;|</span><br><span class="line">004023ED | CALL    DWORD PTR DS:[EAX+0xA0]                   ;| 取用户名</span><br><span class="line">004023F3 | CMP     EAX, EDI                                  ;|</span><br><span class="line">004023F5 | JGE     afkayas.1.402409                          ;|</span><br><span class="line">004023F7 | PUSH    0xA0                                      ;|</span><br><span class="line">004023FC | PUSH    afkayas.1.401B5C                          ;|</span><br><span class="line">00402401 | PUSH    EBX                                       ;|</span><br><span class="line">00402402 | PUSH    EAX                                       ;|</span><br><span class="line">00402403 | CALL    DWORD PTR DS:[&lt;&amp;__vbaHresultCheckObj&gt;]    ;|</span><br><span class="line">00402409 | MOV     EDX, DWORD PTR SS:[EBP-0xB0]              ;|</span><br><span class="line">0040240F | MOV     EAX, DWORD PTR SS:[EBP-0x1C]              ;|</span><br><span class="line">00402412 | PUSH    EAX                                       ;|</span><br><span class="line">00402413 | MOV     EBX, DWORD PTR DS:[EDX]                   ;|</span><br><span class="line">00402415 | CALL    DWORD PTR DS:[&lt;&amp;__vbaLenBstr&gt;]            ;| 计算用户名长度</span><br><span class="line">0040241B | MOV     EDI, EAX                                  ;|</span><br><span class="line">0040241D | MOV     ECX, DWORD PTR SS:[EBP-0x18]              ;| [ebp-18]:L&quot;Serial&quot;</span><br><span class="line">00402420 | IMUL    EDI, EDI, 0x17CFB                         ;| NameLen * 0x17CFB</span><br><span class="line">00402426 | PUSH    ECX                                       ;| EDI --&gt; 0x5F3EC</span><br><span class="line">00402427 | JO      afkayas.1.4026BE                          ;|</span><br><span class="line">0040242D | CALL    DWORD PTR DS:[&lt;&amp;rtcAnsiValueBstr&gt;]        ;| EAX --&gt; 0x4E(&quot;N&quot;)</span><br><span class="line">00402433 | MOVSX   EDX, AX                                   ;|</span><br><span class="line">00402436 | ADD     EDI, EDX                                  ;| EDI --&gt; 0x5F43A</span><br><span class="line">00402438 | JO      afkayas.1.4026BE                          ;|</span><br><span class="line">0040243E | PUSH    EDI                                       ;| 计算出来的值入栈</span><br><span class="line">0040243F | CALL    DWORD PTR DS:[&lt;&amp;__vbaStrI4&gt;]              ;|</span><br><span class="line">00402445 | MOV     EDX, EAX                                  ;| edx --&gt; L&quot;390202&quot;</span><br><span class="line">00402447 | LEA     ECX, DWORD PTR SS:[EBP-0x20]              ;| 新的地址0x12F454</span><br><span class="line">0040244A | CALL    DWORD PTR DS:[&lt;&amp;__vbaStrMove&gt;]            ;| 新的地址存储的是转换后的值的地址</span><br><span class="line"></span><br><span class="line">;&gt;&gt;&gt; 获取输入的注册码，再次处理上面得到的注册码(拼接额外字符串)</span><br><span class="line"></span><br><span class="line">004024BA | LEA     EDX, DWORD PTR SS:[EBP-0x18]              ;| [ebp-18]:L&quot;Serial&quot;</span><br><span class="line">004024BD | PUSH    EDX                                       ;| edx:L&quot;AKA-390202&quot;</span><br><span class="line">004024BE | PUSH    EDI                                       ;|</span><br><span class="line">004024BF | MOV     ECX, DWORD PTR DS:[EDI]                   ;|</span><br><span class="line">004024C1 | CALL    DWORD PTR DS:[ECX+0xA0]                   ;| 取注册码&quot;Serial&quot;</span><br><span class="line">004024C7 | TEST    EAX, EAX                                  ;|</span><br><span class="line">004024C9 | JGE     afkayas.1.4024DD                          ;|</span><br><span class="line">004024CB | PUSH    0xA0                                      ;|</span><br><span class="line">004024D0 | PUSH    afkayas.1.401B5C                          ;|</span><br><span class="line">004024D5 | PUSH    EDI                                       ;|</span><br><span class="line">004024D6 | PUSH    EAX                                       ;|</span><br><span class="line">004024D7 | CALL    DWORD PTR DS:[&lt;&amp;__vbaHresultCheckObj&gt;]    ;|</span><br><span class="line">004024DD | PUSH    ESI                                       ;|</span><br><span class="line">004024DE | CALL    DWORD PTR SS:[EBP-0xC0]                   ;|</span><br><span class="line">004024E4 | PUSH    EAX                                       ;|</span><br><span class="line">004024E5 | LEA     EAX, DWORD PTR SS:[EBP-0x28]              ;|</span><br><span class="line">004024E8 | PUSH    EAX                                       ;|</span><br><span class="line">004024E9 | CALL    EBX                                       ;|</span><br><span class="line">004024EB | MOV     ESI, EAX                                  ;|</span><br><span class="line">004024ED | LEA     EDX, DWORD PTR SS:[EBP-0x1C]              ;| [ebp-1C]:L&quot;390202&quot;</span><br><span class="line">004024F0 | PUSH    EDX                                       ;| edx:L&quot;AKA-390202&quot;</span><br><span class="line">004024F1 | PUSH    ESI                                       ;|</span><br><span class="line">004024F2 | MOV     ECX, DWORD PTR DS:[ESI]                   ;|</span><br><span class="line">004024F4 | CALL    DWORD PTR DS:[ECX+0xA0]                   ;| 取刚刚计算出来的字符串&quot;390202&quot;</span><br><span class="line">004024FA | TEST    EAX, EAX                                  ;|</span><br><span class="line">004024FC | JGE     afkayas.1.402510                          ;|</span><br><span class="line">004024FE | PUSH    0xA0                                      ;|</span><br><span class="line">00402503 | PUSH    afkayas.1.401B5C                          ;|</span><br><span class="line">00402508 | PUSH    ESI                                       ;|</span><br><span class="line">00402509 | PUSH    EAX                                       ;|</span><br><span class="line">0040250A | CALL    DWORD PTR DS:[&lt;&amp;__vbaHresultCheckObj&gt;]    ;|</span><br><span class="line">00402510 | MOV     EAX, DWORD PTR SS:[EBP-0x18]              ;| [ebp-18]:L&quot;Serial&quot;</span><br><span class="line">00402513 | MOV     ECX, DWORD PTR SS:[EBP-0x1C]              ;| [ebp-1C]:L&quot;390202&quot;</span><br><span class="line">00402516 | MOV     EDI, DWORD PTR DS:[&lt;&amp;__vbaStrCat&gt;]        ;|</span><br><span class="line">0040251C | PUSH    EAX                                       ;|</span><br><span class="line">0040251D | PUSH    afkayas.1.401B70                          ;| 401B70:L&quot;AKA-&quot;</span><br><span class="line">00402522 | PUSH    ECX                                       ;|</span><br><span class="line">00402523 | CALL    EDI                                       ;| StaCat拼接&quot;AKA-&quot;和&quot;390202&quot;得到注册码</span><br><span class="line">00402525 | MOV     EBX, DWORD PTR DS:[&lt;&amp;__vbaStrMove&gt;]       ;|</span><br><span class="line">0040252B | MOV     EDX, EAX                                  ;| edx:L&quot;AKA-390202&quot;</span><br><span class="line">0040252D | LEA     ECX, DWORD PTR SS:[EBP-0x20]              ;| [ebp-20]:L&quot;AKA-390202&quot;</span><br><span class="line">00402530 | CALL    EBX                                       ;| 使用一个地址存储注册码</span><br><span class="line">00402532 | PUSH    EAX                                       ;|</span><br><span class="line">00402533 | CALL    DWORD PTR DS:[&lt;&amp;__vbaStrCmp&gt;]             ;| 对比注册码和输入的&quot;Serial&quot;</span><br><span class="line">00402539 | MOV     ESI, EAX                                  ;|</span><br><span class="line"></span><br><span class="line">;&gt;&gt;&gt; 关键跳转，用于爆破任意用户名密码注册</span><br><span class="line"></span><br><span class="line">0040258B | JE      afkayas.1.4025E5                          ;| 根据上面对比的值，跳转到失败</span><br></pre></td></tr></table></figure>
 
 <h1 id="注册机"><a href="#注册机" class="headerlink" title="注册机"></a>注册机</h1><h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><ul>
 <li><p>直接输入用户名，返回生成的注册码</p>
-<p><img src="1574502887799.png" alt="1574502887799"></p>
+<p><img src="/2019/11/23/02_CrackMe/Afkayas.1/1574502887799.png" alt="1574502887799"></p>
 </li>
 <li><p>生成的Serial可以直接使用，Over~</p>
 </li>
@@ -301,7 +301,7 @@
 </ul>
 <h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><ul>
 <li><p><code>02_Afkayas.1_Crack.exe</code>(采用VS2019编译，Win7以上可执行)</p>
-<p><a href="/DownSome/02_Afkayas.1_Crack.exe" ><code>点这里~~</code></a></p>
+<p><a href="/DownSome/02_Afkayas.1_Crack.exe"><code>点这里~~</code></a></p>
 </li>
 </ul>
 

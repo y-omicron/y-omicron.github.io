@@ -257,16 +257,16 @@
 <td align="center">8CFA512BA62399F135C03505A93533F3</td>
 </tr>
 </tbody></table>
-<h2 id="样本行为流程图"><a href="#样本行为流程图" class="headerlink" title="样本行为流程图"></a>样本行为流程图</h2><p><img src="1572514959657.png" alt="1572514959657"></p>
+<h2 id="样本行为流程图"><a href="#样本行为流程图" class="headerlink" title="样本行为流程图"></a>样本行为流程图</h2><p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572514959657.png" alt="1572514959657"></p>
 <h1 id="动态监控"><a href="#动态监控" class="headerlink" title="动态监控"></a>动态监控</h1><ul>
 <li><p>首先释放一个<code>dll</code>然后通过<code>regsvr32.exe</code>注册这个<code>dll</code></p>
-<p><img src="1572434831696.png" alt="1572434831696"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572434831696.png" alt="1572434831696"></p>
 </li>
 <li><p>通过对比可以发现，这个<code>dll</code>与这个<code>exe</code>是一摸一样的，仅仅只有<code>FileHeader</code>中标志文件是个动态链接库的地方存在一个<code>Byte</code>的差异</p>
-<p><img src="1572435138587.png" alt="1572435138587"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435138587.png" alt="1572435138587"></p>
 </li>
 <li><p>然后可以看到对磁盘进行写入操作，并不是修改某个文件，而是直接写磁盘。</p>
-<p><img src="1572435241760.png" alt="1572435241760"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435241760.png" alt="1572435241760"></p>
 </li>
 </ul>
 <h1 id="调试分析"><a href="#调试分析" class="headerlink" title="调试分析"></a>调试分析</h1><blockquote>
@@ -274,110 +274,110 @@
 </blockquote>
 <h2 id="EXE代码分析"><a href="#EXE代码分析" class="headerlink" title="EXE代码分析"></a>EXE代码分析</h2><ul>
 <li><p>首先查壳，压缩壳，实际上是两层<code>ASP</code>壳</p>
-<p><img src="1572435628894.png" alt="1572435628894"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435628894.png" alt="1572435628894"></p>
 </li>
 <li><p>很轻松的脱掉壳，然后使用IDA配合分析</p>
-<p><img src="1.gif" alt="1"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1.gif" alt="1"></p>
 </li>
 <li><p>没有壳之后，IDA翻译伪代码，就可以直接看执行的逻辑，主要行为是修改MBR代码，然后写入一个驱动文件到磁盘的末尾部分。</p>
 <ul>
 <li><p>首先是第一个函数，用来打开<code>%temp%/00000218.tmp</code>文件，写入日志信息。在程序中多次使用，怀疑样本代码没有开发完全。写入的都是错误信息，哪个函数出现错误的信息。</p>
-<p><img src="1572436154782.png" alt="1572436154782"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436154782.png" alt="1572436154782"></p>
 </li>
 <li><p>然后非常常规的操作，首先获取磁盘信息，然后创建互斥体。</p>
-<p><img src="1572436353922.png" alt="1572436353922"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436353922.png" alt="1572436353922"></p>
 </li>
 <li><p>接下来直接将Payload写入磁盘</p>
-<p><img src="1572436428982.png" alt="1572436428982"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436428982.png" alt="1572436428982"></p>
 </li>
 <li><p>具体是分4次写入，总共写入3个扇区和位于高地址的驱动文件</p>
-<p><img src="1572436563927.png" alt="1572436563927"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436563927.png" alt="1572436563927"></p>
 </li>
 <li><p>写入的扇区分别是1号扇区的MBR代码，60扇区的<code>Kernel</code>HOOK代码，61扇区的<code>NtLoad</code>Hook代码，和62扇区的原始MBR代码。</p>
 </li>
 <li><p>随后提示系统更新，重启计算机。</p>
-<p><img src="1572436761042.png" alt="1572436761042"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436761042.png" alt="1572436761042"></p>
 <p>写完数据之后，执行<code>InitiateSystemShutdownA</code>函数，重启计算机。</p>
-<p><img src="1572436739443.png" alt="1572436739443"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436739443.png" alt="1572436739443"></p>
 </li>
 </ul>
 </li>
 </ul>
 <h2 id="MBR代码分析"><a href="#MBR代码分析" class="headerlink" title="MBR代码分析"></a>MBR代码分析</h2><ul>
 <li><p>正常的MBR代码</p>
-<p><img src="1571729883131.png" alt="1571729883131"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571729883131.png" alt="1571729883131"></p>
 </li>
 <li><p>精心构造的ShellCode</p>
-<p><img src="1571741936347.png" alt="1571741936347"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571741936347.png" alt="1571741936347"></p>
 </li>
 <li><p>然后跳转到修复MBR的代码。</p>
-<p><img src="1571742820264.png" alt="1571742820264"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571742820264.png" alt="1571742820264"></p>
 </li>
 <li><p>这个时候，发现漏掉了最重要的部分，我们着重观察ShellCode部分的最后几个MOV指令。</p>
-<p><img src="1571797400565.png" alt="1571797400565"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571797400565.png" alt="1571797400565"></p>
 </li>
 <li><p>作用就是Hook中断向量表中的int 13函数，执行刚刚拷贝出来的数据(来自磁盘0x7A00)</p>
 </li>
 <li><p><code>Hook</code> int 13的代码，主要是Hook磁盘读取功能，执行的功能不是读取，则直接返回原来的函数地址正常运行。</p>
-<p><img src="1571908048567.png" alt="1571908048567"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571908048567.png" alt="1571908048567"></p>
 </li>
 <li><p>图中的<code>AddrOfSub_Int_13_73</code>则是原来的<code>int 13</code>函数地址。</p>
 </li>
 <li><p>接下来则是通过系统读取文件时，匹配是否读到自己想要的比特序列(NT loader的特征序列)，然后HOOK这个程序</p>
 </li>
 <li><p>首先，设置遍历内存的条件</p>
-<p><img src="1571920044389.png" alt="1571920044389"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920044389.png" alt="1571920044389"></p>
 </li>
 <li><p>开始遍历读取内存，寻找特征比特数组：<code>8B F0 85 F6 74 21 80 3D</code></p>
-<p><img src="1571920147173.png" alt="1571920147173"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920147173.png" alt="1571920147173"></p>
 <p>特征比特数组的代码为：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov		esi,eax</span><br><span class="line">test 	esi,esi</span><br><span class="line">jz		$+0x23h</span><br><span class="line">cmp</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>当然，在找到特征字符串之后，首先判断是否感染过，然后直接修改原始代码，跳转执行恶意指令。</p>
-<p><img src="1571920257928.png" alt="1571920257928"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920257928.png" alt="1571920257928"></p>
 </li>
 <li><p>命中条件之后，NT loader就被成功修改了</p>
 </li>
 <li><p>此时命中的代码就是修改后的NT loader中的跳转</p>
-<p><img src="1571920467662.png" alt="1571920467662"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920467662.png" alt="1571920467662"></p>
 </li>
 <li><p>进入这里就进入了保护模式，接下来的代码就是32位的。</p>
 </li>
 </ul>
 <h2 id="保护模式代码分析"><a href="#保护模式代码分析" class="headerlink" title="保护模式代码分析"></a>保护模式代码分析</h2><ul>
 <li><p>首先定位到Kernel的地址</p>
-<p><img src="1572351572287.png" alt="1572351572287"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351572287.png" alt="1572351572287"></p>
 </li>
 <li><p>同样的，执行的代码也是为了Hook下一级程序，所以也是硬编码寻找对应的特征码，然后Hook对应的Call</p>
-<p><img src="1572351613368.png" alt="1572351613368"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351613368.png" alt="1572351613368"></p>
 </li>
 <li><p>内核特征码：<code>6A 4B 6A 19 E8 E8 DD E6 FF FF B5 90 FB FF FF E8 53 E6 FF FF</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">push    0x4B</span><br><span class="line">push    0x19</span><br><span class="line">call    Kernel:InbvSetProgressBarSubset</span><br><span class="line">push    [EBP+Var_470]</span><br><span class="line">call    Kernel:IoInitSystem</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>然后开始二级Hook</p>
-<p><img src="1572351656501.png" alt="1572351656501"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351656501.png" alt="1572351656501"></p>
 </li>
 </ul>
 <h2 id="第三级Hook分析"><a href="#第三级Hook分析" class="headerlink" title="第三级Hook分析"></a>第三级Hook分析</h2><ul>
 <li><p>首先是通过内核的输出表定位到<code>ExAllocatePool</code>函数，搜索这个内核的函数是通过Hash的比较。当找到这个函数的地址以后就调用这个函数分配一片内存池，然后把下面的代码拷贝到这份内存中并在内存池中执行<code>Bootkit</code>后面的代码。  </p>
-<p><img src="1572352677929.png" alt="1572352677929"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352677929.png" alt="1572352677929"></p>
 </li>
 <li><p>接下来<code>Bootkit</code>会把调用之前被HOOK的<code>IoInitSystem</code>函数，即去Call这个函数，让IO去初始化系统。当执行完这步操作以后，则会在内核中搜索和多函数，如<code>NtReadFile、NtOpenFile、NtClose</code>等函数，调用这些函数主要是为了能够把驱动直接从磁盘上读出来，然后运行。  </p>
 <ul>
 <li><p>首先执行原来的函数</p>
-<p><img src="1572352752031.png" alt="1572352752031"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352752031.png" alt="1572352752031"></p>
 </li>
 <li><p>然后调用函数<code>NtOpenFile</code>打开磁盘，并定位那个驱动的位置</p>
-<p><img src="1572352984871.png" alt="1572352984871"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352984871.png" alt="1572352984871"></p>
 </li>
 <li><p>接下来调用<code>NtReadFile</code>函数，把驱动从磁盘上读到内存中  </p>
-<p><img src="1572353364835.png" alt="1572353364835"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572353364835.png" alt="1572353364835"></p>
 </li>
 <li><p>而且在内存中展开这个驱动文件</p>
-<p><img src="1572431056761.png" alt="1572431056761"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572431056761.png" alt="1572431056761"></p>
 </li>
 <li><p>展开之后，程序便跳转到驱动中执行恶意代码，然后再返回Kernel的代码，返回之前，清空内存池，防止出错。</p>
-<p><img src="1572434237955.png" alt="1572434237955"></p>
+<p><img src="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572434237955.png" alt="1572434237955"></p>
 </li>
 </ul>
 </li>

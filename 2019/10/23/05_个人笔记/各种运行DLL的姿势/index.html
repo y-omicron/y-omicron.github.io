@@ -241,10 +241,10 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">rundll32 &lt;DllName&gt;,&lt;FunctionName&gt;| [Arguments]...</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>这是我根据MSDN上的图写出来的命令行介绍，因为这个系统程序莫名奇妙居然不可以使用<code>--help</code>命令获取帮助，也不能使用<code>/?</code>获取命令详情，白给。。。</p>
-<p><img src="1572859442171.png" alt="MSDN简直在犯罪"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572859442171.png" alt="MSDN简直在犯罪"></p>
 </li>
 <li><p>首先，rundll32，这是在system32下面的windows应用程序，然后[space]输入dll的名称，当然如果当前命令行不在对应目录需要切换目录或者输入绝对路径，最后是需要执行的函数和对应的参数，参数可选，而且用[space]隔开。</p>
-<p><img src="1572859584351.png" alt="1572859584351"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572859584351.png" alt="1572859584351"></p>
 </li>
 </ul>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
@@ -259,7 +259,7 @@
 <li><p>这个界面很简单，但是没有<code>main</code>函数那么有用，main函数决定了一个程序的运行逻辑，但是<code>dllmain</code>不同，他只决定这个dll被加载，或者被卸载的时候，执行什么动作，而导出函数与<code>dllmain</code>没有任何关系，可以在载入的时候调用，也可以不调用。</p>
 </li>
 <li><p>首先，我们在<code>DLL_PROCESS_ATTACH</code>，下面调用一个MessageBox或者printf，开始我们的编程之旅，都说了嘛，千行代码始于HelloWord！</p>
-<p><img src="1572860036933.png" alt="1572860036933"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860036933.png" alt="1572860036933"></p>
 </li>
 <li><p>接下来，就算我们输入的是</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">rundll32 &lt;DllName&gt;.dll</span></span><br></pre></td></tr></table></figure>
@@ -267,7 +267,7 @@
 <p>不执行任何函数都会弹出刚才的窗口，因为我们代码是在dll被加载的时候就执行了的。</p>
 </li>
 <li><p>就像这样</p>
-<p><img src="1572860217376.png" alt="DLL被加载"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860217376.png" alt="DLL被加载"></p>
 <p>但是不得不说，这还有一个BUG，如果后面不接上参数0的话，DLL就不会被加载。。。</p>
 </li>
 </ul>
@@ -286,7 +286,7 @@
 </ul>
 </li>
 <li><p>我写多几个，都差不多的弹窗</p>
-<p><img src="1572860704865.png" alt="1572860704865"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860704865.png" alt="1572860704865"></p>
 </li>
 </ul>
 <h1 id="dll的运行"><a href="#dll的运行" class="headerlink" title="dll的运行"></a>dll的运行</h1><ul>
@@ -294,17 +294,17 @@
 </ul>
 <h2 id="LoadLibrary"><a href="#LoadLibrary" class="headerlink" title="LoadLibrary"></a>LoadLibrary</h2><ul>
 <li><p>首先我们使用绝对路径直接加载DLL，没有必要使用相对路径。算来算去太复杂了。。。</p>
-<p><img src="1572861552443.png" alt="1572861552443"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861552443.png" alt="1572861552443"></p>
 </li>
 <li><p>要记得一件事情，C里面，所有的指针，句柄，全部都是内存中的地址。同样的，这里返回的<code>HMODULE</code>也就是DLL被加载到内存中的入口地址，在DeBug模式下编译，然后使用调试器可以看的更清楚。(Release模式下编译之后代码都被优化没了的憨憨在此！！!)</p>
-<p><img src="1572861817119.png" alt="1572861817119"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861817119.png" alt="1572861817119"></p>
 </li>
 <li><p>可以看到，首先是<code>dllmain</code>中被加载的代码执行。</p>
-<p><img src="1572861914081.png" alt="1572861914081"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861914081.png" alt="1572861914081"></p>
 <p>在执行完之后，DLL的地址被返回到EAX中，可以观察内存布局或者查看对应的内存空间，就可以看到我们刚刚编写的DLL</p>
-<p><img src="1572864128820.png" alt="1572864128820"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864128820.png" alt="1572864128820"></p>
 <p>内存空间也可以看到</p>
-<p><img src="1572864190738.png" alt="1572864190738"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864190738.png" alt="1572864190738"></p>
 </li>
 <li><p>接下来，我们获取对应的函数地址。</p>
 </li>
@@ -316,31 +316,31 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*fun)</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>接下来一套强制转换的熟练操作即可。</p>
-<p><img src="1572864813054.png" alt="1572864813054"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864813054.png" alt="1572864813054"></p>
 </li>
 <li><p>同样的，我们使用调试器来查看结果，顺便我们这次采用Release来编译。</p>
-<p><img src="1572864951921.png" alt="1572864951921"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864951921.png" alt="1572864951921"></p>
 </li>
 <li><p>这代码不愧只有<code>7kb</code>啊，核心代码就7行，获取函数地址之后，直接Call过去就完事儿，我们顺便看看对应地址究竟是什么</p>
-<p><img src="1.gif" alt="1"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1.gif" alt="1"></p>
 </li>
 </ul>
 <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*fun)</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	WCHAR DLLPath[MAX_PATH] = <span class="string">L&quot;D:\\VS2013\\ConsoleApplication1\\Release\\Win32Project1.dll&quot;</span>;</span><br><span class="line">	HMODULE HandleOfDLL = LoadLibrary(DLLPath);</span><br><span class="line">	fun Add = (fun)GetProcAddress(HandleOfDLL, <span class="string">&quot;add&quot;</span>);</span><br><span class="line">	Add();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="同时运行多个导出函数"><a href="#同时运行多个导出函数" class="headerlink" title="同时运行多个导出函数"></a>同时运行多个导出函数</h1><h2 id="手动实现GetProcAddress"><a href="#手动实现GetProcAddress" class="headerlink" title="手动实现GetProcAddress"></a>手动实现GetProcAddress</h2><ul>
 <li><p>没办法呀，当我们拿到一个未知的DLL的时候，我们肯定是不知道导出函数的名称的，总不能给程序内嵌一个<code>PEiD</code>吧。</p>
-<p><img src="1572865868952.png" alt="使用Die可以方便的查看导出函数等PE相关资料"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572865868952.png" alt="使用Die可以方便的查看导出函数等PE相关资料"></p>
 </li>
 <li><p>所以我们需要简单的实现一下<code>GetProcAddress</code>的功能，回顾一下<code>PE</code>结构的知识</p>
-<p><img src="1572866308042.png" alt="1572866308042"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866308042.png" alt="1572866308042"></p>
 </li>
 <li><p>首先把目标展示出来，我们要获取的是<code>NtHeader</code>下面的<code>OptionalHeader</code>中的结构体<code>DataDirectory</code>数组中的第一个<code>Export</code></p>
 </li>
 <li><p>所以首先找到<code>NtHeader</code></p>
-<p><img src="1572866525064.png" alt="1572866525064"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866525064.png" alt="1572866525064"></p>
 </li>
 <li><p>接下来，我们从<code>NtHeader</code>一路找到导出表</p>
-<p><img src="1572866748885.png" alt="1572866748885"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866748885.png" alt="1572866748885"></p>
 </li>
 <li><p>以前遍历导出表，都需要遍历三个表，现在我们硬气了！就只遍历一个！</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (DWORD i = <span class="number">0</span>; i &lt; PointerExportDirectory-&gt;NumberOfFunctions; i++)</span><br></pre></td></tr></table></figure>
@@ -352,19 +352,19 @@
 <li><p>要不怎么说我是个憨憨呢，代码写好了，就是不干活。。。我哪知道就算多线程创建好了，也需要在代码中停下来<code>Sleep</code>，否则就算创建了线程，却因为CPU没来的及执行就<code>return</code>了，导致线程夭折。</p>
 </li>
 <li><p>这里我们使用正规一点的方法来等待线程结束，<code>WaitForMultipleObjects</code></p>
-<p><img src="1572867136668.png" alt="1572867136668"></p>
+<p><img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572867136668.png" alt="1572867136668"></p>
 </li>
 </ul>
-<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成~"></a>大功告成~</h2><p>  <img src="2.gif" alt="2"></p>
+<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成~"></a>大功告成~</h2><p>  <img src="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/2.gif" alt="2"></p>
 <h1 id="偷懒"><a href="#偷懒" class="headerlink" title="偷懒"></a>偷懒</h1><ul>
 <li>完成这个程序之后，最大的好处就是遇到可疑的DLL，或者难以分析的DLL，直接运行起来，然后捕捉行为，这可比阅读汇编容易多了~</li>
 </ul>
 <h2 id="下载文件"><a href="#下载文件" class="headerlink" title="下载文件"></a>下载文件</h2><ul>
 <li><p><code>测试用EXE</code>(使用VS2013编译，win7及以上均可运行)</p>
-<p>  <a href="/DownSome/RunAnyDLLFunction.exe" ><code>点这里~~</code></a></p>
+<p>  <a href="/DownSome/RunAnyDLLFunction.exe"><code>点这里~~</code></a></p>
 </li>
 <li><p><code>测试用DLL</code>(使用VS2013编译，win7及以上均可运行)</p>
-<p>  <a href="/DownSome/TextFromDLL.dll" ><code>点这里~~</code></a></p>
+<p>  <a href="/DownSome/TextFromDLL.dll"><code>点这里~~</code></a></p>
 </li>
 </ul>
 
