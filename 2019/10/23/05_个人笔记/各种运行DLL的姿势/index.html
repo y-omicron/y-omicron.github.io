@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="经常会遇到需要鉴定的样本是DLL的情况，或者白利用样本，核心逻辑都封装在DLL里面，想要监控行为，我们就需要各种运行DLL的方式，顺便记录DLL的编写规则。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种运行DLL的姿势">
+<meta property="og:url" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="经常会遇到需要鉴定的样本是DLL的情况，或者白利用样本，核心逻辑都封装在DLL里面，想要监控行为，我们就需要各种运行DLL的方式，顺便记录DLL的编写规则。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572859442171.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572859584351.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860036933.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860217376.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572860704865.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861552443.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861817119.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572861914081.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864128820.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864190738.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864813054.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572864951921.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1.gif">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572865868952.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866308042.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866525064.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572866748885.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572867136668.png">
+<meta property="og:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/2.gif">
+<meta property="article:published_time" content="2019-10-23T12:36:00.000Z">
+<meta property="article:modified_time" content="2020-04-28T07:07:28.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="DLL">
+<meta property="article:tag" content="编程">
+<meta property="article:tag" content="PE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/1572859442171.png">
+
+<link rel="canonical" href="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>各种运行DLL的姿势 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种运行DLL的姿势
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-23 20:36:00" itemprop="dateCreated datePublished" datetime="2019-10-23T20:36:00+08:00">2019-10-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-28 15:07:28" itemprop="dateModified" datetime="2020-04-28T15:07:28+08:00">2020-04-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" itemprop="url" rel="index"><span itemprop="name">各种姿势</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>经常会遇到需要鉴定的样本是DLL的情况，或者白利用样本，核心逻辑都封装在DLL里面，想要监控行为，我们就需要各种运行DLL的方式，顺便记录DLL的编写规则。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="DLL的编写"><a href="#DLL的编写" class="headerlink" title="DLL的编写"></a>DLL的编写</h1><ul>
+<li>一个DLL的功能往往就是提供常用的函数，方便在EXE中使用，同时提高代码的可阅读性。所以，一个DLL最重要的部分就是导出函数</li>
+</ul>
+<h2 id="RunDll32-exe"><a href="#RunDll32-exe" class="headerlink" title="RunDll32.exe"></a>RunDll32.exe</h2><ul>
+<li><p>为了后面的讲解，首先介绍第一个姿势，<code>RunDll32.exe</code>执行导出函数</p>
+</li>
+<li><p><code>rundll32.exe</code>是系统自带的一个应用程序，从名字就可以知道，作用就是运行一个<code>dll</code>，通过命令行参数，我们简单的了解一下这个程序。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">rundll32 &lt;DllName&gt;,&lt;FunctionName&gt;| [Arguments]...</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这是我根据MSDN上的图写出来的命令行介绍，因为这个系统程序莫名奇妙居然不可以使用<code>--help</code>命令获取帮助，也不能使用<code>/?</code>获取命令详情，白给。。。</p>
+<p><img src="1572859442171.png" alt="MSDN简直在犯罪"></p>
+</li>
+<li><p>首先，rundll32，这是在system32下面的windows应用程序，然后[space]输入dll的名称，当然如果当前命令行不在对应目录需要切换目录或者输入绝对路径，最后是需要执行的函数和对应的参数，参数可选，而且用[space]隔开。</p>
+<p><img src="1572859584351.png" alt="1572859584351"></p>
+</li>
+</ul>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li><p>首先，创建<code>DLL</code>程序必须选择<code>动态链接库</code>程序。原因倒是没什么，因为VS会设定好很多参数。。其中最重要的就是<code>dllmain</code>这个页面的默认生成。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// dllmain.cpp : 定义 DLL 应用程序的入口点。</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">( HMODULE hModule,</span></span></span><br><span class="line"><span class="function"><span class="params">                       DWORD  ul_reason_for_call,</span></span></span><br><span class="line"><span class="function"><span class="params">                       LPVOID lpReserved</span></span></span><br><span class="line"><span class="function"><span class="params">					 )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">switch</span> (ul_reason_for_call)</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">	<span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">	<span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p>这个界面很简单，但是没有<code>main</code>函数那么有用，main函数决定了一个程序的运行逻辑，但是<code>dllmain</code>不同，他只决定这个dll被加载，或者被卸载的时候，执行什么动作，而导出函数与<code>dllmain</code>没有任何关系，可以在载入的时候调用，也可以不调用。</p>
+</li>
+<li><p>首先，我们在<code>DLL_PROCESS_ATTACH</code>，下面调用一个MessageBox或者printf，开始我们的编程之旅，都说了嘛，千行代码始于HelloWord！</p>
+<p><img src="1572860036933.png" alt="1572860036933"></p>
+</li>
+<li><p>接下来，就算我们输入的是</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">rundll32 &lt;DllName&gt;.dll</span></span><br></pre></td></tr></table></figure>
+
+<p>不执行任何函数都会弹出刚才的窗口，因为我们代码是在dll被加载的时候就执行了的。</p>
+</li>
+<li><p>就像这样</p>
+<p><img src="1572860217376.png" alt="DLL被加载"></p>
+<p>但是不得不说，这还有一个BUG，如果后面不接上参数0的话，DLL就不会被加载。。。</p>
+</li>
+</ul>
+<h2 id="导出函数的编写"><a href="#导出函数的编写" class="headerlink" title="导出函数的编写"></a>导出函数的编写</h2><ul>
+<li><p>导出函数也有几点需要注意，首先是需要定义导出函数的调用约定，通常情况是<code>cdcall</code>，但是也可以采用<code>stdcall</code>或者<code>fscall</code>。</p>
+</li>
+<li><p>第二就是导出函数的方式，如果是使用<code>C++</code>的方式导出函数，那么你会遭遇名称粉碎，这也是<code>C++函数重载</code>的本质。。。</p>
+</li>
+<li><p>所以我们这样编写一个导出函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> __declspec(dllexport) <span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	::MessageBox(<span class="literal">NULL</span>, <span class="string">L&quot;???&quot;</span>, <span class="string">L&quot;ADD&quot;</span>, MB_OK);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>extern &quot;c&quot;</code>表示该函数使用C的语法编译，防止编译器给我们名称粉碎。</li>
+<li><code>__declspec(dllexport)</code>这个就不用解释了好吧，告诉编译器，这个函数是我们的导出函数。</li>
+<li>接下来就是一个正常函数的编写。</li>
+</ul>
+</li>
+<li><p>我写多几个，都差不多的弹窗</p>
+<p><img src="1572860704865.png" alt="1572860704865"></p>
+</li>
+</ul>
+<h1 id="dll的运行"><a href="#dll的运行" class="headerlink" title="dll的运行"></a>dll的运行</h1><ul>
+<li>每个程序想要使用dll，分为<code>显式调用</code>和<code>隐式调用</code>两种，然后又存在dll的调用路径等，一系列问题的积累。所以，这里我们只使用<code>LoadLibrary</code>加载DLL，然后使用<code>GetProcAddress</code>获取导出函数地址来执行这个函数，以及使用多线程直接运行多个导出函数。</li>
+</ul>
+<h2 id="LoadLibrary"><a href="#LoadLibrary" class="headerlink" title="LoadLibrary"></a>LoadLibrary</h2><ul>
+<li><p>首先我们使用绝对路径直接加载DLL，没有必要使用相对路径。算来算去太复杂了。。。</p>
+<p><img src="1572861552443.png" alt="1572861552443"></p>
+</li>
+<li><p>要记得一件事情，C里面，所有的指针，句柄，全部都是内存中的地址。同样的，这里返回的<code>HMODULE</code>也就是DLL被加载到内存中的入口地址，在DeBug模式下编译，然后使用调试器可以看的更清楚。(Release模式下编译之后代码都被优化没了的憨憨在此！！!)</p>
+<p><img src="1572861817119.png" alt="1572861817119"></p>
+</li>
+<li><p>可以看到，首先是<code>dllmain</code>中被加载的代码执行。</p>
+<p><img src="1572861914081.png" alt="1572861914081"></p>
+<p>在执行完之后，DLL的地址被返回到EAX中，可以观察内存布局或者查看对应的内存空间，就可以看到我们刚刚编写的DLL</p>
+<p><img src="1572864128820.png" alt="1572864128820"></p>
+<p>内存空间也可以看到</p>
+<p><img src="1572864190738.png" alt="1572864190738"></p>
+</li>
+<li><p>接下来，我们获取对应的函数地址。</p>
+</li>
+</ul>
+<h2 id="GetProcAddress"><a href="#GetProcAddress" class="headerlink" title="GetProcAddress"></a>GetProcAddress</h2><ul>
+<li><p><code>GetProcAddress(&lt;模块句柄&gt;，&lt;函数名称&gt;)</code></p>
+</li>
+<li><p>使用很简单，但是要执政这个函数，我们总不能使用内联汇编直接写<code>Jmp</code>吧，所以我们还需要使用函数指针，强制转换这个地址位我们的一个定义好的函数。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*fun)</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来一套强制转换的熟练操作即可。</p>
+<p><img src="1572864813054.png" alt="1572864813054"></p>
+</li>
+<li><p>同样的，我们使用调试器来查看结果，顺便我们这次采用Release来编译。</p>
+<p><img src="1572864951921.png" alt="1572864951921"></p>
+</li>
+<li><p>这代码不愧只有<code>7kb</code>啊，核心代码就7行，获取函数地址之后，直接Call过去就完事儿，我们顺便看看对应地址究竟是什么</p>
+<p><img src="1.gif" alt="1"></p>
+</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*fun)</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	WCHAR DLLPath[MAX_PATH] = <span class="string">L&quot;D:\\VS2013\\ConsoleApplication1\\Release\\Win32Project1.dll&quot;</span>;</span><br><span class="line">	HMODULE HandleOfDLL = LoadLibrary(DLLPath);</span><br><span class="line">	fun Add = (fun)GetProcAddress(HandleOfDLL, <span class="string">&quot;add&quot;</span>);</span><br><span class="line">	Add();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="同时运行多个导出函数"><a href="#同时运行多个导出函数" class="headerlink" title="同时运行多个导出函数"></a>同时运行多个导出函数</h1><h2 id="手动实现GetProcAddress"><a href="#手动实现GetProcAddress" class="headerlink" title="手动实现GetProcAddress"></a>手动实现GetProcAddress</h2><ul>
+<li><p>没办法呀，当我们拿到一个未知的DLL的时候，我们肯定是不知道导出函数的名称的，总不能给程序内嵌一个<code>PEiD</code>吧。</p>
+<p><img src="1572865868952.png" alt="使用Die可以方便的查看导出函数等PE相关资料"></p>
+</li>
+<li><p>所以我们需要简单的实现一下<code>GetProcAddress</code>的功能，回顾一下<code>PE</code>结构的知识</p>
+<p><img src="1572866308042.png" alt="1572866308042"></p>
+</li>
+<li><p>首先把目标展示出来，我们要获取的是<code>NtHeader</code>下面的<code>OptionalHeader</code>中的结构体<code>DataDirectory</code>数组中的第一个<code>Export</code></p>
+</li>
+<li><p>所以首先找到<code>NtHeader</code></p>
+<p><img src="1572866525064.png" alt="1572866525064"></p>
+</li>
+<li><p>接下来，我们从<code>NtHeader</code>一路找到导出表</p>
+<p><img src="1572866748885.png" alt="1572866748885"></p>
+</li>
+<li><p>以前遍历导出表，都需要遍历三个表，现在我们硬气了！就只遍历一个！</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (DWORD i = <span class="number">0</span>; i &lt; PointerExportDirectory-&gt;NumberOfFunctions; i++)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>这样我们直接拿到导出函数的内存地址，我们不在意也不关注啊对应的函数名称是什么，直接创建线程执行。</p>
+</li>
+</ul>
+<h2 id="多线程-WaitForMultipleObjects"><a href="#多线程-WaitForMultipleObjects" class="headerlink" title="多线程-WaitForMultipleObjects"></a>多线程-WaitForMultipleObjects</h2><ul>
+<li><p>要不怎么说我是个憨憨呢，代码写好了，就是不干活。。。我哪知道就算多线程创建好了，也需要在代码中停下来<code>Sleep</code>，否则就算创建了线程，却因为CPU没来的及执行就<code>return</code>了，导致线程夭折。</p>
+</li>
+<li><p>这里我们使用正规一点的方法来等待线程结束，<code>WaitForMultipleObjects</code></p>
+<p><img src="1572867136668.png" alt="1572867136668"></p>
+</li>
+</ul>
+<h2 id="大功告成"><a href="#大功告成" class="headerlink" title="大功告成~"></a>大功告成~</h2><p>  <img src="2.gif" alt="2"></p>
+<h1 id="偷懒"><a href="#偷懒" class="headerlink" title="偷懒"></a>偷懒</h1><ul>
+<li>完成这个程序之后，最大的好处就是遇到可疑的DLL，或者难以分析的DLL，直接运行起来，然后捕捉行为，这可比阅读汇编容易多了~</li>
+</ul>
+<h2 id="下载文件"><a href="#下载文件" class="headerlink" title="下载文件"></a>下载文件</h2><ul>
+<li><p><code>测试用EXE</code>(使用VS2013编译，win7及以上均可运行)</p>
+<p>  <a href="/DownSome/RunAnyDLLFunction.exe" ><code>点这里~~</code></a></p>
+</li>
+<li><p><code>测试用DLL</code>(使用VS2013编译，win7及以上均可运行)</p>
+<p>  <a href="/DownSome/TextFromDLL.dll" ><code>点这里~~</code></a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DLL/" rel="tag"># DLL</a>
+              <a href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag"># 编程</a>
+              <a href="/tags/PE/" rel="tag"># PE</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E4%B8%AD%E6%96%AD%E5%90%91%E9%87%8F%E8%A1%A8/" rel="prev" title="中断向量表">
+      <i class="fa fa-chevron-left"></i> 中断向量表
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/29/02_CrackMe/CrackMe_01/" rel="next" title="CrackMe - Acid burn">
+      CrackMe - Acid burn <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DLL%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">1.</span> <span class="nav-text">DLL的编写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RunDll32-exe"><span class="nav-number">1.1.</span> <span class="nav-text">RunDll32.exe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.2.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%87%BA%E5%87%BD%E6%95%B0%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">1.3.</span> <span class="nav-text">导出函数的编写</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dll%E7%9A%84%E8%BF%90%E8%A1%8C"><span class="nav-number">2.</span> <span class="nav-text">dll的运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LoadLibrary"><span class="nav-number">2.1.</span> <span class="nav-text">LoadLibrary</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GetProcAddress"><span class="nav-number">2.2.</span> <span class="nav-text">GetProcAddress</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8C%E6%97%B6%E8%BF%90%E8%A1%8C%E5%A4%9A%E4%B8%AA%E5%AF%BC%E5%87%BA%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">同时运行多个导出函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%AE%9E%E7%8E%B0GetProcAddress"><span class="nav-number">3.1.</span> <span class="nav-text">手动实现GetProcAddress</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B-WaitForMultipleObjects"><span class="nav-number">3.2.</span> <span class="nav-text">多线程-WaitForMultipleObjects</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%8A%9F%E5%91%8A%E6%88%90"><span class="nav-number">3.3.</span> <span class="nav-text">大功告成~</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%81%B7%E6%87%92"><span class="nav-number">4.</span> <span class="nav-text">偷懒</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="nav-number">4.1.</span> <span class="nav-text">下载文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

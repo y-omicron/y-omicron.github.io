@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="以前使用的都是Typora，但是它太过于强大，导致我导出的文章放到博客上或多或少的会出现BUG，真是难受…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转战VScode写MarkDown文档">
+<meta property="og:url" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="以前使用的都是Typora，但是它太过于强大，导致我导出的文章放到博客上或多或少的会出现BUG，真是难受…">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-22-49.png">
+<meta property="og:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-43-33.png">
+<meta property="og:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-45-22.png">
+<meta property="og:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-50-13.png">
+<meta property="og:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-26-57.png">
+<meta property="article:published_time" content="2020-04-16T07:26:28.000Z">
+<meta property="article:modified_time" content="2020-04-17T03:10:14.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="每次都会忘">
+<meta property="article:tag" content="VSCode">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-22-49.png">
+
+<link rel="canonical" href="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>转战VScode写MarkDown文档 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/16/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          转战VScode写MarkDown文档
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-16 15:26:28" itemprop="dateCreated datePublished" datetime="2020-04-16T15:26:28+08:00">2020-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-17 11:10:14" itemprop="dateModified" datetime="2020-04-17T11:10:14+08:00">2020-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>以前使用的都是Typora，但是它太过于强大，导致我导出的文章放到博客上或多或少的会出现BUG，真是难受…</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="修改Post模板"><a href="#修改Post模板" class="headerlink" title="修改Post模板"></a>修改Post模板</h1><h2 id="Path"><a href="#Path" class="headerlink" title="Path"></a>Path</h2><ul>
+<li>路径很简单，我们找到路径<code>&lt;you blog&gt;/scaffolds/</code>这里存放的都是模板文件，我选择新建一个模板，因为我喜欢加密一部分文章，所以我创建了一个<code>encode.md</code>，我是这样编辑我的模板的。<br><img src="2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-22-49.png" alt="修改模板"></li>
+</ul>
+<h1 id="下载VS-Code插件"><a href="#下载VS-Code插件" class="headerlink" title="下载VS Code插件"></a>下载VS Code插件</h1><h2 id="图片处理"><a href="#图片处理" class="headerlink" title="图片处理"></a>图片处理</h2><ul>
+<li>什么都不要说，先容我解决粘贴图片的问题！！！这也是为什么我一直使用的是Typora的原因，但是我发现VS Code有插件<code>Paste Image</code>可以解决这个问题<br><img src="2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-43-33.png" alt="VS Code插件 Paste Image"></li>
+<li>然后需要简单的配置一下，将复制黏贴的图片放到指定的文件夹中<code>&lt;DirPath&gt;\&lt;FileNameDir&gt;</code><br><img src="2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-45-22.png" alt="修改 Paste Image 配置"></li>
+<li><code>$&#123;currentFileDir&#125;\$&#123;currentFileNameWithoutExt&#125;</code></li>
+<li>按照文档的说法，这两个变量是当前文件路径和当前文件不带Ext的名称</li>
+</ul>
+<h2 id="预览插件"><a href="#预览插件" class="headerlink" title="预览插件"></a>预览插件</h2><ul>
+<li>没什么好说的，大名鼎鼎的<code>Markdown Preview Enhanced</code>，下载好之后，可以在页面的右上角点击对应的预览，来使用这个插件渲染你的MD文档<br><img src="2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-50-13.png" alt="Markdown Preview Enhanced"></li>
+</ul>
+<h2 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h2><ul>
+<li>这个主要是<code>Markdown All In One</code>提供的快捷键让人爱不释手，所以也下载安装了一手，具体的快捷键可以前往GitHub主页查看~</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yzhang-gh/vscode-markdown">markdown all in one 的 GitHub 主页</a></li>
+</ul>
+<h1 id="开始写作"><a href="#开始写作" class="headerlink" title="开始写作"></a>开始写作</h1><h2 id="建立文件"><a href="#建立文件" class="headerlink" title="建立文件"></a>建立文件</h2><ul>
+<li>使用<code>hexo new &lt;you layout&gt; &quot;&lt;title&gt;&quot;</code>来创建一个新的文件<br><img src="2020_04_16_%E8%BD%AC%E6%88%98VScode%E5%86%99MD/2020-04-16-15-26-57.png" alt="创建新文件"></li>
+</ul>
+<h2 id="合并文件夹"><a href="#合并文件夹" class="headerlink" title="合并文件夹"></a>合并文件夹</h2><ul>
+<li>因为我的习惯，我喜欢将我同类的文件合并到文件夹中，所以还需要XV来转移一下文件的位置，这里就不过多赘述了~</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%AF%8F%E6%AC%A1%E9%83%BD%E4%BC%9A%E5%BF%98/" rel="tag"># 每次都会忘</a>
+              <a href="/tags/VSCode/" rel="tag"># VSCode</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/10/06_%E6%80%BB%E7%BB%93/PE%E6%96%87%E4%BB%B6%E7%9A%84%E9%87%8A%E6%94%BE/" rel="prev" title="No.02.PE文件的释放">
+      <i class="fa fa-chevron-left"></i> No.02.PE文件的释放
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/16/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/2020-04-16-Python%E7%81%B0%E5%B8%BD%E5%AD%90-%E9%80%86%E5%90%91%E4%B8%8EPython%E7%BC%96%E7%A8%8B/" rel="next" title="Python灰帽子.逆向与Python编程">
+      Python灰帽子.逆向与Python编程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9Post%E6%A8%A1%E6%9D%BF"><span class="nav-number">1.</span> <span class="nav-text">修改Post模板</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Path"><span class="nav-number">1.1.</span> <span class="nav-text">Path</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDVS-Code%E6%8F%92%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">下载VS Code插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E7%89%87%E5%A4%84%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">图片处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E8%A7%88%E6%8F%92%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">预览插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E6%8D%B7%E6%93%8D%E4%BD%9C"><span class="nav-number">2.3.</span> <span class="nav-text">快捷操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B%E5%86%99%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">开始写作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%8B%E6%96%87%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">建立文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">3.2.</span> <span class="nav-text">合并文件夹</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

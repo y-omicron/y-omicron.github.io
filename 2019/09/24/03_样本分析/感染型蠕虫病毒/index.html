@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="感染文件需要对PE文件结构有很深的理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="感染型蠕虫病毒">
+<meta property="og:url" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="感染文件需要对PE文件结构有很深的理解。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569833414340.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569330640001.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569330917469.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331314165.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331358731.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331179991.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/one.gif">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331717471.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331673856.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569413160102.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/twe.gif">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738619091.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738580152.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738657834.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738678210.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569739263484.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569739271671.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569743874464.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569744332903.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569382175802.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393041334.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403324810.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393155375.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393295629.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393599562.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393514845.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393745348.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569396522010.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569401588005.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403342890.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403970753.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569411449779.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569465420187.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569465691902.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569467140132.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569468458994.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569464921446.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569469169207.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569464445189.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569394683918.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569395019456.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569402772516.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569402853017.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403025641.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569468100627.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569481984224.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569479368848.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569482083218.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497038813.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497245220.png">
+<meta property="og:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497500462.png">
+<meta property="article:published_time" content="2019-09-24T02:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-27T01:55:06.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="感染">
+<meta property="article:tag" content="蠕虫">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569833414340.png">
+
+<link rel="canonical" href="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>感染型蠕虫病毒 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          感染型蠕虫病毒
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-24 10:00:00" itemprop="dateCreated datePublished" datetime="2019-09-24T10:00:00+08:00">2019-09-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-27 09:55:06" itemprop="dateModified" datetime="2020-07-27T09:55:06+08:00">2020-07-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" itemprop="url" rel="index"><span itemprop="name">学习报告</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>感染文件需要对PE文件结构有很深的理解。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="样本基本信息"><a href="#样本基本信息" class="headerlink" title="样本基本信息"></a>样本基本信息</h2><table>
+<thead>
+<tr>
+<th align="center">样本名称</th>
+<th align="center">样本类型</th>
+<th align="center">样本大小</th>
+<th align="center">样本MD5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">DesktopLayer.exe</td>
+<td align="center">感染性蠕虫</td>
+<td align="center">56320 bytes</td>
+<td align="center">FF5E1F27193CE51EEC318714EF038BEF</td>
+</tr>
+</tbody></table>
+<h2 id="病毒攻击流程"><a href="#病毒攻击流程" class="headerlink" title="病毒攻击流程"></a>病毒攻击流程</h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569833414340.png" alt="1569833414340"></p>
+<h1 id="简单静态分析以及行为监控"><a href="#简单静态分析以及行为监控" class="headerlink" title="简单静态分析以及行为监控"></a>简单静态分析以及行为监控</h1><ul>
+<li><p>首先使用<code>Die</code>查壳，然后使用<code>Process Monitor</code>监控行为。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569330640001.png" alt="1569330640001"></p>
+</li>
+<li><p>在<code>Process Monitor</code>里面可以看到，开始拷贝自己为<code>DesktopLayer.exe</code>到用户目录下的<code>Microsoft</code>文件夹里</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569330917469.png" alt="1569330917469"></p>
+</li>
+<li><p>写入<code>100+KB</code>的数据到<code>Html</code>文件中，大小接近文件本身的大小</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331314165.png" alt="1569331314165"></p>
+<p>可以看到文件本身的大小也差不多<code>100K</code></p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331358731.png" alt="1569331358731"></p>
+</li>
+<li><p>与远程服务器<code>93.46.8.90</code>，<code>204.79.197.200</code>，<code>59.24.3.174</code>，<code>46.82.174.69</code>，等建立<code>TCP</code>连接，使用<code>HTTP</code>协议</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331179991.png" alt="1569331179991"></p>
+</li>
+</ul>
+<h1 id="静态分析-amp-动态调试"><a href="#静态分析-amp-动态调试" class="headerlink" title="静态分析&amp;动态调试"></a>静态分析&amp;动态调试</h1><h2 id="脱壳"><a href="#脱壳" class="headerlink" title="脱壳"></a>脱壳</h2><ul>
+<li><p>首先脱壳，上面可以看到这是个<code>UPX</code>的壳，我们使用<code>ESP</code>定理来脱壳，但是这个作者很厉害，不仅使用两次<code>UPX</code>壳，而且在两次<code>UPX</code>壳之间使用汇编语言，手写了一个解密的代码，所以，总共用三处<code>ESP</code>定理才可以脱干净。</p>
+<p><img src="one.gif" alt="one"></p>
+</li>
+<li><p>脱壳完成之后，可以看到这个病毒的做者是使用的<code>MASM32</code>汇编语言来编写的程序。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331717471.png" alt="1569331717471"></p>
+<p>而且图标模仿音乐文件。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569331673856.png" alt="1569331673856"></p>
+</li>
+<li><p>接下来可以使用<code>IDA</code>配合<code>OD</code>来分析这个文件。</p>
+</li>
+</ul>
+<h2 id="病毒逻辑流程"><a href="#病毒逻辑流程" class="headerlink" title="病毒逻辑流程"></a>病毒逻辑流程</h2><blockquote>
+<h2 id="DesktopLayer-exe-程序逻辑"><a href="#DesktopLayer-exe-程序逻辑" class="headerlink" title="DesktopLayer.exe 程序逻辑"></a><code>DesktopLayer.exe</code> 程序逻辑</h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569413160102.png" alt="1569413160102"></p>
+</blockquote>
+<h2 id="DesktopLayer-exe-程序逻辑-1"><a href="#DesktopLayer-exe-程序逻辑-1" class="headerlink" title="DesktopLayer.exe 程序逻辑"></a><code>DesktopLayer.exe</code> 程序逻辑</h2><ul>
+<li>首先在函数<a href="#%E5%87%BD%E6%95%B0%60GetBrowserPath_401718()%60"><code>GetBrowserPath_401718()</code></a>中获取浏览器路径。</li>
+<li>然后由函数<a href="#%E5%87%BD%E6%95%B0%60DuplicateCheck_4016DF()%60"><code>DuplicateCheck_4016DF()</code></a>判断互斥体状态，确保病毒没有重复运行。</li>
+<li>在这之后，判断自己进程信息中的文件名是否是是预期的文件路径和文件名，来决定是否执行病毒逻辑(<a href="#%E5%87%BD%E6%95%B0%60ComparedName_402B89()%60"><code>ComparedName_402B89()</code></a>)，如果不符合预期，则复制自己到特定的目录下，创建进程执行，并结束当前进程。</li>
+<li>如果符合预期，那么首先执行函数<a href="#%E5%87%BD%E6%95%B0%60GetLowAPI_401848()%60"><code>GetLowAPI_401848()</code></a>，获取很多底层的<code>API</code>，相当于填充<code>IAT</code>写入到文件中，然后返回主函数。</li>
+<li>然后使用函数<a href="#%E5%87%BD%E6%95%B0%60InlineHookZwWriteVirtualMemory_402B1E()%60"><code>InlineHookZwWriteVirtualMemory_402B1E()</code></a>去<code>Inline Hook</code>系统底层函数<code>ZwWriteVirtualMemory</code>，这个函数在创建进程的时候会被触发。</li>
+<li>接下来，创建进程启动浏览器(<a href="#%E5%87%BD%E6%95%B0%60SetUpSomeExe_401379()%60"><code>SetUpSomeExe_401379()</code></a>)，触发自己的<code>Hook</code>函数。在<code>Hook</code>函数中，设置注入的操作，在启动浏览器时，注入浏览器，执行恶意代码。</li>
+<li>使用函数<a href="#%E5%87%BD%E6%95%B0%60PickHook_402B62()%60"><code>PickHook_402B62()</code></a>摘除钩子，并且结束程序。</li>
+</ul>
+<h2 id="提取dllrmnsoft-dll"><a href="#提取dllrmnsoft-dll" class="headerlink" title="提取dllrmnsoft.dll"></a>提取dll<code>rmnsoft.dll</code></h2><p>基于我们对注入过程的分析，可以直接从内存中提取未展开的<code>dll</code>，就不用去修复重定位了。</p>
+<ul>
+<li><p>首先第一件事情，导入我们的<code>map</code>文件。然后提取<code>DLL</code>。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/twe.gif" alt="twe"></p>
+</li>
+<li><p>在这次的处理中，我们在代码中，知道设置了<code>Hook</code>之后，程序在创建浏览器进程的时候，调用了这个底层函数，命中<code>Hook</code>，在<code>Hook</code>的代码中进行注入，自己展开加载<code>dll</code>到目标进程中，并且修改目标进程的入口点，设置跳转到恶意代码申请的堆空间中，调用<code>dll</code>的函数执行。</p>
+</li>
+</ul>
+<blockquote>
+<h2 id="rmnsoft-dll-分析"><a href="#rmnsoft-dll-分析" class="headerlink" title="rmnsoft.dll 分析"></a><code>rmnsoft.dll</code> 分析</h2></blockquote>
+<h2 id="rmnsoft-dll-分析-1"><a href="#rmnsoft-dll-分析-1" class="headerlink" title="rmnsoft.dll 分析"></a><code>rmnsoft.dll</code> 分析</h2><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>首先我们采用一种新的方式来分析这个文件，因为确实函数非常多，有一些迷茫不知道从哪里开始分析，所以我这次选择使用<code>API</code>作为切入点。</li>
+<li>首先，我们在监控工具中掌握到几条非常重要的信息，这个病毒的感染行为是在被控制的浏览器进程中完成的，也就是我们这个<code>dll</code>一定会修改文件，那么我首先的切入点就可以是<code>WriteFile</code>，<code>CreateFile</code>这两个用来操作文件的<code>API</code>，当然，还学习到了使用内存映像来修改文件。</li>
+<li>第二个思路是关注被写入的内容，虽然感染<code>exe</code>的过程不慎明了，但是对于我们写入到<code>html</code>文件中的脚本我们可以有一个很好的切入点，使用<code>Ctrl+F</code>在使用<code>Shift+F12</code>打开的字符串窗口中搜索字符串信息。</li>
+<li>这两个办法实际上不具备太多通用性，但是是我在分析这个样本时的思路。</li>
+</ul>
+<h2 id="搜索API调用"><a href="#搜索API调用" class="headerlink" title="搜索API调用"></a>搜索<code>API</code>调用</h2><ul>
+<li><p>首先搜索<code>API</code>调用。在导入里面，搜索<code>File</code>，看看使用了哪些与文件相关的函数。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738619091.png" alt="1569738619091"></p>
+</li>
+<li><p>首先下面的三个<code>API</code>通常是用作修改文件的，上面出现的两个<code>API</code>则时用来遍历文件的。那么，按照我们的思路，我们观察这几个函数在哪里被调用，</p>
+<ul>
+<li><p><code>WriteFile</code>：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738580152.png" alt="1569738580152"></p>
+</li>
+<li><p><code>CreateFile</code>：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738657834.png" alt="1569738657834"></p>
+</li>
+<li><p><code>CreateFileMapping</code>：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569738678210.png" alt="1569738678210"></p>
+</li>
+</ul>
+</li>
+<li><p>确实，由于函数的适用型问题，可以看到写文件和创建文件这两个函数被使用的非常频繁，所以本着欺软怕硬的原则，首先观察使用<code>CreateFileMapping</code>函数的调用。</p>
+</li>
+</ul>
+<h2 id="由函数入手"><a href="#由函数入手" class="headerlink" title="由函数入手"></a>由函数入手</h2><ul>
+<li><p>首先分析调用他的函数，很短，很快就可以判断出这个函数的作用是建立一个文件映像。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569739263484.png" alt="1569739263484"></p>
+</li>
+<li><p>我们恢复符号之后，继续观察交叉引用，但是出现了分支。仔细一点！！！这是一个函数的不同偏移，也就是在同一个函数中调用。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569739271671.png" alt="1569739271671"></p>
+</li>
+<li><p>进入函数，然后以这个点为基点向下继续走，向上肯定看不懂的嘛</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569743874464.png" alt="1569743874464"></p>
+</li>
+<li><p>这种简单的函数还是可以进去看一下，知道在进行什么工作，然后小知识点就是设置变量的结构体类型。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569744332903.png" alt="1569744332903"></p>
+</li>
+</ul>
+<h2 id="病毒功能函数"><a href="#病毒功能函数" class="headerlink" title="病毒功能函数"></a>病毒功能函数</h2><h2 id="函数GetBrowserPath-401718"><a href="#函数GetBrowserPath-401718" class="headerlink" title="函数GetBrowserPath_401718()"></a>函数<code>GetBrowserPath_401718()</code></h2><ul>
+<li><p>从入口点进来的第一个函数，主要功能就是获取浏览器的路径</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569382175802.png" alt="1569382175802"></p>
+</li>
+<li><p><code>ExpandEnvironmentStringsA</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DWORD <span class="title">ExpandEnvironmentStringsA</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  LPCSTR lpSrc,</span></span></span><br><span class="line"><span class="function"><span class="params">  LPSTR  lpDst,</span></span></span><br><span class="line"><span class="function"><span class="params">  DWORD  nSize</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p> 函数：<code>ExpandEnvironmentStringsA</code>，用于扩展环境变量字符串，并将其替换为为当前用户定义的值。</p>
+</blockquote>
+<ul>
+<li><code>lpSrc</code>：包含一个或多个环境变量字符串的缓冲区，格式为：<code>％VariableName％</code>，函数具体功能就是将<code>％VariableName％</code>部分替换为该环境变量的当前值。</li>
+<li><code>lpDst</code>：指向缓冲区的指针，用来接受替换之后的字符串。</li>
+<li><code>nSize</code>：<code>lpDst</code>参数指向的缓冲区中可以存储的最大字符数。</li>
+</ul>
+</li>
+<li><p>其中可以看出作者非常细致，在获取浏览器的路径上，都做得非常极致。不仅考虑到缓冲区未清理的情况下可能结尾不是<code>\0</code>，而且针对没有获取到默认浏览器有一个备选方案，获取<code>IE</code>浏览器的路径。</p>
+</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数DuplicateCheck-4016DF"><a href="#函数DuplicateCheck-4016DF" class="headerlink" title="函数DuplicateCheck_4016DF()"></a>函数<code>DuplicateCheck_4016DF()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393041334.png" alt="1569393041334"></p>
+<ul>
+<li><p>传入参数为<code>KyUffThOkYwRRtgPP</code>，以这个字符串为参数，判断互斥体是否存在，是否继续运行。</p>
+</li>
+<li><p><code>CreateMutexA</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HANDLE <span class="title">CreateMutexA</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  LPSECURITY_ATTRIBUTES lpMutexAttributes,</span></span></span><br><span class="line"><span class="function"><span class="params">  BOOL                  bInitialOwner,</span></span></span><br><span class="line"><span class="function"><span class="params">  LPCSTR                lpName</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>函数：<code>CreateMutexA</code>，创建或打开一个已命名或未命名的互斥对象。</p>
+</blockquote>
+<ul>
+<li><code>lpMutexAttributes</code>：指向<code>SECURITY_ATTRIBUTES</code>结构的指针 。如果此参数为<strong>NULL</strong>，则子进程不能继承该句柄。一般都为<strong>NULL</strong>，这里也一样。</li>
+<li><code>bInitialOwner</code>：如果此值为<strong>TRUE</strong>，并且调用方创建了互斥对象，则调用线程将获得互斥对象的初始所有权。否则，调用线程将无法获得互斥锁的所有权。这里当然是<strong>FALSE</strong>。</li>
+<li><code>lpName</code>：互斥对象的名称。区分大小写，这里是<code>KyUffThOkYwRRtgPP</code>。</li>
+</ul>
+<p>这个函数的返回结果有三种：</p>
+<ol>
+<li>没有这个互斥体，创建互斥体并返回，返回值为互斥体句柄。</li>
+<li>创建互斥体失败，没能成功创建互斥体，返回值为<strong>NULL</strong>。</li>
+<li>互斥体已存在，打开了对应互斥体，返回值为互斥体句柄。</li>
+</ol>
+<p>那么，在我们已经拿到互斥体句柄的时候，是创建了互斥体还是打开的互斥体，我们需要使用<code>LastError</code>来判断，如果是打开互斥体成功，那么<code>LastError</code>的返回值是<code>ERROR_ALREADY_EXISTS</code>，也就是<code>183</code>。</p>
+</li>
+<li><p>他在判断的时候，就使用了这种判断方式。</p>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+</li>
+</ul>
+<h2 id="函数ComparedName-402B89"><a href="#函数ComparedName-402B89" class="headerlink" title="函数ComparedName_402B89()"></a>函数<code>ComparedName_402B89()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403324810.png" alt="1569403324810"></p>
+<ul>
+<li><p>判断进程文件名是否符合预期，<code>DesktopLayer.exe</code>，如果是，函数直接返回，否则拷贝自身到用户目录的<code>Microsoft</code>文件夹下，改名为<code>DesktopLayer.exe</code>，并且退出程序。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393155375.png" alt="1569393155375"></p>
+</li>
+<li><p>在实现这个函数的时候，作者一步一步的来判断</p>
+</li>
+<li><p>首先是使用函数<code>GetMoudleFileNameA</code>获取自己程序的进程路径信息，返回值是这样的效果：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393295629.png" alt="1569393295629"></p>
+</li>
+<li><p>然后使用函数<code>GetVolumePathNameA</code>判断自己的根目录是不是固定磁盘。例如，硬盘或闪存。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393599562.png" alt="1569393599562"></p>
+<ul>
+<li><p>上面的结果就是<code>lpszFileName</code>，然后获取根磁盘信息<code>szVolumePathName</code></p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393514845.png" alt="1569393514845"></p>
+</li>
+<li><p>再然后就判断磁盘类型。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569393745348.png" alt="1569393745348"></p>
+</li>
+<li><p>当然，磁盘类型为<code>0x3</code>就是<code>DRIVE_FIXED</code>。</p>
+</li>
+</ul>
+</li>
+<li><p>接下来，截取自己的文件名，对比判断。<a href="#%E5%87%BD%E6%95%B0%60GetFiePath_40161B()%60"><code>GetFiePath_40161B()</code></a></p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569396522010.png" alt="1569396522010"></p>
+</li>
+<li><p>主要关注的是返回值，和返回之后的流程走向，在这里，他直接对比返回的字符串也就是文件的名字与<code>DesktopLayer.exe</code>，判断自己是不是该执行病毒逻辑。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569401588005.png" alt="1569401588005"></p>
+</li>
+<li><p>如果判断文件名不正确，那么，先找到一个好的路径<a href="#%E5%87%BD%E6%95%B0%60GetMicrosoftPath_4015BF()%60"><code>GetMicrosoftPath_4015BF</code></a></p>
+</li>
+<li><p>然后修改名字拷贝到该路径下，拷贝成功就创建进程(<a href="#%E5%87%BD%E6%95%B0%60SetUpSomeExe_401379()%60"><code>SetUpSomeExe_401379</code></a>)执行这个程序。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403342890.png" alt="1569403342890"></p>
+</li>
+<li><p>可以看到文件被拷贝</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403970753.png" alt="1569403970753"></p>
+</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数GetLowAPI-401848"><a href="#函数GetLowAPI-401848" class="headerlink" title="函数GetLowAPI_401848()"></a>函数<code>GetLowAPI_401848()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569411449779.png" alt="1569411449779"></p>
+<ul>
+<li>可以看到类似一个填充IAT的过程，获取非常多底层的<code>API</code>然后填充到文件中去。</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数InlineHookZwWriteVirtualMemory-402B1E"><a href="#函数InlineHookZwWriteVirtualMemory-402B1E" class="headerlink" title="函数InlineHookZwWriteVirtualMemory_402B1E()"></a>函数<code>InlineHookZwWriteVirtualMemory_402B1E()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569465420187.png" alt="1569465420187"></p>
+<ul>
+<li><p>程序流程非常清晰，简单的直接去修改目标函数的内存机器码，实现<code>Inlinehook</code>。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569465691902.png" alt="1569465691902"></p>
+</li>
+<li><p>最终实现的效果就是修改<code>ZwWriteVirtualMemory</code>的前5字节为<code>jmp HookMain_402A59</code></p>
+</li>
+<li><p>设置<code>Hook</code>的函数为<a href="#%E5%87%BD%E6%95%B0%60SetHook_4028CA()%60%5D"><code>SetHook_4028CA()</code></a>，<code>Hook</code>的结果如下。</p>
+<p><code>Hook</code>前：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569467140132.png" alt="1569467140132"></p>
+<p><code>Hook</code>后：</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569468458994.png" alt="1569468458994"></p>
+</li>
+<li><p>接下来研究<code>Hook</code>的之后执行的函数是什么功能。</p>
+</li>
+<li><p>首先记录一下<code>ReadProcessMemory</code>函数的使用</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">ReadProcessMemory</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  HANDLE  hProcess,</span></span></span><br><span class="line"><span class="function"><span class="params">  LPCVOID lpBaseAddress,</span></span></span><br><span class="line"><span class="function"><span class="params">  LPVOID  lpBuffer,</span></span></span><br><span class="line"><span class="function"><span class="params">  SIZE_T  nSize,</span></span></span><br><span class="line"><span class="function"><span class="params">  SIZE_T  *lpNumberOfBytesRead</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>ReadProcessMemory</code>将指定地址范围内的数据从指定进程的地址空间复制到当前进程的指定缓冲区。</p>
+</blockquote>
+<ul>
+<li><code>hProcess</code>：要读取的进程的句柄。必须具有<code>PROCESS_VM_READ</code>访问权限。</li>
+<li><code>lpBaseAddress</code>：指向要从中读取的指定进程中的基地址的指针。指定要读取的位置。</li>
+<li><code>lpBuffer</code>：指向缓冲区的指针。读取数据到这个缓冲区。</li>
+<li><code>nSize</code>：从指定进程中读取的字节数。</li>
+<li><code>lpNumberOfBytesRead</code>：指向变量的指针，该变量接收传输到指定缓冲区的字节数。也就是真实读取到的数据大小。</li>
+</ul>
+</li>
+<li><p>接下来就是<a href="#%E5%87%BD%E6%95%B0%60HookMain_402A59()%60"><code>HookMain_402A59()</code></a>函数</p>
+</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数SetUpSomeExe-401379"><a href="#函数SetUpSomeExe-401379" class="headerlink" title="函数SetUpSomeExe_401379()"></a>函数<code>SetUpSomeExe_401379()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569464921446.png" alt="1569464921446"></p>
+<ul>
+<li>在函数中，首先清空并设置进程上下文，具体实现，就是修改<code>dwFlags</code>为<code>STARTF_USESHOWWINDOW</code>，启用<code>wShowWindow</code>选项，然后设置值为<code>1</code>，正常显示窗口，最后一个是用来接受返回进程属性的，最后关闭返回的句柄，函数结束。</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数PickHook-402B62"><a href="#函数PickHook-402B62" class="headerlink" title="函数PickHook_402B62()"></a>函数<code>PickHook_402B62()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569469169207.png" alt="1569469169207"></p>
+<ul>
+<li>看过了<code>Hook</code>的代码之后，就非常好理解这个函数了，就是将原来修改的内容恢复即可。</li>
+</ul>
+<p>[<span style="background-color:#ffc7c7; font-family: 汉仪忘川跳简; font-size: 1.75em">^返回病毒流程</span>](#<code>DesktopLayer.exe</code> 程序逻辑)</p>
+<h2 id="函数GetFiePath-40161B"><a href="#函数GetFiePath-40161B" class="headerlink" title="函数GetFiePath_40161B()"></a>函数<code>GetFiePath_40161B()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569464445189.png" alt="1569464445189"></p>
+<ul>
+<li><p>这个函数，操作十分细腻，但是截取的过程却是一脸懵逼，实际上使用的就仅仅是<code>&#39;\&#39;</code>来进行分割，其他的函数十分容易理解。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569394683918.png" alt="1569394683918"></p>
+</li>
+<li><p>返回值很另类，实际上文件名才是重点，而文件名在前面截取之后存储在变量中。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569395019456.png" alt="1569395019456"></p>
+</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60ComparedName_402B89()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>ComparedName_402B89()</code></span></a></p>
+<h2 id="函数GetMicrosoftPath-4015BF"><a href="#函数GetMicrosoftPath-4015BF" class="headerlink" title="函数GetMicrosoftPath_4015BF()"></a>函数<code>GetMicrosoftPath_4015BF()</code></h2><p><img src="1569402772516.png" alt="1569402772516"></p>
+<ul>
+<li><p>最重要的函数实际上是获取一个合适的路径的函数，也就是图中标黄的路径。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569402853017.png" alt="1569402853017"></p>
+<ul>
+<li><p>在这个函数中，首先判断是否具有合适的权限去移动文件，就是先在文件夹中创建一个临时文件，看看能不谁创建成功，只有完成了这一步判断之后，才会返回一个合适的路径。</p>
+</li>
+<li><p>可以观察到，返回值是一个创建好文件夹的路径。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569403025641.png" alt="1569403025641"></p>
+</li>
+</ul>
+</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60ComparedName_402B89()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>ComparedName_402B89()</code></span></a></p>
+<h2 id="函数SetHook-4028CA"><a href="#函数SetHook-4028CA" class="headerlink" title="函数SetHook_4028CA()"></a>函数<code>SetHook_4028CA()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569468100627.png" alt="1569468100627"></p>
+<ul>
+<li><code>Inline Hook</code>的方式就是修改要<code>Hook</code>的函数的前5个字节，修改为<code>jmp</code>到自己的<code>Hook</code>函数，或者<code>Call</code>到自己的函数。在这个样本中，就是修改原本的地方为<code>jmp</code>，可以看到机器码<code>E9</code>。</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60InlineHookZwWriteVirtualMemory_402B1E()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>InlineHookZwWriteVirtualMemory_402B1E()</code></span></a></p>
+<h2 id="函数HookMain-402A59"><a href="#函数HookMain-402A59" class="headerlink" title="函数HookMain_402A59()"></a>函数<code>HookMain_402A59()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569481984224.png" alt="1569481984224"></p>
+<ul>
+<li><p>首先<code>call</code>设置回调函数的时候构造好的函数，使得原本函数的功能得到实现，然后判断句柄，创建的进程不要是个伪句柄。</p>
+</li>
+<li><p>接下来书熟练的读取<code>DOS</code>头，找到<code>PE</code>头，读取<code>EntryPointAddress</code>的地址(<a href="#%E5%87%BD%E6%95%B0%60GetEntryPointAddress_402270()%60"><code>GetEntryPointAddress_402270()</code></a>)。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569479368848.png" alt="1569479368848"></p>
+</li>
+<li><p>判断有没有得到入口点地址，然后使用函数<a href="#%E5%87%BD%E6%95%B0%60WriteMemory_402002()%60"><code>WriteMemory_402002()</code></a>，将内存中的一个<code>PE</code>文件写入到进程内存中，</p>
+</li>
+<li><p>最后调用判断原本函数是否执行成功，如果执行成功就使用系统函数<code>WriteProcessMemory</code>修改原本的程序的的入口点。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569482083218.png" alt="1569482083218"></p>
+</li>
+<li><p>最后返回原本函数的返回值</p>
+</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60InlineHookZwWriteVirtualMemory_402B1E()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>InlineHookZwWriteVirtualMemory_402B1E()</code></span></a></p>
+<h2 id="函数GetEntryPointAddress-402270"><a href="#函数GetEntryPointAddress-402270" class="headerlink" title="函数GetEntryPointAddress_402270()"></a>函数<code>GetEntryPointAddress_402270()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497038813.png" alt="1569497038813"></p>
+<ul>
+<li>开始看到读取<code>PE</code>文件头就有一种不祥的预感，果然，直接读取到<code>MZ</code>，然后反手就是一个<code>PE</code>，接下来加上偏移，头也不回就返回上一层，<code>EntryPoint</code>就已经被计算好了。</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60HookMain_402A59()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>HookMain_402A59()</code></span></a></p>
+<h2 id="函数WriteMemory-402002"><a href="#函数WriteMemory-402002" class="headerlink" title="函数WriteMemory_402002()"></a>函数<code>WriteMemory_402002()</code></h2><p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497245220.png" alt="1569497245220"></p>
+<ul>
+<li><p>可以猜测，就是在文件中读取了特定的数据然后写入到进程空间中，大小也许是<code>0x9800</code>？事实如此，在内存中可以直接<code>Dump</code>出我们想要的文件，经过查壳，可以判断释放的<code>rmnsoft.dll</code>是一个恶意程序，而且所有的恶意功能都是在这个<code>dll</code>中实现的。</p>
+<p><img src="%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/1569497500462.png" alt="1569497500462"></p>
+</li>
+<li><p>而具体写的过程，被作者融合在内存展开中了，没有进行具体的分析。</p>
+</li>
+<li><p><a href="#%E6%8F%90%E5%8F%96dll%60rmnsoft.dll%60">提取恶意dll<code>rmnsoft.dll</code></a></p>
+</li>
+</ul>
+<p><a href="#%E5%87%BD%E6%95%B0%60HookMain_402A59()%60"><span style="font-family: 汉仪忘川跳简;font-size: 1.25em;">^返回函数<code>HookMain_402A59()</code></span></a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%84%9F%E6%9F%93/" rel="tag"># 感染</a>
+              <a href="/tags/%E8%A0%95%E8%99%AB/" rel="tag"># 蠕虫</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/ECDH%20%E5%AF%86%E9%92%A5%E5%8D%8F%E5%95%86%E5%8E%9F%E7%90%86/" rel="prev" title="ECDH 密钥协商原理">
+      <i class="fa fa-chevron-left"></i> ECDH 密钥协商原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/" rel="next" title="letsgo挖矿木马分析">
+      letsgo挖矿木马分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.</span> <span class="nav-text">样本基本信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%85%E6%AF%92%E6%94%BB%E5%87%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">病毒攻击流程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E8%A1%8C%E4%B8%BA%E7%9B%91%E6%8E%A7"><span class="nav-number">2.</span> <span class="nav-text">简单静态分析以及行为监控</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90-amp-%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">静态分析&amp;动态调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%B1%E5%A3%B3"><span class="nav-number">3.1.</span> <span class="nav-text">脱壳</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%85%E6%AF%92%E9%80%BB%E8%BE%91%E6%B5%81%E7%A8%8B"><span class="nav-number">3.2.</span> <span class="nav-text">病毒逻辑流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DesktopLayer-exe-%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91"><span class="nav-number">3.3.</span> <span class="nav-text">DesktopLayer.exe 程序逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DesktopLayer-exe-%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91-1"><span class="nav-number">3.4.</span> <span class="nav-text">DesktopLayer.exe 程序逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E5%8F%96dllrmnsoft-dll"><span class="nav-number">3.5.</span> <span class="nav-text">提取dllrmnsoft.dll</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmnsoft-dll-%E5%88%86%E6%9E%90"><span class="nav-number">3.6.</span> <span class="nav-text">rmnsoft.dll 分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmnsoft-dll-%E5%88%86%E6%9E%90-1"><span class="nav-number">3.7.</span> <span class="nav-text">rmnsoft.dll 分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">3.8.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2API%E8%B0%83%E7%94%A8"><span class="nav-number">3.9.</span> <span class="nav-text">搜索API调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%B1%E5%87%BD%E6%95%B0%E5%85%A5%E6%89%8B"><span class="nav-number">3.10.</span> <span class="nav-text">由函数入手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%85%E6%AF%92%E5%8A%9F%E8%83%BD%E5%87%BD%E6%95%B0"><span class="nav-number">3.11.</span> <span class="nav-text">病毒功能函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0GetBrowserPath-401718"><span class="nav-number">3.12.</span> <span class="nav-text">函数GetBrowserPath_401718()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0DuplicateCheck-4016DF"><span class="nav-number">3.13.</span> <span class="nav-text">函数DuplicateCheck_4016DF()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0ComparedName-402B89"><span class="nav-number">3.14.</span> <span class="nav-text">函数ComparedName_402B89()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0GetLowAPI-401848"><span class="nav-number">3.15.</span> <span class="nav-text">函数GetLowAPI_401848()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0InlineHookZwWriteVirtualMemory-402B1E"><span class="nav-number">3.16.</span> <span class="nav-text">函数InlineHookZwWriteVirtualMemory_402B1E()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0SetUpSomeExe-401379"><span class="nav-number">3.17.</span> <span class="nav-text">函数SetUpSomeExe_401379()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0PickHook-402B62"><span class="nav-number">3.18.</span> <span class="nav-text">函数PickHook_402B62()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0GetFiePath-40161B"><span class="nav-number">3.19.</span> <span class="nav-text">函数GetFiePath_40161B()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0GetMicrosoftPath-4015BF"><span class="nav-number">3.20.</span> <span class="nav-text">函数GetMicrosoftPath_4015BF()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0SetHook-4028CA"><span class="nav-number">3.21.</span> <span class="nav-text">函数SetHook_4028CA()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0HookMain-402A59"><span class="nav-number">3.22.</span> <span class="nav-text">函数HookMain_402A59()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0GetEntryPointAddress-402270"><span class="nav-number">3.23.</span> <span class="nav-text">函数GetEntryPointAddress_402270()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0WriteMemory-402002"><span class="nav-number">3.24.</span> <span class="nav-text">函数WriteMemory_402002()</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

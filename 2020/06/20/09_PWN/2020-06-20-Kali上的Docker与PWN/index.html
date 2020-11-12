@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="最近因为渗透的缘故，又安装了神器Kali，然而说实话喜欢Kali的界面，试图在Kali上面玩PWN~整活！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2020 06 20 Kali上的Docker与PWN">
+<meta property="og:url" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="最近因为渗透的缘故，又安装了神器Kali，然而说实话喜欢Kali的界面，试图在Kali上面玩PWN~整活！">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-16-41.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-15-00.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-20-02.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-20-48.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-23-09.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-25-04.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-26-29.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-56-37.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-50-55.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-50-05.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-54-17.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-55-16.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-56-02.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-56-33.png">
+<meta property="og:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-11-04-00.png">
+<meta property="article:published_time" content="2020-06-20T10:08:33.000Z">
+<meta property="article:modified_time" content="2020-08-03T01:47:34.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="PWN">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Kali">
+<meta property="article:tag" content="IDA Remote Debug">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-16-41.png">
+
+<link rel="canonical" href="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>2020 06 20 Kali上的Docker与PWN | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2020 06 20 Kali上的Docker与PWN
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-20 18:08:33" itemprop="dateCreated datePublished" datetime="2020-06-20T18:08:33+08:00">2020-06-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-03 09:47:34" itemprop="dateModified" datetime="2020-08-03T09:47:34+08:00">2020-08-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PWN/" itemprop="url" rel="index"><span itemprop="name">PWN</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>最近因为渗透的缘故，又安装了神器Kali，然而说实话喜欢Kali的界面，试图在Kali上面玩PWN~整活！</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Kali上安装Tools"><a href="#Kali上安装Tools" class="headerlink" title="Kali上安装Tools"></a>Kali上安装Tools</h1><h2 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li>直接一步到位行不行<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install docker docker-compose</span><br></pre></td></tr></table></figure></li>
+<li>稍微验证一下安装结果<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-16-41.png"></li>
+<li>这样安装之后就暂时可以了，我们再修改一下源以待后用</li>
+</ul>
+<h3 id="源"><a href="#源" class="headerlink" title="源"></a>源</h3><ul>
+<li>mousepad /etc/docker/daemon.json<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-15-00.png"><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;registry-mirrors&quot;</span>: [<span class="string">&quot;https://docker.mirrors.ustc.edu.cn&quot;</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="安装checksec"><a href="#安装checksec" class="headerlink" title="安装checksec"></a>安装checksec</h2><ul>
+<li>首先还是看一看<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-20-02.png"></li>
+<li>确定没有直接：<code>apt-get install checksec</code></li>
+<li>然后咱再看看<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-20-48.png"></li>
+</ul>
+<h2 id="安装其他杂七杂八的工具"><a href="#安装其他杂七杂八的工具" class="headerlink" title="安装其他杂七杂八的工具"></a>安装其他杂七杂八的工具</h2><ul>
+<li>建议直接去看我另一篇文章：<a target="_blank" rel="noopener" href="https://omicron.fun/2020/06/07/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020-06-07-%E4%B8%8EPWN%E7%9A%84%E7%AC%AC%E4%B8%80%E6%AC%A1%E9%82%82%E9%80%85/">与PWN的第一次邂逅~</a></li>
+</ul>
+<h1 id="配置IDA调试"><a href="#配置IDA调试" class="headerlink" title="配置IDA调试"></a>配置IDA调试</h1><h2 id="Docker环境准备"><a href="#Docker环境准备" class="headerlink" title="Docker环境准备"></a>Docker环境准备</h2><h3 id="IDA-Server程序"><a href="#IDA-Server程序" class="headerlink" title="IDA Server程序"></a>IDA Server程序</h3><ul>
+<li>首先拷贝需要的Server程序到Linux上<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-23-09.png"></li>
+<li>直接复制到Kali上就可以了，然后准备Docker创建一个容器来启动<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-25-04.png"><br>我是准备把他们放到一个文件夹里面，方便管理<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-26-29.png"></li>
+</ul>
+<h3 id="Docker容器导入"><a href="#Docker容器导入" class="headerlink" title="Docker容器导入"></a>Docker容器导入</h3><ul>
+<li>然后导入一个容器，我这里运行一个x86的服务，用来调试x86的程序</li>
+<li>这里是网上直接嫖的容器<del>([作者在这儿</del>](<a target="_blank" rel="noopener" href="https://bbs.ichunqiu.com/thread-42239-1-1.html">https://bbs.ichunqiu.com/thread-42239-1-1.html</a>))</li>
+<li>导入直接：<code>cat &lt;容器压缩包&gt; | docker import - &lt;你的容器名&gt;:&lt;Tag&gt;</code><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-20-18-56-37.png"></li>
+</ul>
+<h3 id="运行并启动Server"><a href="#运行并启动Server" class="headerlink" title="运行并启动Server"></a>运行并启动Server</h3><ul>
+<li>IDA监听的端口是23946，所以我们要将容器的23946端口映射出来<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -it -p 23946:23946 my/ubuntu.i386:i386 /bin/bash</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="设定IDA-Remote-DeBug"><a href="#设定IDA-Remote-DeBug" class="headerlink" title="设定IDA Remote DeBug"></a>设定IDA Remote DeBug</h2><ul>
+<li>设定提示<br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-50-55.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-50-05.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-54-17.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-55-16.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-56-02.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-10-56-33.png"><br><img src="2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/2020-06-21-11-04-00.png"><br>查看端口占用情况的命令<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看全部的占用情况</span></span><br><span class="line">netstat -tunlp </span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看某一个端口的占用情况</span></span><br><span class="line">lsof -i:8000</span><br><span class="line">netstat -tunlp | grep 8000</span><br></pre></td></tr></table></figure></li>
+<li>将某个PWN程序运行在端口上<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat tcp-listen:10001,fork EXEC:./level0</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PWN/" rel="tag"># PWN</a>
+              <a href="/tags/Docker/" rel="tag"># Docker</a>
+              <a href="/tags/Kali/" rel="tag"># Kali</a>
+              <a href="/tags/IDA-Remote-Debug/" rel="tag"># IDA Remote Debug</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/" rel="prev" title="2020 06 12 JarvisOJ-Level1">
+      <i class="fa fa-chevron-left"></i> 2020 06 12 JarvisOJ-Level1
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/07/07/01_CTF/2020-07-02-RE%E5%85%A5%E9%97%A8%E9%A2%98%E7%9B%AE%E8%A7%A3%E6%9E%90/" rel="next" title="2020 07 02 RE入门题目解析">
+      2020 07 02 RE入门题目解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kali%E4%B8%8A%E5%AE%89%E8%A3%85Tools"><span class="nav-number">1.</span> <span class="nav-text">Kali上安装Tools</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Docker"><span class="nav-number">1.1.</span> <span class="nav-text">安装Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90"><span class="nav-number">1.1.2.</span> <span class="nav-text">源</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85checksec"><span class="nav-number">1.2.</span> <span class="nav-text">安装checksec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E5%85%B6%E4%BB%96%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB%E7%9A%84%E5%B7%A5%E5%85%B7"><span class="nav-number">1.3.</span> <span class="nav-text">安装其他杂七杂八的工具</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEIDA%E8%B0%83%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">配置IDA调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.1.</span> <span class="nav-text">Docker环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDA-Server%E7%A8%8B%E5%BA%8F"><span class="nav-number">2.1.1.</span> <span class="nav-text">IDA Server程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker%E5%AE%B9%E5%99%A8%E5%AF%BC%E5%85%A5"><span class="nav-number">2.1.2.</span> <span class="nav-text">Docker容器导入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E5%B9%B6%E5%90%AF%E5%8A%A8Server"><span class="nav-number">2.1.3.</span> <span class="nav-text">运行并启动Server</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E5%AE%9AIDA-Remote-DeBug"><span class="nav-number">2.2.</span> <span class="nav-text">设定IDA Remote DeBug</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

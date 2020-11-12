@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="勒索病毒来钱太快了，已经成为目前恶意样本的重点之一了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="勒索病毒解密实现">
+<meta property="og:url" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="勒索病毒来钱太快了，已经成为目前恶意样本的重点之一了">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%25E5%258B%2592%25E7%25B4%25A2%25E7%2597%2585%25E6%25AF%2592%25E5%258A%25A0%25E5%25AF%2586%25E7%25AE%2597%25E6%25B3%2595%25E5%2588%2586%25E6%259E%2590/1573033807812.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%25E5%258B%2592%25E7%25B4%25A2%25E7%2597%2585%25E6%25AF%2592%25E5%258A%25A0%25E5%25AF%2586%25E7%25AE%2597%25E6%25B3%2595%25E5%2588%2586%25E6%259E%2590/1573037390806.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573715304726.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1.gif">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573442543419.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716486692.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716784693.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716957842.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717007730.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717048023.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717720100.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573729620889.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728746230.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728762719.png">
+<meta property="og:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728803351.png">
+<meta property="article:published_time" content="2019-11-14T13:43:00.000Z">
+<meta property="article:modified_time" content="2020-07-07T07:11:58.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="勒索病毒">
+<meta property="article:tag" content="密码学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/%25E5%258B%2592%25E7%25B4%25A2%25E7%2597%2585%25E6%25AF%2592%25E5%258A%25A0%25E5%25AF%2586%25E7%25AE%2597%25E6%25B3%2595%25E5%2588%2586%25E6%259E%2590/1573033807812.png">
+
+<link rel="canonical" href="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>勒索病毒解密实现 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/14/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          勒索病毒解密实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-14 21:43:00" itemprop="dateCreated datePublished" datetime="2019-11-14T21:43:00+08:00">2019-11-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-07 15:11:58" itemprop="dateModified" datetime="2020-07-07T15:11:58+08:00">2020-07-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%BB%BB%E5%8A%A1%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">任务总结</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>勒索病毒来钱太快了，已经成为目前恶意样本的重点之一了</p>
+</blockquote>
+<a id="more"></a>
+
+
+
+<h1 id="BUPG勒索病毒"><a href="#BUPG勒索病毒" class="headerlink" title="BUPG勒索病毒"></a>BUPG勒索病毒</h1><h2 id="居然有现成的分析报告"><a href="#居然有现成的分析报告" class="headerlink" title="居然有现成的分析报告"></a>居然有现成的分析报告</h2><ul>
+<li><p>太舒服了，可以直接看别人的报告。。哇嘎嘎。。。</p>
+<p><a href="%5Bhttp://blogs.360.cn/post/pubg-%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%88%86%E6%9E%90.html%5D(http://blogs.360.cn/post/pubg-%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%88%86%E6%9E%90.html)"> 360 核心安全技术博客 </a><img src="%25E5%258B%2592%25E7%25B4%25A2%25E7%2597%2585%25E6%25AF%2592%25E5%258A%25A0%25E5%25AF%2586%25E7%25AE%2597%25E6%25B3%2595%25E5%2588%2586%25E6%259E%2590/1573033807812.png" alt="1573033807812"></p>
+</li>
+<li><p>居然网页还是不安全了，<code>Https</code>都没得，不过，完美呀，直接就给我划重点，标出了病毒的加解密算法部分。</p>
+</li>
+</ul>
+<h2 id="加解密部分分析"><a href="#加解密部分分析" class="headerlink" title="加解密部分分析"></a>加解密部分分析</h2><ul>
+<li><p>直接上手看代码，<code>.Net</code>还真是中奖了~</p>
+<p><img src="%25E5%258B%2592%25E7%25B4%25A2%25E7%2597%2585%25E6%25AF%2592%25E5%258A%25A0%25E5%25AF%2586%25E7%25AE%2597%25E6%25B3%2595%25E5%2588%2586%25E6%259E%2590/1573037390806.png" alt="1573037390806"></p>
+</li>
+<li><p>这是原始样本的加密函数部分，可以看到使用<code>Rijndael-CBC</code>解密文件，而且密钥是上面传入的<code>password</code>也就是<code>GBUPRansomware</code>，而且采用的是拓展成256位之后的密钥，<code>iv</code>传入的也是上面传入的Key，而加密的块大小则是256。</p>
+<p>附上简单的解密代码</p>
+</li>
+</ul>
+<h2 id="简单的解密代码"><a href="#简单的解密代码" class="headerlink" title="简单的解密代码"></a>简单的解密代码</h2><ul>
+<li><p>采用与病毒相同的C#编写，现有的开源加解密库中极少包含Rijndael 256的加解密系统。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 路径常量定义</span></span><br><span class="line">    <span class="keyword">string</span> FilePath = <span class="string">@&quot;D:\inected\Lesuo\MCR4Ever.cpp.PUBG&quot;</span>;</span><br><span class="line">    <span class="keyword">string</span> DecodeFilePath = <span class="string">@&quot;D:\inected\Lesuo\MCR4Ever.cpp&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 密钥定义&amp;拷贝</span></span><br><span class="line">    <span class="keyword">string</span> password = <span class="string">&quot;GBUPRansomware&quot;</span>;</span><br><span class="line">    <span class="keyword">byte</span>[] KeyOfAES = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">32</span>];</span><br><span class="line">    <span class="keyword">byte</span>[] IvOfAES = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">32</span>];</span><br><span class="line">    Encoding.Default.GetBytes(password).CopyTo(KeyOfAES, <span class="number">0</span>);</span><br><span class="line">    Encoding.Default.GetBytes(password).CopyTo(IvOfAES, <span class="number">0</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 创建加解密器</span></span><br><span class="line">    RijndaelManaged rijndaelManaged = <span class="keyword">new</span> RijndaelManaged</span><br><span class="line">    &#123;</span><br><span class="line">        Mode = CipherMode.CBC,</span><br><span class="line">        KeySize = <span class="number">256</span>,</span><br><span class="line">        BlockSize = <span class="number">256</span>,</span><br><span class="line">        Padding = PaddingMode.Zeros</span><br><span class="line">    &#125;;</span><br><span class="line">    </span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 读入文件</span></span><br><span class="line">    <span class="keyword">byte</span>[] ByteOfFile = File.ReadAllBytes(FilePath);</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 内存流</span></span><br><span class="line">    <span class="keyword">using</span> (MemoryStream memoryStream = <span class="keyword">new</span> MemoryStream())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 加解密流</span></span><br><span class="line">        <span class="keyword">using</span> (</span><br><span class="line">            CryptoStream cryptoStream =</span><br><span class="line">               <span class="keyword">new</span> CryptoStream(</span><br><span class="line">                   memoryStream, </span><br><span class="line">                   <span class="comment"><span class="doctag">///</span> 创建解密器，传入Key，Iv</span></span><br><span class="line">                   rijndaelManaged.CreateDecryptor(KeyOfAES, IvOfAES), </span><br><span class="line">                   CryptoStreamMode.Write)</span><br><span class="line">              )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment"><span class="doctag">///</span> 解密流</span></span><br><span class="line">            cryptoStream.Write(ByteOfFile, <span class="number">0</span>, ByteOfFile.Length);</span><br><span class="line">            <span class="keyword">byte</span>[] ByteOfDecode = memoryStream.ToArray();</span><br><span class="line">            <span class="comment"><span class="doctag">///</span> 解密流写入文件</span></span><br><span class="line">            File.WriteAllBytes(DecodeFilePath, ByteOfDecode);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    Console.WriteLine(<span class="string">&quot;解密完成！&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h2><ul>
+<li><p>实际上这个病毒只需要判断是否有<code>TslGame</code>进程被启动，然后启动3秒即可解密文件，看起来更像一个恶作剧的Demo。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573715304726.png" alt="1573715304726"></p>
+</li>
+<li><p>所以我写了一个HelloWorld，但是改名为TslGame，运行起来，他还是诚实的给我解密文件了。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1.gif" alt="1"></p>
+</li>
+</ul>
+<h1 id="CryptoNar勒索病毒-CryptoJoker家族"><a href="#CryptoNar勒索病毒-CryptoJoker家族" class="headerlink" title="CryptoNar勒索病毒(CryptoJoker家族)"></a>CryptoNar勒索病毒(CryptoJoker家族)</h1><h2 id="加密逻辑分析"><a href="#加密逻辑分析" class="headerlink" title="加密逻辑分析"></a>加密逻辑分析</h2><h3 id="Main"><a href="#Main" class="headerlink" title="Main"></a>Main</h3><ul>
+<li><p>首先创建互斥体<code>CryptNarWalker90912</code></p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573442543419.png" alt="1573442543419"></p>
+</li>
+<li><p>重要的逻辑还是在<code>RunInfector</code>中执行。。。</p>
+</li>
+</ul>
+<h3 id="RunInfector"><a href="#RunInfector" class="headerlink" title="RunInfector"></a>RunInfector</h3><ul>
+<li><p>首先判断文件类型，如果是txt文件或者md文件转入完全加密分支(<code>EncryptFileFully</code>)，否则转入部分加密分支(<code>EncryptFilePartially</code>)。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716486692.png" alt="1573716486692"></p>
+</li>
+<li><p>实际上，加密的方式非常简单，采用按位移位的方式加密，而<code>PassWordBytes</code>则是在每台电脑上随机生成的。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716784693.png" alt="1573716784693"></p>
+</li>
+<li><p>接下来则是将随机生成的密钥使用RSA加密并且发送到远程服务器上，白色高亮部分是释放勒索信息。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573716957842.png" alt="1573716957842"></p>
+</li>
+<li><p>我们可以在<code>SendEmail</code>函数中看到他的服务器信息。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717007730.png" alt="1573717007730"></p>
+</li>
+</ul>
+<h3 id="CryptoClass"><a href="#CryptoClass" class="headerlink" title="CryptoClass"></a>CryptoClass</h3><ul>
+<li><p>病毒作者自己定义了一个加解密类，但是实际上用于加密的还是移位加密。但是笨笨的我以为采用的是RSA加密，导致浪费了非常长的时间，要吸取教训，认证看代码。</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717048023.png" alt="1573717048023"></p>
+</li>
+<li><p>我们不去管RSA的算法，先分析加密算法，和密钥产生的算法。</p>
+</li>
+</ul>
+<h3 id="DecodeAob"><a href="#DecodeAob" class="headerlink" title="DecodeAob"></a>DecodeAob</h3><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">byte</span>[] <span class="title">EncodeAob</span>(<span class="params"><span class="keyword">byte</span>[] aobToEncode, <span class="keyword">byte</span>[] passwordBytes</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">byte</span>[] array = <span class="keyword">new</span> <span class="keyword">byte</span>[aobToEncode.Length];</span><br><span class="line">    <span class="keyword">int</span> num = <span class="number">0</span>;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> 循环密钥，按位相加即可</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; aobToEncode.Length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        array[i] = aobToEncode[i] + passwordBytes[num];</span><br><span class="line">        <span class="keyword">if</span> (passwordBytes[num + <span class="number">1</span>] == <span class="string">&#x27;\0&#x27;</span>) <span class="comment">// 判断有没有到字符串末尾</span></span><br><span class="line">            num = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            num++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> array;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="GenerateRandomString"><a href="#GenerateRandomString" class="headerlink" title="GenerateRandomString"></a>GenerateRandomString</h3><ul>
+<li><p>在初始化<code>CryptoClass</code>类的时候，病毒产生以一个20位的密钥</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573717720100.png" alt="1573717720100"></p>
+</li>
+<li><p>密钥的生成则是在给定字符串中随机选中20个字符。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">readonly</span> Random _Ran = <span class="keyword">new</span> Random();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">GenerateRandomString</span>(<span class="params"><span class="keyword">int</span> length</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">string</span> ContextStr = <span class="string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span>;</span><br><span class="line">    <span class="keyword">string</span> PassWordStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment"><span class="doctag">///</span> 产生一个随机的下标，然后取出数据转换为字符串</span></span><br><span class="line">        PassWordStr += </span><br><span class="line">            ContextStr[<span class="keyword">this</span>._Ran.Next(ContextStr.Length)].ToString();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> PassWordStr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="解密逻辑实现"><a href="#解密逻辑实现" class="headerlink" title="解密逻辑实现"></a>解密逻辑实现</h2><h3 id="暴力枚举密钥"><a href="#暴力枚举密钥" class="headerlink" title="暴力枚举密钥"></a>暴力枚举密钥</h3><ul>
+<li>想屁吃呢！37的20次方，解密是不是要等人死了再解密啊！XD</li>
+</ul>
+<h3 id="意外收获"><a href="#意外收获" class="headerlink" title="意外收获"></a>意外收获</h3><ul>
+<li><p>待って待って！我们先对比一下加密前后的文件再做决定是否逆算法(不就是一个Caesar加密嘛)，我们用加密前是<code>256 bit</code>的<code>1</code>来作为原始文本，加密后…</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573729620889.png" alt="1573729620889"></p>
+</li>
+<li><p>？？？？黑人问好脸好不啦，什么加密啊，您是憨批嘛？</p>
+</li>
+<li><p>难以接受事实的我决定调试这个病毒，本来不愿意调试.Net程序的233333</p>
+</li>
+</ul>
+<h3 id="神秘发现"><a href="#神秘发现" class="headerlink" title="神秘发现"></a>神秘发现</h3><ul>
+<li><p>随机取得20位的密钥是正常的，待って待って，我们看看内存先。我好像感觉到了什么</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728746230.png" alt="1573728746230"></p>
+</li>
+<li><p>果然，因为编码是<code>Unicode</code>，所以，全是字母和数字的结果就是第二位默认是<code>&#39;\0&#39;</code>！！！！</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728762719.png" alt="1573728762719"></p>
+</li>
+<li><p>到加密的时候</p>
+<p><img src="%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1573728803351.png" alt="1573728803351"></p>
+</li>
+<li><p>我TM一口老血差点憋死，你要说我解密失败是算法的问题我忍了，我TM解密失败是因为你加密算法写错了？！</p>
+</li>
+</ul>
+<h2 id="解密工具"><a href="#解密工具" class="headerlink" title="解密工具"></a>解密工具</h2><ul>
+<li><p>这里就提供人家老外写的一个工具吧，C#还加壳，真小气~</p>
+<p>  <a href="/DownSome/CryptoJokerDecrypter.exe" ><code>点这里~~</code></a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92/" rel="tag"># 勒索病毒</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/06/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E6%B7%BB%E5%8A%A0%E5%8F%B3%E9%94%AE%E8%8F%9C%E5%8D%95%E7%9A%84%E5%A7%BF%E5%8A%BF/" rel="prev" title="各种添加右键菜单的姿势">
+      <i class="fa fa-chevron-left"></i> 各种添加右键菜单的姿势
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E7%BC%96%E8%AF%91OpenSSL%E7%9A%84%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" rel="next" title="编译OpenSSL的静态链接库">
+      编译OpenSSL的静态链接库 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#BUPG%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92"><span class="nav-number">1.</span> <span class="nav-text">BUPG勒索病毒</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%85%E7%84%B6%E6%9C%89%E7%8E%B0%E6%88%90%E7%9A%84%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A"><span class="nav-number">1.1.</span> <span class="nav-text">居然有现成的分析报告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E8%A7%A3%E5%AF%86%E9%83%A8%E5%88%86%E5%88%86%E6%9E%90"><span class="nav-number">1.2.</span> <span class="nav-text">加解密部分分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E5%AF%86%E4%BB%A3%E7%A0%81"><span class="nav-number">1.3.</span> <span class="nav-text">简单的解密代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Other"><span class="nav-number">1.4.</span> <span class="nav-text">Other</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CryptoNar%E5%8B%92%E7%B4%A2%E7%97%85%E6%AF%92-CryptoJoker%E5%AE%B6%E6%97%8F"><span class="nav-number">2.</span> <span class="nav-text">CryptoNar勒索病毒(CryptoJoker家族)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86%E9%80%BB%E8%BE%91%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">加密逻辑分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Main"><span class="nav-number">2.1.1.</span> <span class="nav-text">Main</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RunInfector"><span class="nav-number">2.1.2.</span> <span class="nav-text">RunInfector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CryptoClass"><span class="nav-number">2.1.3.</span> <span class="nav-text">CryptoClass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DecodeAob"><span class="nav-number">2.1.4.</span> <span class="nav-text">DecodeAob</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GenerateRandomString"><span class="nav-number">2.1.5.</span> <span class="nav-text">GenerateRandomString</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">解密逻辑实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9A%B4%E5%8A%9B%E6%9E%9A%E4%B8%BE%E5%AF%86%E9%92%A5"><span class="nav-number">2.2.1.</span> <span class="nav-text">暴力枚举密钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%84%8F%E5%A4%96%E6%94%B6%E8%8E%B7"><span class="nav-number">2.2.2.</span> <span class="nav-text">意外收获</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A5%9E%E7%A7%98%E5%8F%91%E7%8E%B0"><span class="nav-number">2.2.3.</span> <span class="nav-text">神秘发现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86%E5%B7%A5%E5%85%B7"><span class="nav-number">2.3.</span> <span class="nav-text">解密工具</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

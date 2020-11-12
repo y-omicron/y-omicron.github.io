@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="第一次见到加壳的DLL文件，连导出表都需要在DLL被加载之后才能看到~">
+<meta property="og:type" content="article">
+<meta property="og:title" content="加壳DLL样本分析">
+<meta property="og:url" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="第一次见到加壳的DLL文件，连导出表都需要在DLL被加载之后才能看到~">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569069604758.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/one.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036589908.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036637139.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036781076.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036934140.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569048004027.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/twe.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569037988336.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569049912459.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045651979.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045695432.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045765139.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/sri.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051403776.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051446830.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051485220.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051538445.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051611785.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051697083.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051867064.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051929688.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052110133.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052196372.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052257105.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052412058.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052550399.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052721305.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052741979.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053069472.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053314739.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053385849.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053416820.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/fre.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054082992.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/fei.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054385917.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/six.gif">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054524999.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054566986.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569067972016.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068391577.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068515868.png">
+<meta property="og:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068757330.png">
+<meta property="article:published_time" content="2019-09-17T02:00:00.000Z">
+<meta property="article:modified_time" content="2020-06-15T11:56:56.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="DLL">
+<meta property="article:tag" content="宏病毒">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569069604758.png">
+
+<link rel="canonical" href="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>加壳DLL样本分析 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/09/17/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          加壳DLL样本分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-17 10:00:00" itemprop="dateCreated datePublished" datetime="2019-09-17T10:00:00+08:00">2019-09-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-06-15 19:56:56" itemprop="dateModified" datetime="2020-06-15T19:56:56+08:00">2020-06-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" itemprop="url" rel="index"><span itemprop="name">学习报告</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>第一次见到加壳的DLL文件，连导出表都需要在DLL被加载之后才能看到~</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="样本基础信息"><a href="#样本基础信息" class="headerlink" title="样本基础信息"></a>样本基础信息</h2><table>
+<thead>
+<tr>
+<th align="center">样本名称</th>
+<th align="center">样本类型</th>
+<th align="center">样本大小</th>
+<th align="center">样本MD5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">3effeba64d9a1.xls</td>
+<td align="center">恶意宏</td>
+<td align="center">346112bytes</td>
+<td align="center">3EFFEBA64D9A1A4DD1BDDAEB1858E4D0</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>流程图示例攻击过程</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569069604758.png" alt="1569069604758"></p>
+</li>
+</ul>
+<h1 id="技术分析"><a href="#技术分析" class="headerlink" title="技术分析"></a>技术分析</h1><h2 id="宏代码分析"><a href="#宏代码分析" class="headerlink" title="宏代码分析"></a>宏代码分析</h2><ul>
+<li><p>首先使用<code>Office</code>自带的<code>VBA</code>调试器调试，找到恶意逻辑块</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/one.gif" alt="one"></p>
+</li>
+<li><p>很快嘛，创建假窗口让我们等着，然后偷偷的释放一个<code>13.xls</code>的文件，继续看，先不慌分析<code>13.xls</code></p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036589908.png" alt="1569036589908"></p>
+</li>
+<li><p>代码首先定义三个变量，分别拼接字符串，得到路径</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036637139.png" alt="1569036637139"></p>
+</li>
+<li><p>然后马上判断操作系统版本，感觉要释放文件了，看这个参数，还是释放一个<code>DLL</code></p>
+</li>
+<li><p>然后作者考虑了一下中病毒的人的智商，嗯，他肯定会第二次打开，不能报错，所以毅然决然的<code>kill</code>刚刚创建的东西，防止报错</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036781076.png" alt="1569036781076"></p>
+</li>
+<li><p>接下来，另存为自己，将自己设置为<code>xlsx</code>格式另存为<code>13.xlsx</code>中</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569036934140.png" alt="1569036934140"></p>
+<ul>
+<li><span style="background-color:#ffc7c7">   <em>expression</em>.<strong>SaveAs</strong> (<em>FileName</em>, <em>FileFormat</em>, <em>Password</em>, <em>WriteResPassword</em>, <em>ReadOnlyRecommended</em>, <em>CreateBackup</em>, <em>AccessMode</em>, <em>ConflictResolution</em>, <em>AddToMru</em>, <em>TextCodepage</em>, <em>TextVisualLayout</em>, <em>Local</em>)   </span><ul>
+<li><span style="background-color:#ffffc7">   FileName   </span>：一个字符串，指示要保存的文件的名称。</li>
+<li><span style="background-color:#ffffc7">   FileFormat   </span>：保存文件时使用的文件格式。</li>
+</ul>
+</li>
+</ul>
+<p>在这里，他选择用<code>51</code>来保存自己</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569048004027.png" alt="1569048004027"></p>
+<p>我们可以看到，是<code>xlsx</code>类型，刚刚好，这个类型可以使用解压工具打开</p>
+</li>
+<li><p>然后直接重命名<code>13.xlsx</code>为一个<code>13.xls.zip</code>，然后使用<code>ZipFolder</code>解压这个压缩包，从中提取一个<code>.bin</code>文件，然后将<code>.bin</code>文件写入，之前拼接的<code>DLL</code>的路径中</p>
+<p>首先提取bin文件</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/twe.gif" alt="twe"></p>
+<p>函数<code>ReadAndWriteExactedBinFile</code>，<code>Dump</code>文件，并且写入<code>DLL</code></p>
+<p><img src="1569037988336.png" alt="1569037988336"></p>
+</li>
+<li><p>然后返回代码继续执行</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569049912459.png" alt="1569049912459"></p>
+<p>可以看到，先获取<code>DLL</code>句柄</p>
+<p>然后执行函数<code>Amway</code>，我们不知道<code>Amway</code>是什么，但是实际上这个函数是<code>DLL</code>的导出函数。</p>
+</li>
+</ul>
+<h2 id="从BIN文件中提取DLL"><a href="#从BIN文件中提取DLL" class="headerlink" title="从BIN文件中提取DLL"></a>从<code>BIN</code>文件中提取<code>DLL</code></h2><ul>
+<li><p>首先，我们分析他的提取函数的参数</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045651979.png" alt="1569045651979"></p>
+</li>
+<li><p>然后他定以了一个<code>MZ</code>头的特征字段</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045695432.png" alt="1569045695432"></p>
+</li>
+<li><p>为什么说它是特征字段呢，我们在后面可以看到，他读取的文件内容都要于这三个对比，直到找到他所需的内容</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569045765139.png" alt="1569045765139"></p>
+</li>
+<li><p>首先找到特征字段，如果是第一次找到，就开始读取，我们可以判断，如果系统版本是<code>WIN64</code>那么很有可能是第二个特征字段再开始读，达到多平台兼容的目的</p>
+</li>
+<li><p>接下来，我们尝试手动实现获取<code>DLL</code>，看我们的判断是不是正确的。</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/sri.gif" alt="sri"></p>
+</li>
+<li><p>得到了我们需要的文件，我们就可以进行下一步分析了。</p>
+</li>
+</ul>
+<h2 id="DumpDLL"><a href="#DumpDLL" class="headerlink" title="DumpDLL"></a><code>DumpDLL</code></h2><ul>
+<li><p>首先查壳，没有发现有壳，但是也没有发现我们需要的导出函数，我们载入<code>IDA</code></p>
+</li>
+<li><p>看到非常多的常量，也不知道是在干什么，搜索不到什么字符串，但是发现在导入函数中有个<code>VirtualAlloc</code>，而且字符串中有<code>Kernel32</code>和<code>User32</code>，是不是还存在一个加密壳？使用<code>OD</code>看一看<code>DLL</code>是在干什么。</p>
+</li>
+<li><p>首先去<code>VirtualAlloc</code>下断点，看看到底是在干什么使用了这个函数</p>
+</li>
+<li><p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051403776.png" alt="1569051403776"></p>
+</li>
+<li><p>命中之后，我们走出来，看到外面紧接着一个内存拷贝</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051446830.png" alt="1569051446830"></p>
+<p>在<code>IDA</code>中通过交叉引用也可以找到</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051485220.png" alt="1569051485220"></p>
+</li>
+<li><p>尤其是马上在<code>IDA</code>中看到定义函数指针，感觉这里或许就是重点</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051538445.png" alt="1569051538445"></p>
+</li>
+<li><p>先看拷贝出来的是什么东西</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051611785.png" alt="1569051611785"></p>
+</li>
+<li><p>乍一看，感觉就是很整齐，可能是一个地址表或者原本就是很多重复的东西，<code>IDA</code>看不明白，我们就继续<code>OD</code>调试</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051697083.png" alt="1569051697083"></p>
+</li>
+<li><p>经过一个函数<code>(sub_003D1210)</code>之后突然就看到了<code>55 8B EC</code>，说明解密出来的应该就是一段代码，说明这个<code>DLL</code>还没有真正的被我们脱光</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051867064.png" alt="1569051867064"></p>
+<p>直接下一个硬件断点防止我们跑飞，然后继续单步跟。</p>
+</li>
+<li><p>果然，直接<code>Call</code>过去了</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569051929688.png" alt="1569051929688"></p>
+</li>
+<li><p>继续跟进去，由于这是解密之后的代码，我们的好帮手<code>IDA</code>无能为力，又懒得<code>Dump</code>出来，咳咳，这不是一个好习惯，我们继续运行，看到一上来，好家伙，在堆栈里面写了很多数据，我们跳过去看一下</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052110133.png" alt="1569052110133"></p>
+</li>
+<li><p>基本一个壳该要的全都要了，那么肯定啊还要开辟虚拟空间，反正我断点还没取消，直接跑起来，看上下文</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052196372.png" alt="1569052196372"></p>
+<p>立刻就申请了一个空间，跑出去看上下文</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052257105.png" alt="1569052257105"></p>
+<p>第一眼就看到下面又定义了一个虚拟空间，所以先不慌，把第二个也申请到，看看这两个空间要写什么东西，当然，该下断点的地方不能忘，不然你都不知道什么时候用到分配的的虚拟空间</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052412058.png" alt="1569052412058"></p>
+</li>
+<li><p>两个空间都可以先下好写入断点，在使用的时候断下来</p>
+</li>
+<li><p>很快就断在了第一个硬件断点，看一看上下文，我们就可以发现是一个循环，跑几步看一看</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052550399.png" alt="1569052550399"></p>
+</li>
+<li><p>我们可以看到，每次循环都会在第一个空间中写入一个字节，我们看不懂在写什么东西，所以在跳出循环的地方下断点。</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052721305.png" alt="1569052721305"></p>
+<p>不要找不到断点下在哪里</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569052741979.png" alt="1569052741979"></p>
+</li>
+<li><p>看不懂写了什么没关系，要么明文要么密文，这看不懂就是密文咯，接下来阅读这段空间的肯定就是要解密，我们更换断点为访问断点</p>
+</li>
+<li><p>下一个断住的果然是访问断点，豪赌一波，肯定要写入！！！</p>
+</li>
+<li><p>结果断住的地方还是访问断点233333，不过我这个时候的内存空间就不是原本那样了</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053069472.png" alt="1569053069472"></p>
+</li>
+<li><p>惊现<code>MZ</code>！！这个时候的第二个空间还没有被使用，继续压，豪赌！！</p>
+</li>
+<li><p>然后发现，断点在循环里面，先取消掉断点，记录一下机器码和内存地址。</p>
+</li>
+<li><p>结果是悲惨的，温馨提示，赌博必输！</p>
+</li>
+<li><p>回到上一步，我们单步调试</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053314739.png" alt="1569053314739"></p>
+</li>
+<li><p>老老实实单步，可以看到，在这里又有一个循环，执行解密工作，下好断点，等待解密结束</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053385849.png" alt="1569053385849"></p>
+</li>
+<li><p>结果在下一个函数之后，立刻就弹出了一个完成的<code>PE</code>文件，上面我下的断点类型不对，没有断住。。。。。</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569053416820.png" alt="1569053416820"></p>
+</li>
+<li><p>接下来，将这个解密出来的文件<code>Dump</code>出来</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/fre.gif" alt="fre"></p>
+</li>
+<li><p>检查一下，发现是个<code>DLL</code></p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054082992.png" alt="1569054082992"></p>
+</li>
+<li><p>欸，这个<code>UPX</code>，看的就很爽，再脱一次壳</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/fei.gif" alt="fei"></p>
+</li>
+<li><p>脱完壳一看，欸，找到了</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054385917.png" alt="1569054385917"></p>
+<p>这不就是被执行的东西嘛！</p>
+</li>
+<li><p>实际上，直接尼玛的拉满！！两次<code>ESP</code>定理干掉！！</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/six.gif" alt="six"></p>
+</li>
+</ul>
+<h2 id="DownLoad分析"><a href="#DownLoad分析" class="headerlink" title="DownLoad分析"></a><code>DownLoad</code>分析</h2><ul>
+<li><p>大杀器<code>IDA</code>冲鸭~</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054524999.png" alt="1569054524999"></p>
+<p>直接去看被使用的函数干了什么，当然，<code>DLLMain</code>也得看看，但是</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569054566986.png" alt="1569054566986"></p>
+<p>所以我们还是看导出函数吧</p>
+</li>
+<li><p>用<code>X64 dbg</code>一调居然就看到了疑似添加异常处理的函数。。。。。</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569067972016.png" alt="1569067972016"></p>
+</li>
+<li><p>这不是重点，我们先找到我们在<code>IDA</code>上看到的函数</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068391577.png" alt="1569068391577"></p>
+<p>看第三个函数执行之后的返回值，来判断第三个函数的作用</p>
+<p>返回值，为获取到的计算机主机名：</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068515868.png" alt="1569068515868"></p>
+</li>
+<li><p>然后拼接返回的参数</p>
+<p><img src="190917-%E5%8A%A0%E5%A3%B3DLL%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/1569068757330.png" alt="1569068757330"></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/DLL/" rel="tag"># DLL</a>
+              <a href="/tags/%E5%AE%8F%E7%97%85%E6%AF%92/" rel="tag"># 宏病毒</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/08/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" rel="prev" title="Hexo搭建个人博客">
+      <i class="fa fa-chevron-left"></i> Hexo搭建个人博客
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/23/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/190915-%E7%99%BD%E5%88%A9%E7%94%A8%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/" rel="next" title="白利用样本分析">
+      白利用样本分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.</span> <span class="nav-text">样本基础信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%80%E6%9C%AF%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">技术分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">宏代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8EBIN%E6%96%87%E4%BB%B6%E4%B8%AD%E6%8F%90%E5%8F%96DLL"><span class="nav-number">2.2.</span> <span class="nav-text">从BIN文件中提取DLL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DumpDLL"><span class="nav-number">2.3.</span> <span class="nav-text">DumpDLL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DownLoad%E5%88%86%E6%9E%90"><span class="nav-number">2.4.</span> <span class="nav-text">DownLoad分析</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

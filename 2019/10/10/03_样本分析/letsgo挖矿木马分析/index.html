@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="现在的攻击方式偏向于获利，而不再是破坏，而获利最简单而且隐蔽的方式，就是挖矿。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="letsgo挖矿木马分析">
+<meta property="og:url" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="现在的攻击方式偏向于获利，而不再是破坏，而获利最简单而且隐蔽的方式，就是挖矿。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795229520.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795697760.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795471319.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795600243.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795841719.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570796181578.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570796355872.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570796493995.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570796555344.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/twe.gif">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/one.gif">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570773070627.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787516192.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787608098.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787462855.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787438346.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787199266.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570787296110.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570785137329.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570785101082.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570785836154.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570786358775.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570786664135.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570797354239.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570797434514.png">
+<meta property="og:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570797293233.png">
+<meta property="article:published_time" content="2019-10-10T02:00:00.000Z">
+<meta property="article:modified_time" content="2020-04-17T03:09:56.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="矿机">
+<meta property="article:tag" content="木马">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/1570795229520.png">
+
+<link rel="canonical" href="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>letsgo挖矿木马分析 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/10/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/letsgo%E6%8C%96%E7%9F%BF%E6%9C%A8%E9%A9%AC%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          letsgo挖矿木马分析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-10 10:00:00" itemprop="dateCreated datePublished" datetime="2019-10-10T10:00:00+08:00">2019-10-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-17 11:09:56" itemprop="dateModified" datetime="2020-04-17T11:09:56+08:00">2020-04-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" itemprop="url" rel="index"><span itemprop="name">学习报告</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>现在的攻击方式偏向于获利，而不再是破坏，而获利最简单而且隐蔽的方式，就是挖矿。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="样本基本信息"><a href="#样本基本信息" class="headerlink" title="样本基本信息"></a>样本基本信息</h2><table>
+<thead>
+<tr>
+<th align="center">样本名称</th>
+<th align="center">样本类型</th>
+<th align="center">样本大小</th>
+<th align="center">样本MD5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">letsgo.exe</td>
+<td align="center">矿机木马</td>
+<td align="center">468480 bytes</td>
+<td align="center">D48AB2E921F5C725672FCE16135D1F09</td>
+</tr>
+</tbody></table>
+<h2 id="病毒逻辑流程图"><a href="#病毒逻辑流程图" class="headerlink" title="病毒逻辑流程图"></a>病毒逻辑流程图</h2><p><img src="1570795229520.png" alt="1570795229520"></p>
+<h1 id="简单静态分析以及行为监控"><a href="#简单静态分析以及行为监控" class="headerlink" title="简单静态分析以及行为监控"></a>简单静态分析以及行为监控</h1><ul>
+<li><p>进程树状态</p>
+<p><img src="1570795697760.png" alt="1570795697760"></p>
+</li>
+<li><p>通过指令再次创建进程启动自己。</p>
+<p><img src="1570795471319.png" alt="1570795471319"></p>
+</li>
+<li><p>拷贝自身到<code>%APPDATA%\\svchostx64.exe</code>，并添加计划任务。</p>
+<p><img src="1570795600243.png" alt="1570795600243"></p>
+</li>
+<li><p>试图连接<code>107.168.242.129:3333</code>，传输登录用户名和密码。</p>
+<p><img src="1570795841719.png" alt="1570795841719"></p>
+<p>返回错误信息：<code>登录被拒绝。 原因：由于僵尸网络挖掘报告，该地址已被禁止。</code></p>
+</li>
+</ul>
+<h1 id="静态分析-amp-动态调试"><a href="#静态分析-amp-动态调试" class="headerlink" title="静态分析&amp;动态调试"></a>静态分析&amp;动态调试</h1><h2 id="分析外壳代码"><a href="#分析外壳代码" class="headerlink" title="分析外壳代码"></a>分析外壳代码</h2><blockquote>
+<p>外壳代码没有看到我们发现的核心逻辑，而且自身的主程序逻辑还被修改了，说明这部分代码性质类似于壳代码，我们简单分析一下。</p>
+</blockquote>
+<ul>
+<li><p>首先，程序的行为与<code>IDA</code>观察到的代码严重不符，但是看到存在类似<code>ShellCode</code>的操作，分配空间，写入数据，然后直接执行。</p>
+<p><img src="1570796181578.png" alt="1570796181578"></p>
+</li>
+<li><p>首先直接执行解密的代码</p>
+<p><img src="1570796355872.png" alt="1570796355872"></p>
+</li>
+<li><p>这些堆中的代码完成了<code>PE</code>文件的解密，并且将该<code>PE</code>文件在内存中展开。</p>
+</li>
+<li><p>在堆中的代码执行结束之后，可以看到跳转到<code>0x4042ca</code>，也就是返回原本的主函数。</p>
+<p><img src="1570796493995.png" alt="1570796493995"></p>
+</li>
+<li><p>但是可以看到返回的地方的代码是一个<code>VS2013</code>程序的标准入口。</p>
+<p><img src="1570796555344.png" alt="1570796555344"></p>
+<p>还可以看到第一个<code>CALL</code>里面就是初始化函数，说明这才是真正的病毒核心代码。</p>
+<p><img src="twe.gif" alt="twe"></p>
+</li>
+</ul>
+<h2 id="提取核心exe"><a href="#提取核心exe" class="headerlink" title="提取核心exe"></a>提取核心exe</h2><blockquote>
+<p>重点是避免重定位，里面的代码运行时，进行了重定位，如果在脱壳之后不去修复重定位，会导致难以分析。</p>
+</blockquote>
+<ul>
+<li><p>首先，如果使用原本的脱壳方式，得到的<code>EXE</code>已经被重定位过，导致后面分析的时候，出现错误，所以采用内存<code>dump</code>的方式获取<code>EXE</code></p>
+<p><img src="one.gif" alt="one"></p>
+</li>
+<li><p>提取之后，修改重定位信息即可</p>
+<p><img src="1570773070627.png" alt="1570773070627"></p>
+</li>
+</ul>
+<h2 id="分析病毒核心逻辑"><a href="#分析病毒核心逻辑" class="headerlink" title="分析病毒核心逻辑"></a>分析病毒核心逻辑</h2><h2 id="检查互斥体"><a href="#检查互斥体" class="headerlink" title="检查互斥体"></a>检查互斥体</h2><p>直接检查互斥体，判断是否多开，防止重复运行</p>
+<p><img src="1570787516192.png" alt="1570787516192"></p>
+<h2 id="系统驻留"><a href="#系统驻留" class="headerlink" title="系统驻留"></a>系统驻留</h2><ul>
+<li><p>在函数<code>subCopyFileAsAPPDATA_4027C1(L&quot;svchostx64.exe&quot;);</code>中，通过拷贝文件到<code>%APPDATA%\\svchostx64.exe</code>，并且添加计划任务，达到驻留在系统中的目的。</p>
+<p><img src="1570787608098.png" alt="1570787608098"></p>
+</li>
+</ul>
+<h2 id="防止屏幕关闭"><a href="#防止屏幕关闭" class="headerlink" title="防止屏幕关闭"></a>防止屏幕关闭</h2><ul>
+<li><p>创建一个新的线程执行简答的代码，防止屏幕关闭。</p>
+<p><img src="1570787462855.png" alt="1570787462855"></p>
+<p><img src="1570787438346.png" alt="1570787438346"></p>
+</li>
+</ul>
+<h2 id="获取矿机程序句柄"><a href="#获取矿机程序句柄" class="headerlink" title="获取矿机程序句柄"></a>获取矿机程序句柄</h2><ul>
+<li><p>病毒将矿机的文件隐藏在自己的<code>.plato</code>节中</p>
+<p><img src="1570787199266.png" alt="1570787199266"></p>
+</li>
+<li><p>在函数<code>subFreeMinerPE_4025D1</code>中获取该节的信息，并且返回矿机程序的句柄</p>
+<p><img src="1570787296110.png" alt="1570787296110"></p>
+</li>
+</ul>
+<h2 id="解密挖矿指令"><a href="#解密挖矿指令" class="headerlink" title="解密挖矿指令"></a>解密挖矿指令</h2><ul>
+<li><p>在最后一个函数<code>subMining_4010C5</code>的代码中，解密挖矿相关指令。</p>
+<p><img src="1570785137329.png" alt="1570785137329"></p>
+<p><img src="1570785101082.png" alt="1570785101082"></p>
+</li>
+<li><p>通过硬编码写入，然后解密指令作为矿机的参数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">-o, --url=URL                 URL of mining server</span></span><br><span class="line">-o monerohash.com:3333</span><br><span class="line"><span class="meta">#</span><span class="bash">-u, --user=USERNAME           username <span class="keyword">for</span> mining server</span></span><br><span class="line">-u 4BrL51JCc9NGQ71kWhnYoDRffsDZy7m1HUU7MRU4nUMXAHNFBEJhkTZV9HdaL4gfuNBxLPc3BeMkLGaPbF5vWtANQni58KYZqH43YSDeqY</span><br><span class="line"><span class="meta">#</span><span class="bash">-p, --pass=PASSWORD           password <span class="keyword">for</span> mining server</span></span><br><span class="line">-p x </span><br><span class="line"><span class="meta">#</span><span class="bash">-k, --keepalive               send keepalived packet <span class="keyword">for</span> prevent timeout (needs pool support)</span></span><br><span class="line">-k --donate-level=1 </span><br><span class="line"><span class="meta">#</span><span class="bash">-t, --threads=N               number of miner threads</span></span><br><span class="line">-t 3</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="远线程注入"><a href="#远线程注入" class="headerlink" title="远线程注入"></a>远线程注入</h2><ul>
+<li><p>通过创建进程执行自己，然后将矿机注入到新创建的进程中，完成隐藏自身。</p>
+<p><img src="1570785836154.png" alt="1570785836154"></p>
+</li>
+<li><p>创建进程的时候，<code>CREATE_SUSPENDED</code> 挂起， <code>CREATE_NO_WINDOW</code> 没有终端窗口</p>
+<p><img src="1570786358775.png" alt="1570786358775"></p>
+</li>
+<li><p>而且可以看到传入了刚刚解密的参数。</p>
+</li>
+</ul>
+<h2 id="对抗查杀和检查"><a href="#对抗查杀和检查" class="headerlink" title="对抗查杀和检查"></a>对抗查杀和检查</h2><ul>
+<li><p>这个矿机木马试图在用户打开任务管理器的时候，干掉自己的子程序，达到隐藏自身的目的。</p>
+<p><img src="1570786664135.png" alt="1570786664135"></p>
+</li>
+<li><p>如果遍历进程找到<code>Taskmgr.exe</code>就使用<code>subTerminateProcess_4022C2</code>结束自己的子进程，然后等待任务管理器关闭，再重新执行远线程注入进行挖矿。</p>
+</li>
+</ul>
+<h1 id="查杀方案-amp-IOC"><a href="#查杀方案-amp-IOC" class="headerlink" title="查杀方案&amp;IOC"></a>查杀方案&amp;IOC</h1><h2 id="查杀方案"><a href="#查杀方案" class="headerlink" title="查杀方案"></a>查杀方案</h2><ul>
+<li><p>为了先结束挖矿子进程，可以先打开任务管理器，使得病毒主程序主动结束挖矿子进程。中文系统，手动结束子程序。</p>
+<p><img src="1570797354239.png" alt="1570797354239"></p>
+</li>
+<li><p>然后删除计划任务，名称<code>Adasdsadas3id</code></p>
+<p><img src="1570797434514.png" alt="1570797434514"></p>
+</li>
+<li><p>然后结束病毒母体程序，特征有：</p>
+<ul>
+<li>创建互斥体<code>NIHILMsINERaassdaa</code>。</li>
+<li>命令行参数<code> -o monerohash.com:3333 -u 4BrL51JCc9NGQ71kWhnYoDRffsDZy7m1HUU7MRU4nUMXAHNFBEJhkTZV9HdaL4gfuNBxLPc3BeMkLGaPbF5vWtANQni58KYZqH43YSDeqY -p x -k --donate-level=1 -t 3</code></li>
+<li>部分病毒程序的路径为<code>%APPDATA%\\svchostx64.exe</code>。</li>
+</ul>
+<p><img src="1570797293233.png" alt="1570797293233"></p>
+</li>
+<li><p>删除病毒原程序，然后删除<code>%APPDATA%</code>下的病毒文件，即可。</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9F%BF%E6%9C%BA/" rel="tag"># 矿机</a>
+              <a href="/tags/%E6%9C%A8%E9%A9%AC/" rel="tag"># 木马</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/09/24/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/%E6%84%9F%E6%9F%93%E5%9E%8B%E8%A0%95%E8%99%AB%E7%97%85%E6%AF%92/" rel="prev" title="感染型蠕虫病毒">
+      <i class="fa fa-chevron-left"></i> 感染型蠕虫病毒
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E4%B8%AD%E6%96%AD%E5%90%91%E9%87%8F%E8%A1%A8/" rel="next" title="中断向量表">
+      中断向量表 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.</span> <span class="nav-text">样本基本信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%97%85%E6%AF%92%E9%80%BB%E8%BE%91%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">病毒逻辑流程图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90%E4%BB%A5%E5%8F%8A%E8%A1%8C%E4%B8%BA%E7%9B%91%E6%8E%A7"><span class="nav-number">2.</span> <span class="nav-text">简单静态分析以及行为监控</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90-amp-%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">静态分析&amp;动态调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E5%A4%96%E5%A3%B3%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.</span> <span class="nav-text">分析外壳代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E5%8F%96%E6%A0%B8%E5%BF%83exe"><span class="nav-number">3.2.</span> <span class="nav-text">提取核心exe</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E7%97%85%E6%AF%92%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="nav-number">3.3.</span> <span class="nav-text">分析病毒核心逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E4%BA%92%E6%96%A5%E4%BD%93"><span class="nav-number">3.4.</span> <span class="nav-text">检查互斥体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%A9%BB%E7%95%99"><span class="nav-number">3.5.</span> <span class="nav-text">系统驻留</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B2%E6%AD%A2%E5%B1%8F%E5%B9%95%E5%85%B3%E9%97%AD"><span class="nav-number">3.6.</span> <span class="nav-text">防止屏幕关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E7%9F%BF%E6%9C%BA%E7%A8%8B%E5%BA%8F%E5%8F%A5%E6%9F%84"><span class="nav-number">3.7.</span> <span class="nav-text">获取矿机程序句柄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86%E6%8C%96%E7%9F%BF%E6%8C%87%E4%BB%A4"><span class="nav-number">3.8.</span> <span class="nav-text">解密挖矿指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9C%E7%BA%BF%E7%A8%8B%E6%B3%A8%E5%85%A5"><span class="nav-number">3.9.</span> <span class="nav-text">远线程注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E6%9F%A5%E6%9D%80%E5%92%8C%E6%A3%80%E6%9F%A5"><span class="nav-number">3.10.</span> <span class="nav-text">对抗查杀和检查</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%9D%80%E6%96%B9%E6%A1%88-amp-IOC"><span class="nav-number">4.</span> <span class="nav-text">查杀方案&amp;IOC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%9D%80%E6%96%B9%E6%A1%88"><span class="nav-number">4.1.</span> <span class="nav-text">查杀方案</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

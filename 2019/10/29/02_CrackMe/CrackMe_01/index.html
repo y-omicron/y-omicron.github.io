@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="首先养成习惯，每个Cracker都要有自己的一个套路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CrackMe - Acid burn">
+<meta property="og:url" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="首先养成习惯，每个Cracker都要有自己的一个套路。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571317749563.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363038249.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363155153.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363260203.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363281015.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363296526.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571363312711.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571366524756.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571366679877.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571366833538.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368144307.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368361894.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368420412.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368530491.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368708809.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368753743.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368786986.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368865802.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571368978773.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571369191847.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1.gif">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571379349646.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571379464396.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571379612666.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571379829999.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571379757002.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571380068015.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571380167653.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/2-1571385768866.gif">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571385858297.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571386504375.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571387471689.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/3.gif">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389020782.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389088071.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389138164.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389155632.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/4.gif">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389649105.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389728913.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571389794884.png">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/5.gif">
+<meta property="og:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/7-1572339624899.gif">
+<meta property="article:published_time" content="2019-10-29T09:05:00.000Z">
+<meta property="article:modified_time" content="2020-07-07T07:11:56.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="CrackMe">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/1571317749563.png">
+
+<link rel="canonical" href="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CrackMe - Acid burn | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/29/02_CrackMe/CrackMe_01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CrackMe - Acid burn
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-29 17:05:00" itemprop="dateCreated datePublished" datetime="2019-10-29T17:05:00+08:00">2019-10-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-07 15:11:56" itemprop="dateModified" datetime="2020-07-07T15:11:56+08:00">2020-07-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%81%B7%E5%81%B7%E8%AE%B0%E4%B8%8B%E6%9D%A5/" itemprop="url" rel="index"><span itemprop="name">偷偷记下来</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>首先养成习惯，每个<code>Cracker</code>都要有自己的一个套路。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="查壳-amp-样本信息"><a href="#查壳-amp-样本信息" class="headerlink" title="查壳&amp;样本信息"></a>查壳&amp;样本信息</h1><h2 id="壳信息，样本语言"><a href="#壳信息，样本语言" class="headerlink" title="壳信息，样本语言"></a>壳信息，样本语言</h2><ul>
+<li>实际上，这个样本是没有壳的，而且是采用的<code>Delphi</code>语言编写程序。</li>
+</ul>
+<p><img src="1571317749563.png" alt="1571317749563"></p>
+<h2 id="运行结果，窗体概况"><a href="#运行结果，窗体概况" class="headerlink" title="运行结果，窗体概况"></a>运行结果，窗体概况</h2><ol>
+<li><p>首先就是弹窗<code>NAG</code>，窗口标题<code>hello you have to kill me!</code>也说明，这个弹窗需要被干掉，相当于未注册的时候，弹窗提示你购买软件。</p>
+<p><img src="1571363038249.png" alt="1571363038249"></p>
+</li>
+<li><p>接下来点完确认，就可以看到软件的正式界面</p>
+<p><img src="1571363155153.png" alt="1571363155153"></p>
+</li>
+<li><p>有两种验证的方式，说明我们需要解决两种验证的算法。</p>
+<ul>
+<li><p>Name/Serial</p>
+<p><img src="1571363260203.png" alt="1571363260203"></p>
+<p><img src="1571363281015.png" alt="1571363281015"></p>
+</li>
+<li><p>Serial</p>
+<p><img src="1571363296526.png" alt="1571363296526"></p>
+<p><img src="1571363312711.png" alt="1571363312711"></p>
+</li>
+</ul>
+</li>
+<li><p>得到的比较有效的消息都来自于标题或者内容，实际上这个弹窗我们猜测使用的是<code>MessageBoxA/W</code>，如果断不下来，在考虑<code>CreateWindow</code>这个更加原始的API下断点。</p>
+</li>
+</ol>
+<h1 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h1><h2 id="IDA初处理"><a href="#IDA初处理" class="headerlink" title="IDA初处理"></a>IDA初处理</h2><ul>
+<li><p>首先，我们<code>F5</code>尝试阅读伪代码。原始图片如下图，我们使用<code>F5</code>或者<code>Table</code>键就可以查看反编译窗口。有的时候不可以反编译，就需要我们做一些调整。</p>
+<p><img src="1571366524756.png" alt="1571366524756"></p>
+</li>
+<li><p>首先，我们尝试恢复符号。我们可以看到没有变量，都是函数，所以直接跟进函数，尝试恢复函数名。</p>
+<p><img src="1571366679877.png" alt="1571366679877"></p>
+</li>
+<li><p>首先可以看到传入了一个参数，这个参数可以双击点进去看看是什么，实际上感觉这个参数类似列表，可能用来寻址之类的。没有遇到使用，暂时不做修改。</p>
+<p><img src="1571366833538.png" alt="1571366833538"></p>
+</li>
+<li><p>进入函数之后，阅读性很强，所以我们直接阅读代码，遇到函数记得上<a target="_blank" rel="noopener" href="https://docs.microsoft.com/zh-cn/"><code>MSDN</code></a>查询。</p>
+<p><img src="1571368144307.png" alt="1571368144307"></p>
+</li>
+<li><p>在这里就可以直接搜索函数<code>GetModuleHandleA</code>然后修改<code>v2</code>为<code>hSelfProcess</code>自己能看懂就行，这里是当前进程的伪句柄。</p>
+<p><img src="1571368361894.png" alt="1571368361894"></p>
+</li>
+<li><p>接下来，有一个<code>unk_4300A0</code>是一个很奇怪的数据，但是我们可以判断他是一个数组，因为指针加上偏移，通常情况下是一个结构体，这里可以判断出这个结构体是一个指针数组。</p>
+<p><img src="1571368420412.png" alt="1571368420412"></p>
+</li>
+<li><p>过去之后看到的空间分配告诉我们这个数据的类型的(虽然还是靠猜)</p>
+<p><img src="1571368530491.png" alt="1571368530491"></p>
+</li>
+<li><p>既然知道是一个结构体，那么我们就可以让他看起来更接近原始代码。</p>
+<ul>
+<li><p>首先修复这个数据所包含的空间，否则IDA会认为这个变量只有4字节，实际我们看到的是16字节，是一个<code>DWORD *Ptr[4]</code>，所以我们先修改数据为数组。</p>
+<p><img src="1571368708809.png" alt="1571368708809"></p>
+<p>修改为4就可以了，我们看到这个空间应该是4个变量。</p>
+<p><img src="1571368753743.png" alt="1571368753743"></p>
+<p>结果就是这个数据包含的空间为16字节</p>
+<p><img src="1571368786986.png" alt="1571368786986"></p>
+</li>
+<li><p>接下来，我们首先在反编译窗口使用<code>F5</code>，刷新界面，让我们刚刚做的修改被应用，然后可以看到</p>
+<p><img src="1571368865802.png" alt="1571368865802"></p>
+<p>这个数据还是不对，我们原本看到的是<code>*((DWORD*)&amp;unk_4300A0+1)</code>，怎么看也不会是数组的最后一个嘛，我们接下来修改变量的类型，点击变量，按<code>Y</code>。</p>
+<p><img src="1571368978773.png" alt="1571368978773"></p>
+<p>这就是为什么是4的原因，他识别为<code>char</code>型，而一个<code>char</code>只有一个字节，在代码中强转为<code>DWORD</code>(4个字节)类型之后，加一是移动了4个字节。修改变量为<code>DWORD*</code>类型。</p>
+<p><img src="1571369191847.png" alt="1571369191847"></p>
+<p>这回就是正常的结果了。</p>
+</li>
+<li><p>演示一遍IDA 6.8的过程，大致相同</p>
+<p><img src="1.gif" alt="1"></p>
+<p>中间出现了一些问题，毕竟IDA 6.8识别的与IDA 7.0识别的代码还是略有不同。最后，还是达到了一样的代码逻辑。</p>
+</li>
+</ul>
+</li>
+<li><p>实际上我们完全可以采用<code>IDR (Interactive Delphi Reconstructor)</code>这款工具来完成Delphi的反汇编来辅助IDA，不过上面的内容主要是完成对结构体的一些操作，也是需要掌握的😀。</p>
+</li>
+</ul>
+<h2 id="IDR辅助IDA逆向功能算法"><a href="#IDR辅助IDA逆向功能算法" class="headerlink" title="IDR辅助IDA逆向功能算法"></a>IDR辅助IDA逆向功能算法</h2><ul>
+<li><p>首先使用IDR，在窗口里面快速定位到我们要解决的窗口(没有发现开始的那个弹窗NAG)，这里就首先处理Name Serial窗口。</p>
+<p><img src="1571379349646.png" alt="1571379349646"></p>
+</li>
+<li><p>然后我们直接找到提交答案的按钮，看提交答案的处理函数在那个地方。</p>
+<p><img src="1571379464396.png" alt="1571379464396"></p>
+</li>
+<li><p>然后就可以直接使用IDA/GDB跳转到对应地址，可以看到回答正确的弹窗。</p>
+<p><img src="1571379612666.png" alt="1571379612666"></p>
+</li>
+<li><p>这个时候发现有很多函数都没有识别，没有关系，查壳的作用就要显示出来了</p>
+<p><img src="1571379829999.png" alt="很多函数都没有识别出来"></p>
+</li>
+<li><p>应该还记得查壳的结果。</p>
+<p><img src="1571379757002.png" alt="1571379757002"></p>
+</li>
+<li><p>直接使用快捷键<code>Shift + F5</code>跳转到签名界面，按<code>Insert</code>添加签名。</p>
+<p><img src="1571380068015.png" alt="1571380068015"></p>
+</li>
+<li><p>搜索<code>Delphi</code>，然后添加对应版本的签名。然后回到反编译窗口<code>F5</code>一下，就能看到熟悉的函数名了。</p>
+<p><img src="1571380167653.png" alt="1571380167653"></p>
+</li>
+<li><p>演示一遍IDA 6.8</p>
+<p><img src="2-1571385768866.gif" alt="2"></p>
+</li>
+<li><p>接下来，我们直接阅读代码即可</p>
+<p><img src="1571385858297.png" alt="1571385858297"></p>
+</li>
+</ul>
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><ul>
+<li><p>注意到我标注出来的那一行代码，<code>v14</code>作为注册码最开始的一部分字符串，却没有被赋值，说明他应该是个指针，但是这个指针里面应该是被赋予了一个值，但是静态分析没有办法分析这种调用，所以，我们必须要在<code>DBG</code>里面调试才能找到<code>V14</code>的值(其实猜都猜出来是<code>CW</code>了)</p>
+</li>
+<li><p>其实换个编译器，或者在IDA的汇编窗口查看，也是可以整理清楚逻辑的，只是反编译不是非常完美。所以像我这么懒，就选择直接在<code>GDB</code>中查看拼接好的字符串。</p>
+<p><img src="1571386504375.png" alt="1571386504375"></p>
+</li>
+</ul>
+<h2 id="另一个Serial"><a href="#另一个Serial" class="headerlink" title="另一个Serial"></a>另一个Serial</h2><ul>
+<li>这个按照上面的办法就可以解决了，找到算法，一下就看懂了，看不懂的，建议写一些程序，然后再多使用一下MSDN。</li>
+</ul>
+<p><img src="1571387471689.png" alt="1571387471689"></p>
+<ul>
+<li>注册码<code>Hello Dude!</code>，注意感叹号，上面就是没发现感叹号……</li>
+</ul>
+<h1 id="动态分析"><a href="#动态分析" class="headerlink" title="动态分析"></a>动态分析</h1><h2 id="调试器选择"><a href="#调试器选择" class="headerlink" title="调试器选择"></a>调试器选择</h2><ul>
+<li><p>我们通过静态分析知道这个程序使用的是<code>MessageBox</code>来实现弹窗的，我们就可以使用在<code>MessageBox</code>下API断点来完成去除<code>NAG</code>的工作</p>
+</li>
+<li><p>但是我们如何去除掉这个<code>NAG</code>就有些讲究，我们可以先试试，我习惯使用自己魔改的x64_dbg。</p>
+<p><img src="3.gif" alt="3"></p>
+</li>
+<li><p>所以我们还是需要在调试器中进行栈回溯和一定的分析，否则只会白给。我采用的方式是交叉引用查找。</p>
+<ul>
+<li><p>首先找到字符串在内存中的位置</p>
+<p><img src="1571389020782.png" alt="1571389020782"></p>
+</li>
+<li><p>然后直接搜素引用</p>
+<p><img src="1571389088071.png" alt="1571389088071"></p>
+</li>
+<li><p>这样就可以找到真正传递参数准备弹窗的地方。</p>
+<p><img src="1571389138164.png" alt="1571389138164"></p>
+<p><img src="1571389155632.png" alt="1571389155632"></p>
+</li>
+<li><p>接下来就知道怎么做了</p>
+</li>
+</ul>
+</li>
+<li><p>演示一遍。</p>
+<p><img src="4.gif" alt="4"></p>
+</li>
+<li><p>接下来，直接干掉另外两个注册的判断即可，地址都知道。当然，也可以直接使用上面的断点，一样的可以解决问题。</p>
+<ul>
+<li><p>判断输入是否短于4</p>
+<p><img src="1571389649105.png" alt="1571389649105"></p>
+</li>
+<li><p>判断用户名/密码是否正确</p>
+<p><img src="1571389728913.png" alt="1571389728913"></p>
+</li>
+<li><p>判断注册码是否正确</p>
+<p><img src="1571389794884.png" alt="1571389794884"></p>
+</li>
+</ul>
+</li>
+<li><p>演示一遍。</p>
+<p><img src="5.gif" alt="5"></p>
+</li>
+<li><p>这样就完成了注册码的爆破</p>
+</li>
+</ul>
+<h1 id="注册机"><a href="#注册机" class="headerlink" title="注册机"></a>注册机</h1><p>实际上这个程序也不写注册机没什么，计算挺简单的，计算器按一下就能按出来。</p>
+<ul>
+<li><p>不过为了学习<code>C#</code>这次采用<code>WPF</code>编写的注册机，还是挺好用的。</p>
+<p>核心代码:</p>
+<p>N/M验证：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Button_Click_2</span>(<span class="params"><span class="keyword">object</span> sender, RoutedEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    String UserID = <span class="keyword">this</span>.UserID.Text;</span><br><span class="line">    <span class="keyword">int</span> Number = (<span class="keyword">int</span>)UserID[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">this</span>.PassWD.Text = (Number * <span class="number">41</span> * <span class="number">2</span>).ToString();</span><br><span class="line">    String PassWD = <span class="string">&quot;CW-&quot;</span> + <span class="keyword">this</span>.PassWD.Text + <span class="string">&quot;-CRACKED&quot;</span>;</span><br><span class="line">    Clipboard.SetDataObject(PassWD, <span class="literal">true</span>);</span><br><span class="line">    _ = MessageBox.Show(</span><br><span class="line">        <span class="string">&quot;注册码已经复制到您的剪贴板~&quot;</span>, </span><br><span class="line">        <span class="string">&quot;Tip：小提示&quot;</span>, MessageBoxButton.OK);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注册码验证：</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Button_Click_1</span>(<span class="params"><span class="keyword">object</span> sender, RoutedEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    MessageBoxResult messageBoxResult = </span><br><span class="line">        MessageBox.Show(</span><br><span class="line">        <span class="string">&quot;注册码为：Hello Dude!\r\n是否需要复制注册码到您的剪贴板？&quot;</span>,</span><br><span class="line">        <span class="string">&quot;Tip：小提示&quot;</span>, MessageBoxButton.YesNo);</span><br><span class="line">    <span class="keyword">if</span> (messageBoxResult == MessageBoxResult.Yes)</span><br><span class="line">    &#123;</span><br><span class="line">        String PassWD = <span class="string">&quot;Hello Dude&quot;</span>;</span><br><span class="line">        Clipboard.SetDataObject(PassWD, <span class="literal">true</span>);</span><br><span class="line">        _ = MessageBox.Show(</span><br><span class="line">            <span class="string">&quot;注册码已经复制到您的剪贴板~&quot;</span>, </span><br><span class="line">            <span class="string">&quot;Tip：小提示&quot;</span>, MessageBoxButton.OK);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用实况。</p>
+<p><img src="7-1572339624899.gif" alt="7"></p>
+</li>
+</ul>
+<h2 id="下载文件"><a href="#下载文件" class="headerlink" title="下载文件"></a>下载文件</h2><ul>
+<li><p><code>FristWPF.exe</code>(使用C#写的.Net程序需要4.7以上框架)</p>
+<p>  <a href="/DownSome/FristWPF.exe" ><code>点这里~~</code></a></p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CrackMe/" rel="tag"># CrackMe</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/23/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8D%E8%BF%90%E8%A1%8CDLL%E7%9A%84%E5%A7%BF%E5%8A%BF/" rel="prev" title="各种运行DLL的姿势">
+      <i class="fa fa-chevron-left"></i> 各种运行DLL的姿势
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/" rel="next" title="MBR病毒">
+      MBR病毒 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E5%A3%B3-amp-%E6%A0%B7%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.</span> <span class="nav-text">查壳&amp;样本信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A3%B3%E4%BF%A1%E6%81%AF%EF%BC%8C%E6%A0%B7%E6%9C%AC%E8%AF%AD%E8%A8%80"><span class="nav-number">1.1.</span> <span class="nav-text">壳信息，样本语言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E7%BB%93%E6%9E%9C%EF%BC%8C%E7%AA%97%E4%BD%93%E6%A6%82%E5%86%B5"><span class="nav-number">1.2.</span> <span class="nav-text">运行结果，窗体概况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">静态分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#IDA%E5%88%9D%E5%A4%84%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">IDA初处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IDR%E8%BE%85%E5%8A%A9IDA%E9%80%86%E5%90%91%E5%8A%9F%E8%83%BD%E7%AE%97%E6%B3%95"><span class="nav-number">2.2.</span> <span class="nav-text">IDR辅助IDA逆向功能算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="nav-number">2.3.</span> <span class="nav-text">解决问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%A6%E4%B8%80%E4%B8%AASerial"><span class="nav-number">2.4.</span> <span class="nav-text">另一个Serial</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">动态分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E5%99%A8%E9%80%89%E6%8B%A9"><span class="nav-number">3.1.</span> <span class="nav-text">调试器选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E6%9C%BA"><span class="nav-number">4.</span> <span class="nav-text">注册机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E6%96%87%E4%BB%B6"><span class="nav-number">4.1.</span> <span class="nav-text">下载文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

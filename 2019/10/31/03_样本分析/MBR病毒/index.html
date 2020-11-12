@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="MBR病毒采用感染磁盘的方式达成驻留的目的，如果不知道是感染了MBR的话，重装系统都无法解决病毒~">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MBR病毒">
+<meta property="og:url" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="MBR病毒采用感染磁盘的方式达成驻留的目的，如果不知道是感染了MBR的话，重装系统都无法解决病毒~">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572514959657.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572434831696.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435138587.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435241760.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572435628894.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1.gif">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436154782.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436353922.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436428982.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436563927.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436761042.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572436739443.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571729883131.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571741936347.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571742820264.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571797400565.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571908048567.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920044389.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920147173.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920257928.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1571920467662.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351572287.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351613368.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572351656501.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352677929.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352752031.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572352984871.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572353364835.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572431056761.png">
+<meta property="og:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572434237955.png">
+<meta property="article:published_time" content="2019-10-31T09:49:22.000Z">
+<meta property="article:modified_time" content="2020-07-07T07:16:16.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="MBR病毒">
+<meta property="article:tag" content="鬼影">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/1572514959657.png">
+
+<link rel="canonical" href="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>MBR病毒 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/10/31/03_%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/MBR%E7%97%85%E6%AF%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MBR病毒
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-10-31 17:49:22" itemprop="dateCreated datePublished" datetime="2019-10-31T17:49:22+08:00">2019-10-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-07 15:16:16" itemprop="dateModified" datetime="2020-07-07T15:16:16+08:00">2020-07-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%8A%A5%E5%91%8A/" itemprop="url" rel="index"><span itemprop="name">学习报告</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>MBR病毒采用感染磁盘的方式达成驻留的目的，如果不知道是感染了MBR的话，重装系统都无法解决病毒~</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="样本概况"><a href="#样本概况" class="headerlink" title="样本概况"></a>样本概况</h1><h2 id="样本基本信息"><a href="#样本基本信息" class="headerlink" title="样本基本信息"></a>样本基本信息</h2><table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">类型</th>
+<th align="center">大小</th>
+<th align="center">Hash</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">鬼影1</td>
+<td align="center">MBR感染型病毒</td>
+<td align="center">242176 bytes</td>
+<td align="center">8CFA512BA62399F135C03505A93533F3</td>
+</tr>
+</tbody></table>
+<h2 id="样本行为流程图"><a href="#样本行为流程图" class="headerlink" title="样本行为流程图"></a>样本行为流程图</h2><p><img src="1572514959657.png" alt="1572514959657"></p>
+<h1 id="动态监控"><a href="#动态监控" class="headerlink" title="动态监控"></a>动态监控</h1><ul>
+<li><p>首先释放一个<code>dll</code>然后通过<code>regsvr32.exe</code>注册这个<code>dll</code></p>
+<p><img src="1572434831696.png" alt="1572434831696"></p>
+</li>
+<li><p>通过对比可以发现，这个<code>dll</code>与这个<code>exe</code>是一摸一样的，仅仅只有<code>FileHeader</code>中标志文件是个动态链接库的地方存在一个<code>Byte</code>的差异</p>
+<p><img src="1572435138587.png" alt="1572435138587"></p>
+</li>
+<li><p>然后可以看到对磁盘进行写入操作，并不是修改某个文件，而是直接写磁盘。</p>
+<p><img src="1572435241760.png" alt="1572435241760"></p>
+</li>
+</ul>
+<h1 id="调试分析"><a href="#调试分析" class="headerlink" title="调试分析"></a>调试分析</h1><blockquote>
+<p>在上面动态监控行为不全，因为操作系统版本的原因，实际上还会提示安装系统重要更新，要求重启，然后执行真正核心的恶意代码。总之，蛛丝马迹还是逃不过静动态的调试分析。</p>
+</blockquote>
+<h2 id="EXE代码分析"><a href="#EXE代码分析" class="headerlink" title="EXE代码分析"></a>EXE代码分析</h2><ul>
+<li><p>首先查壳，压缩壳，实际上是两层<code>ASP</code>壳</p>
+<p><img src="1572435628894.png" alt="1572435628894"></p>
+</li>
+<li><p>很轻松的脱掉壳，然后使用IDA配合分析</p>
+<p><img src="1.gif" alt="1"></p>
+</li>
+<li><p>没有壳之后，IDA翻译伪代码，就可以直接看执行的逻辑，主要行为是修改MBR代码，然后写入一个驱动文件到磁盘的末尾部分。</p>
+<ul>
+<li><p>首先是第一个函数，用来打开<code>%temp%/00000218.tmp</code>文件，写入日志信息。在程序中多次使用，怀疑样本代码没有开发完全。写入的都是错误信息，哪个函数出现错误的信息。</p>
+<p><img src="1572436154782.png" alt="1572436154782"></p>
+</li>
+<li><p>然后非常常规的操作，首先获取磁盘信息，然后创建互斥体。</p>
+<p><img src="1572436353922.png" alt="1572436353922"></p>
+</li>
+<li><p>接下来直接将Payload写入磁盘</p>
+<p><img src="1572436428982.png" alt="1572436428982"></p>
+</li>
+<li><p>具体是分4次写入，总共写入3个扇区和位于高地址的驱动文件</p>
+<p><img src="1572436563927.png" alt="1572436563927"></p>
+</li>
+<li><p>写入的扇区分别是1号扇区的MBR代码，60扇区的<code>Kernel</code>HOOK代码，61扇区的<code>NtLoad</code>Hook代码，和62扇区的原始MBR代码。</p>
+</li>
+<li><p>随后提示系统更新，重启计算机。</p>
+<p><img src="1572436761042.png" alt="1572436761042"></p>
+<p>写完数据之后，执行<code>InitiateSystemShutdownA</code>函数，重启计算机。</p>
+<p><img src="1572436739443.png" alt="1572436739443"></p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="MBR代码分析"><a href="#MBR代码分析" class="headerlink" title="MBR代码分析"></a>MBR代码分析</h2><ul>
+<li><p>正常的MBR代码</p>
+<p><img src="1571729883131.png" alt="1571729883131"></p>
+</li>
+<li><p>精心构造的ShellCode</p>
+<p><img src="1571741936347.png" alt="1571741936347"></p>
+</li>
+<li><p>然后跳转到修复MBR的代码。</p>
+<p><img src="1571742820264.png" alt="1571742820264"></p>
+</li>
+<li><p>这个时候，发现漏掉了最重要的部分，我们着重观察ShellCode部分的最后几个MOV指令。</p>
+<p><img src="1571797400565.png" alt="1571797400565"></p>
+</li>
+<li><p>作用就是Hook中断向量表中的int 13函数，执行刚刚拷贝出来的数据(来自磁盘0x7A00)</p>
+</li>
+<li><p><code>Hook</code> int 13的代码，主要是Hook磁盘读取功能，执行的功能不是读取，则直接返回原来的函数地址正常运行。</p>
+<p><img src="1571908048567.png" alt="1571908048567"></p>
+</li>
+<li><p>图中的<code>AddrOfSub_Int_13_73</code>则是原来的<code>int 13</code>函数地址。</p>
+</li>
+<li><p>接下来则是通过系统读取文件时，匹配是否读到自己想要的比特序列(NT loader的特征序列)，然后HOOK这个程序</p>
+</li>
+<li><p>首先，设置遍历内存的条件</p>
+<p><img src="1571920044389.png" alt="1571920044389"></p>
+</li>
+<li><p>开始遍历读取内存，寻找特征比特数组：<code>8B F0 85 F6 74 21 80 3D</code></p>
+<p><img src="1571920147173.png" alt="1571920147173"></p>
+<p>特征比特数组的代码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mov		esi,eax</span><br><span class="line">test 	esi,esi</span><br><span class="line">jz		$+0x23h</span><br><span class="line">cmp</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当然，在找到特征字符串之后，首先判断是否感染过，然后直接修改原始代码，跳转执行恶意指令。</p>
+<p><img src="1571920257928.png" alt="1571920257928"></p>
+</li>
+<li><p>命中条件之后，NT loader就被成功修改了</p>
+</li>
+<li><p>此时命中的代码就是修改后的NT loader中的跳转</p>
+<p><img src="1571920467662.png" alt="1571920467662"></p>
+</li>
+<li><p>进入这里就进入了保护模式，接下来的代码就是32位的。</p>
+</li>
+</ul>
+<h2 id="保护模式代码分析"><a href="#保护模式代码分析" class="headerlink" title="保护模式代码分析"></a>保护模式代码分析</h2><ul>
+<li><p>首先定位到Kernel的地址</p>
+<p><img src="1572351572287.png" alt="1572351572287"></p>
+</li>
+<li><p>同样的，执行的代码也是为了Hook下一级程序，所以也是硬编码寻找对应的特征码，然后Hook对应的Call</p>
+<p><img src="1572351613368.png" alt="1572351613368"></p>
+</li>
+<li><p>内核特征码：<code>6A 4B 6A 19 E8 E8 DD E6 FF FF B5 90 FB FF FF E8 53 E6 FF FF</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">push    0x4B</span><br><span class="line">push    0x19</span><br><span class="line">call    Kernel:InbvSetProgressBarSubset</span><br><span class="line">push    [EBP+Var_470]</span><br><span class="line">call    Kernel:IoInitSystem</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>然后开始二级Hook</p>
+<p><img src="1572351656501.png" alt="1572351656501"></p>
+</li>
+</ul>
+<h2 id="第三级Hook分析"><a href="#第三级Hook分析" class="headerlink" title="第三级Hook分析"></a>第三级Hook分析</h2><ul>
+<li><p>首先是通过内核的输出表定位到<code>ExAllocatePool</code>函数，搜索这个内核的函数是通过Hash的比较。当找到这个函数的地址以后就调用这个函数分配一片内存池，然后把下面的代码拷贝到这份内存中并在内存池中执行<code>Bootkit</code>后面的代码。  </p>
+<p><img src="1572352677929.png" alt="1572352677929"></p>
+</li>
+<li><p>接下来<code>Bootkit</code>会把调用之前被HOOK的<code>IoInitSystem</code>函数，即去Call这个函数，让IO去初始化系统。当执行完这步操作以后，则会在内核中搜索和多函数，如<code>NtReadFile、NtOpenFile、NtClose</code>等函数，调用这些函数主要是为了能够把驱动直接从磁盘上读出来，然后运行。  </p>
+<ul>
+<li><p>首先执行原来的函数</p>
+<p><img src="1572352752031.png" alt="1572352752031"></p>
+</li>
+<li><p>然后调用函数<code>NtOpenFile</code>打开磁盘，并定位那个驱动的位置</p>
+<p><img src="1572352984871.png" alt="1572352984871"></p>
+</li>
+<li><p>接下来调用<code>NtReadFile</code>函数，把驱动从磁盘上读到内存中  </p>
+<p><img src="1572353364835.png" alt="1572353364835"></p>
+</li>
+<li><p>而且在内存中展开这个驱动文件</p>
+<p><img src="1572431056761.png" alt="1572431056761"></p>
+</li>
+<li><p>展开之后，程序便跳转到驱动中执行恶意代码，然后再返回Kernel的代码，返回之前，清空内存池，防止出错。</p>
+<p><img src="1572434237955.png" alt="1572434237955"></p>
+</li>
+</ul>
+</li>
+<li><p>这样，第三级Hook就完成了，整个代码从MBR的实模式一路挂钩到内核，最终执行恶意驱动文件。</p>
+</li>
+</ul>
+<h2 id="驱动文件分析"><a href="#驱动文件分析" class="headerlink" title="驱动文件分析"></a>驱动文件分析</h2><ul>
+<li>能力问题，鸽了~~</li>
+</ul>
+<h1 id="查杀防御"><a href="#查杀防御" class="headerlink" title="查杀防御"></a>查杀防御</h1><ul>
+<li><p><code>IOC</code></p>
+<p>Hash：8CFA512BA62399F135C03505A93533F3</p>
+</li>
+<li><p>防御</p>
+<p>样本重点行为在于通过打开<code>\\\\.\\PHYSICALDRIVE0</code>来改写MBR，以及嵌入驱动。现有的主动防御可以检测对该项的写入行为，来阻止病毒感染。</p>
+</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>感染性病毒通常被称之为蠕虫，权限维持的主要方式是感染全盘PE文件，达到执行任意程序都能使自己复活的目的，而这个样本则是通过感染MBR，达到寄生在硬盘上，甚至比操作系统还要早的启动，达到驻留的目的。</li>
+<li>对MBR的写入居然如此简单，同时也没有任何检测，只要不是启发式的检查，都可以免杀。</li>
+<li>从MBR进入操作系统需要经历三处Hook</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MBR%E7%97%85%E6%AF%92/" rel="tag"># MBR病毒</a>
+              <a href="/tags/%E9%AC%BC%E5%BD%B1/" rel="tag"># 鬼影</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/29/02_CrackMe/CrackMe_01/" rel="prev" title="CrackMe - Acid burn">
+      <i class="fa fa-chevron-left"></i> CrackMe - Acid burn
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/04/05_%E4%B8%AA%E4%BA%BA%E7%AC%94%E8%AE%B0/%E5%90%84%E7%A7%8DShellCode%E5%AE%9A%E4%BD%8D%E7%9A%84%E5%A7%BF%E5%8A%BF/" rel="next" title="ShellCode各种自定位的姿势">
+      ShellCode各种自定位的姿势 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E6%A6%82%E5%86%B5"><span class="nav-number">1.</span> <span class="nav-text">样本概况</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="nav-number">1.1.</span> <span class="nav-text">样本基本信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E8%A1%8C%E4%B8%BA%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">样本行为流程图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%9B%91%E6%8E%A7"><span class="nav-number">2.</span> <span class="nav-text">动态监控</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">调试分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#EXE%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.1.</span> <span class="nav-text">EXE代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MBR%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.2.</span> <span class="nav-text">MBR代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.3.</span> <span class="nav-text">保护模式代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E7%BA%A7Hook%E5%88%86%E6%9E%90"><span class="nav-number">3.4.</span> <span class="nav-text">第三级Hook分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E6%96%87%E4%BB%B6%E5%88%86%E6%9E%90"><span class="nav-number">3.5.</span> <span class="nav-text">驱动文件分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%9D%80%E9%98%B2%E5%BE%A1"><span class="nav-number">4.</span> <span class="nav-text">查杀防御</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">49</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">83</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
