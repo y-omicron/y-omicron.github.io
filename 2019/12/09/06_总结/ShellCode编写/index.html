@@ -27,9 +27,9 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="没有接触过逆向的人，通常都是在高层进行工作，但是逆向需要接近系统的底层，所以我们首先实现一段ShellCode">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/ShellCode%E7%BC%96%E5%86%99/1.gif">
-<meta property="og:image" content="http://example.com/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/ShellCode%E7%BC%96%E5%86%99/1575872828863.png">
-<meta property="og:image" content="http://example.com/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/ShellCode%E7%BC%96%E5%86%99/2.gif">
+<meta property="og:image" content="http://example.com/.com//1.gif">
+<meta property="og:image" content="http://example.com/.com//1575872828863.png">
+<meta property="og:image" content="http://example.com/.com//2.gif">
 <meta property="article:published_time" content="2019-12-09T05:20:00.000Z">
 <meta property="article:modified_time" content="2020-07-07T07:16:10.000Z">
 <meta property="article:author" content="John Doe">
@@ -37,7 +37,7 @@
 <meta property="article:tag" content="汇编">
 <meta property="article:tag" content="走近逆向">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/ShellCode%E7%BC%96%E5%86%99/1.gif">
+<meta name="twitter:image" content="http://example.com/.com//1.gif">
 
 <link rel="canonical" href="http://example.com/2019/12/09/06_%E6%80%BB%E7%BB%93/ShellCode%E7%BC%96%E5%86%99/">
 
@@ -228,11 +228,11 @@
 <h2 id="学习工具-amp-学习过程"><a href="#学习工具-amp-学习过程" class="headerlink" title="学习工具&amp;学习过程"></a>学习工具&amp;学习过程</h2><ul>
 <li><p>工具列表：</p>
 <ul>
-<li><code>x64_dbg</code>：<a href="/20191209/x64_dbg_2019-09-01_17-37.7z" >&gt;&gt;下载&lt;&lt;</a>，我的x64_dbg安装过一些插件，让我使用起来更舒服。</li>
-<li><code>Rad Asm</code>以及<code>Win32汇编指令字典</code>：<a href="/20191209/汇编工具.7z" ><code>汇编工具.7z</code></a>。</li>
+<li><code>x64_dbg</code>：<a href="/20191209/x64_dbg_2019-09-01_17-37.7z">&gt;&gt;下载&lt;&lt;</a>，我的x64_dbg安装过一些插件，让我使用起来更舒服。</li>
+<li><code>Rad Asm</code>以及<code>Win32汇编指令字典</code>：<a href="/20191209/汇编工具.7z"><code>汇编工具.7z</code></a>。</li>
 </ul>
 </li>
-<li><p>首先学习别人的思路：<a href="/20191209/00_FS寄存器与ShellCode.exe" ><code>程序下载</code></a></p>
+<li><p>首先学习别人的思路：<a href="/20191209/00_FS寄存器与ShellCode.exe"><code>程序下载</code></a></p>
 <ul>
 <li>地址<code>0x47A1AF</code>的函数<code>sub_0047A0B5</code></li>
 <li>地址<code>0x47A1DA</code>的函数<code>sub_0047A476</code></li>
@@ -240,7 +240,7 @@
 </li>
 <li><p>PEB结构体的官方文档</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb" ><code>PEB MSDN</code></a> </li>
+<li><a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb"><code>PEB MSDN</code></a> </li>
 </ul>
 </li>
 <li><p>导出表结构</p>
@@ -254,7 +254,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 10_ShellCode.cpp : 定义控制台应用程序的入口点。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 预编译头文件，没什么作用</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;stdafx.h&quot;</span></span></span><br><span class="line"><span class="comment">// 定义函数指针</span></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">int</span> <span class="params">(__cdecl *fun)</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * _Format)</span></span>;</span><br><span class="line"><span class="comment">// 主函数入口</span></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 定义等下打印的字符串</span></span><br><span class="line">	<span class="keyword">char</span> *Str = <span class="string">&quot;Hello World，This is My ShellCode!\r\n&quot;</span>;</span><br><span class="line">	<span class="comment">// 定义一个函数指针指向printf()，这里使用任何指针都可以</span></span><br><span class="line">	<span class="comment">// 但是我习惯按照规矩定义一个函数指针</span></span><br><span class="line">	fun pPrintf = (fun)<span class="built_in">printf</span>;</span><br><span class="line">	<span class="comment">// 给函数传递参数，调用函数并且恢复堆栈</span></span><br><span class="line">	__asm</span><br><span class="line">	&#123;</span><br><span class="line">		push Str;</span><br><span class="line">		call pPrintf;</span><br><span class="line">		add esp, <span class="number">0x4</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 结束并退出程序</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Rad Asm 汇编程序编写</p>
-<p><img src="ShellCode%E7%BC%96%E5%86%99/1.gif" alt="1"></p>
+<p><img src="/.com//1.gif" alt="1"></p>
 <ul>
 <li>代码</li>
 </ul>
@@ -263,10 +263,10 @@
 <ul>
 <li>当然这里只是简单的取到了字符串的地址，编写ShellCode还需要一些内容，不懂再来问~</li>
 </ul>
-<p><img src="ShellCode%E7%BC%96%E5%86%99/1575872828863.png" alt="1575872828863"></p>
+<p><img src="/.com//1575872828863.png" alt="1575872828863"></p>
 </li>
 <li><p>内存中直接编写汇编代码(没什么区别)</p>
-<p><img src="ShellCode%E7%BC%96%E5%86%99/2.gif" alt="2"></p>
+<p><img src="/.com//2.gif" alt="2"></p>
 </li>
 </ul>
 <h1 id="肯定没搞懂"><a href="#肯定没搞懂" class="headerlink" title="肯定没搞懂"></a>肯定没搞懂</h1><ul>
